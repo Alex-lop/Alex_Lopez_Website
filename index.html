@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alex Lopez</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --neon:       #1A5FFF;
+      --neon-dim:   rgba(26,95,255,0.30);
+      --neon-faint: rgba(26,95,255,0.08);
+      --bg:         #F5F5F0;
+      --text:       #111111;
+      --text-dim:   #555555;
+      --card-bg:    rgba(255,255,255,0.82);
+    }
+
+    html { scroll-behavior: auto; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── CANVAS ───────────────────────────────────────────────── */
+    #bg-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0;
+      display: block;
+      cursor: grab;
+    }
+    #bg-canvas.dragging  { cursor: grabbing; }
+    #bg-canvas.panning   { cursor: move; }
+    #bg-canvas.dollying  { cursor: ns-resize; }
+
+    /* ── SCROLL DRIVER ────────────────────────────────────────── */
+    #scroll-driver {
+      height: 600vh;
+      position: relative;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ── SECTION PANELS ──────────────────────────────────────── */
+    .section-panel {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;        /* panel background never blocks canvas */
+      will-change: opacity, transform;
+    }
+    /* Only the actual content children should be interactive */
+    .section-panel > * { pointer-events: auto; }
+
+    /* ── INTRO ────────────────────────────────────────────────── */
+    #intro-panel {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.75rem;
+    }
+
+    .intro-name {
+      font-size: clamp(3.2rem, 11vw, 8.5rem);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1;
+      text-shadow: 0 0 60px rgba(0,0,0,0.06);
+    }
+
+    .intro-tagline {
+      font-size: clamp(0.95rem, 2.5vw, 1.35rem);
+      font-weight: 300;
+      color: var(--text-dim);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .scroll-hint {
+      position: fixed;
+      bottom: 2.75rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.76rem;
+      color: rgba(0,0,0,0.32);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      animation: hintPulse 2.6s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes hintPulse {
+      0%, 100% { opacity: 0.25; }
+      50%       { opacity: 0.8; }
+    }
+
+    /* ── ABOUT ────────────────────────────────────────────────── */
+    #about-panel { padding: 1.5rem; }
+
+    .about-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--neon-dim);
+      border-radius: 20px;
+      padding: 3.25rem 3.5rem;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 0 80px rgba(26,95,255,0.06), inset 0 1px 0 rgba(0,0,0,0.04);
+    }
+
+    .card-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--neon);
+      margin-bottom: 1.5rem;
+    }
+
+    .about-card p {
+      font-size: 1.08rem;
+      font-weight: 300;
+      line-height: 1.85;
+      color: var(--text);
+      margin-bottom: 2.25rem;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .tag {
+      background: var(--neon-faint);
+      border: 1px solid var(--neon-dim);
+      color: var(--neon);
+      border-radius: 999px;
+      padding: 0.32rem 0.95rem;
+      font-size: 0.82rem;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .tag:hover {
+      background: rgba(26,95,255,0.14);
+      border-color: rgba(26,95,255,0.5);
+    }
+
+    /* ── PROJECTS ─────────────────────────────────────────────── */
+    #projects-panel {
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      padding: 1.5rem;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.4rem;
+      max-width: 1000px;
+      width: 100%;
+    }
+
+    .project-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--neon-dim);
+      border-radius: 16px;
+      padding: 2.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      box-shadow: 0 0 40px rgba(26,95,255,0.04);
+      transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+    }
+
+    .project-card:hover {
+      border-color: rgba(26,95,255,0.55);
+      box-shadow: 0 0 56px rgba(26,95,255,0.12);
+      transform: translateY(-2px);
+    }
+
+    .project-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .project-card p {
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 1.72;
+      flex: 1;
+    }
+
+    .project-link {
+      color: var(--neon);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s, letter-spacing 0.2s;
+      align-self: flex-start;
+    }
+
+    .project-link:hover {
+      border-bottom-color: var(--neon);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── CONTACT / RESUME ─────────────────────────────────────── */
+    #contact-panel {
+      flex-direction: column;
+      align-items: center;
+      gap: 2.5rem;
+      padding: 1.5rem;
+    }
+
+    .resume-section {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--neon-dim);
+      border-radius: 20px;
+      padding: 3.25rem 3.5rem;
+      max-width: 860px;
+      width: 100%;
+      box-shadow: 0 0 80px rgba(26,95,255,0.06);
+    }
+
+    .resume-cols {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.75rem;
+      margin-bottom: 2.75rem;
+    }
+
+    .resume-col h3 {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--neon);
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      margin-bottom: 1.1rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--neon-dim);
+    }
+
+    .resume-col ul { list-style: none; }
+
+    .resume-col li {
+      font-size: 0.9rem;
+      font-weight: 300;
+      line-height: 1.9;
+      color: var(--text-dim);
+    }
+
+    .resume-col li strong {
+      color: var(--text);
+      font-weight: 400;
+      display: block;
+    }
+
+    .resume-col li.spacer { margin-top: 0.75rem; }
+
+    .resume-actions {
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn-resume {
+      display: inline-block;
+      background: var(--neon);
+      color: #000;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.8rem 2.6rem;
+      border-radius: 10px;
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: opacity 0.2s, box-shadow 0.2s, transform 0.2s;
+      box-shadow: 0 0 32px rgba(26,95,255,0.38);
+    }
+
+    .btn-resume:hover {
+      opacity: 0.9;
+      box-shadow: 0 0 48px rgba(26,95,255,0.60);
+      transform: translateY(-1px);
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 400;
+      padding: 0.65rem 1.3rem;
+      border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 10px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.03);
+      transition: color 0.22s, border-color 0.22s, background 0.22s, transform 0.22s;
+    }
+
+    .contact-link:hover {
+      color: var(--neon);
+      border-color: var(--neon-dim);
+      background: var(--neon-faint);
+      transform: translateY(-1px);
+    }
+
+    .contact-link svg { flex-shrink: 0; }
+
+    /* ── BRIGHTNESS OVERLAY ──────────────────────────────────── */
+    #brightness-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: rgba(26,95,255,0);
+    }
+
+    /* Keep contact section colors fully vivid at scroll end */
+    #contact-panel * { color: inherit !important; }
+    #contact-panel .card-label,
+    #contact-panel .resume-col h3 { color: var(--neon) !important; }
+    #contact-panel .btn-resume    { color: #000 !important; }
+    #contact-panel .contact-link  { color: var(--text-dim) !important; }
+    #contact-panel .contact-link:hover { color: var(--neon) !important; }
+
+    /* ── RESPONSIVE ───────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .projects-grid  { grid-template-columns: 1fr; max-width: 440px; }
+      .resume-cols    { grid-template-columns: 1fr; gap: 1.5rem; }
+      .about-card     { padding: 2.25rem 2rem; }
+      .resume-section { padding: 2rem 1.75rem; }
+      .contact-links  { gap: 0.85rem; }
+      #contact-panel  { gap: 1.75rem; }
+    }
+
+    @media (max-width: 480px) {
+      .intro-name       { letter-spacing: -0.02em; }
+      #projects-panel   { gap: 1.25rem; }
+      .project-card     { padding: 1.75rem; }
+      .about-card       { padding: 1.75rem 1.5rem; }
+    }
+
+    /* ── DRAG HINT ────────────────────────────────────────────── */
+    #drag-hint {
+      position: fixed;
+      bottom: 5.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,0.38);
+      background: rgba(255,255,255,0.60);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 999px;
+      padding: 0.42rem 1.2rem;
+      pointer-events: none;
+      transition: opacity 1s ease;
+    }
+    #drag-hint.hidden { opacity: 0; }
+
+    /* ── DARK MODE  (camera below XY plane) ─────────────────── */
+    body {
+      transition:
+        color            0.45s ease,
+        background-color 0.45s ease;
+    }
+    body.dark-mode {
+      --text:     #e8e8e8;
+      --text-dim: #aaaaaa;
+      --card-bg:  rgba(18,18,18,0.85);
+      background: #050505;
+      color:      #e8e8e8;
+    }
+    body.dark-mode .intro-name {
+      text-shadow: 0 0 28px rgba(229,160,0,0.55);
+    }
+    body.dark-mode .project-card,
+    body.dark-mode .about-card {
+      border-color: rgba(229,160,0,0.18);
+      box-shadow:   0 0 18px rgba(229,160,0,0.08);
+    }
+    body.dark-mode .project-card:hover,
+    body.dark-mode .about-card:hover {
+      border-color: rgba(229,160,0,0.45);
+      box-shadow:   0 0 28px rgba(229,160,0,0.18);
+    }
+    body.dark-mode .project-tag {
+      background: rgba(229,160,0,0.12);
+      color:      #E5A000;
+    }
+    body.dark-mode a { color: #E5A000; }
+    body.dark-mode a:hover { color: #ffcc44; }
+    body.dark-mode .scroll-hint { color: rgba(255,255,255,0.38); }
+    body.dark-mode #drag-hint {
+      color:        rgba(255,255,255,0.50);
+      background:   rgba(0,0,0,0.55);
+      border-color: rgba(255,255,255,0.10);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="drag-hint">
+    ☉ drag · orbit &nbsp;·&nbsp; right-drag · pan &nbsp;·&nbsp; ctrl+scroll · zoom &nbsp;·&nbsp; scroll · navigate page
+  </div>
+
+  <canvas id="bg-canvas"></canvas>
+  <div id="brightness-overlay"></div>
+  <div id="scroll-driver"></div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PHASE 1 — INTRO
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="intro-panel" class="section-panel">
+    <h1 class="intro-name" id="intro-name">Alex Lopez</h1>
+    <p  class="intro-tagline" id="intro-tagline">Engineer.&nbsp; Builder.&nbsp; Explorer.</p>
+    <p  class="scroll-hint" id="scroll-hint">scroll to explore ↓</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PHASE 2 — ABOUT
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="about-panel" class="section-panel">
+    <div class="about-card" id="about-card">
+      <p class="card-label">About Me</p>
+      <p></p>
+      <div class="tags"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PHASE 3 — PROJECTS
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="projects-panel" class="section-panel">
+    <p class="card-label" style="letter-spacing:0.22em;">Selected Projects</p>
+    <div class="projects-grid">
+
+      <div class="project-card" id="proj-0">
+        <h3></h3>
+        <p></p>
+        <div class="tags"></div>
+        <a href="#" class="project-link">View →</a>
+      </div>
+
+      <div class="project-card" id="proj-1">
+        <h3></h3>
+        <p></p>
+        <div class="tags"></div>
+        <a href="#" class="project-link">View →</a>
+      </div>
+
+      <div class="project-card" id="proj-2">
+        <h3></h3>
+        <p></p>
+        <div class="tags"></div>
+        <a href="#" class="project-link">View →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PHASE 4 — RESUME / CONTACT
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="contact-panel" class="section-panel">
+    <div class="resume-section" id="resume-section">
+      <p class="card-label" style="text-align:center;margin-bottom:1.6rem;">Resume</p>
+      <div class="resume-cols">
+
+        <div class="resume-col">
+          <h3>Education</h3>
+          <ul></ul>
+        </div>
+
+        <div class="resume-col">
+          <h3>Experience</h3>
+          <ul></ul>
+        </div>
+
+        <div class="resume-col">
+          <h3>Skills</h3>
+          <ul></ul>
+        </div>
+
+      </div>
+      <div class="resume-actions">
+        <a href="#" class="btn-resume">Download Resume ↓</a>
+      </div>
+    </div>
+
+    <div class="contact-links" id="contact-links">
+      <a href="#" target="_blank" rel="noopener" class="contact-link">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57
+            0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695
+            -.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99
+            .105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225
+            -.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405
+            c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225
+            0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3
+            0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        GitHub
+      </a>
+      <a href="#" target="_blank" rel="noopener" class="contact-link">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136
+            2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37
+            4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063
+            2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542
+            C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0
+            22.222 0h.003z"/>
+        </svg>
+        LinkedIn
+      </a>
+      <a href="mailto:" class="contact-link">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9
+            2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+        </svg>
+        alex@example.com
+      </a>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SCRIPTS
+  ═══════════════════════════════════════════════════════════ -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three":         "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    /* ════════════════════════════════════════════════════════════
+       RENDERER
+    ════════════════════════════════════════════════════════════ */
+    const canvas   = document.getElementById('bg-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0xF5F5F0, 1);
+
+    const scene  = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0xF5F5F0, 0.00025);   // gentle — enough for depth, won't bleach grid
+    const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.5, 6000);
+    camera.position.set(0, 120, 520);    // lower + slightly further back — grid is clearly in frame
+    camera.lookAt(0, 0, 0);
+
+    const controls = new OrbitControls(camera, canvas);
+    controls.target.set(0, -55, 0);
+
+    // ── Movement axes ──────────────────────────────────────────
+    controls.enableRotate      = true;
+    controls.enablePan         = true;
+    controls.enableZoom        = true;
+    controls.enableDamping     = true;
+    controls.dampingFactor     = 0.06;
+    controls.rotateSpeed       = 0.55;
+    controls.panSpeed          = 0.7;
+    controls.zoomSpeed         = 0.55;
+    controls.screenSpacePanning= true;
+
+    // ── Distance limits ────────────────────────────────────────
+    controls.minDistance  = 80;
+    controls.maxDistance  = 900;
+
+    // ── Mouse button map ───────────────────────────────────────
+    controls.mouseButtons = {
+      LEFT:   THREE.MOUSE.ROTATE,
+      MIDDLE: THREE.MOUSE.DOLLY,
+      RIGHT:  THREE.MOUSE.PAN,
+    };
+
+    // ── Touch ──────────────────────────────────────────────────
+    controls.touches = {
+      ONE: THREE.TOUCH.ROTATE,
+      TWO: THREE.TOUCH.DOLLY_PAN,
+    };
+
+    // ── Auto-rotate: pauses on interaction, resumes after 2.5s ─
+    controls.autoRotate      = true;
+    controls.autoRotateSpeed = 0.3;
+
+    controls.update();
+
+    // Wheel always scrolls the page — zoom via middle-mouse-button drag only.
+    // This avoids any conflict between page scroll and scene zoom.
+    controls.enableZoom = false;
+
+    // Cursor feedback: driven by raw canvas pointer events (always fires)
+    canvas.addEventListener('pointerdown', (e) => {
+      canvas.classList.remove('panning', 'dollying');
+      if (e.button === 0) canvas.classList.add('dragging');
+      if (e.button === 1) canvas.classList.add('dollying');
+      if (e.button === 2) canvas.classList.add('panning');
+    });
+    window.addEventListener('pointerup', () => {
+      canvas.classList.remove('dragging', 'panning', 'dollying');
+    });
+
+    // Auto-rotate pause/resume: use OrbitControls' own events — fire
+    // regardless of DOM layering, so they always work correctly.
+    controls.addEventListener('start', () => {
+      controls.autoRotate = false;
+      clearTimeout(window._orbitTimer);
+    });
+    controls.addEventListener('end', () => {
+      window._orbitTimer = setTimeout(() => {
+        controls.autoRotate = true;
+      }, 2500);
+    });
+
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    /* ════════════════════════════════════════════════════════════
+       STARS
+    ════════════════════════════════════════════════════════════ */
+    let starMat, nearStarMat;   // exposed for color inversion
+
+    (function buildStars() {
+      const N   = 7500;
+      const pos = new Float32Array(N * 3);
+
+      for (let i = 0; i < N; i++) {
+        pos[i*3]   = (Math.random() - 0.5) * 9000;   // ±4500
+        pos[i*3+1] = (Math.random() - 0.5) * 6000;   // ±3000
+        pos[i*3+2] = Math.random() * -3200 - 50;      // -3250 to -50
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+
+      // Soft radial sprite for stars
+      const starCanvas = document.createElement('canvas');
+      starCanvas.width  = 16; starCanvas.height = 16;
+      const sc = starCanvas.getContext('2d');
+      const sg = sc.createRadialGradient(8,8,0, 8,8,8);
+      sg.addColorStop(0,   'rgba(26,95,255,1)');
+      sg.addColorStop(0.4, 'rgba(26,95,255,0.6)');
+      sg.addColorStop(1,   'rgba(26,95,255,0)');
+      sc.fillStyle = sg;
+      sc.fillRect(0, 0, 16, 16);
+      const starTex = new THREE.CanvasTexture(starCanvas);
+
+      starMat = new THREE.PointsMaterial({
+        map: starTex,
+        size: 4.5,
+        transparent: true,
+        opacity: 0.55,
+        sizeAttenuation: true,
+        blending: THREE.NormalBlending,
+        depthWrite: false,
+      });
+
+      scene.add(new THREE.Points(geo, starMat));
+    })();
+
+    // Near-field stars — sparse layer around the camera's Z range so
+    // they occasionally drift across the view as the scene rotates.
+    (function buildNearStars() {
+      const N   = 950;
+      const pos = new Float32Array(N * 3);
+
+      for (let i = 0; i < N; i++) {
+        pos[i*3]   = (Math.random() - 0.5) * 5000;   // ±2500
+        pos[i*3+1] = (Math.random() - 0.5) * 3600;   // ±1800
+        // Z spans from well in front of the camera (+800) back to -1400,
+        // putting stars at various depths that cross the FOV during orbit.
+        pos[i*3+2] = Math.random() * 2200 - 1400;     // -1400 to +800
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+
+      const nearStarCanvas = document.createElement('canvas');
+      nearStarCanvas.width  = 12; nearStarCanvas.height = 12;
+      const nc = nearStarCanvas.getContext('2d');
+      const ng = nc.createRadialGradient(6,6,0, 6,6,6);
+      ng.addColorStop(0,   'rgba(26,95,255,1)');
+      ng.addColorStop(0.35,'rgba(26,95,255,0.5)');
+      ng.addColorStop(1,   'rgba(26,95,255,0)');
+      nc.fillStyle = ng;
+      nc.fillRect(0, 0, 12, 12);
+      const nearStarTex = new THREE.CanvasTexture(nearStarCanvas);
+
+      nearStarMat = new THREE.PointsMaterial({
+        map: nearStarTex,
+        size: 3.2,
+        transparent: true,
+        opacity: 0.32,
+        sizeAttenuation: true,
+        blending: THREE.NormalBlending,
+        depthWrite: false,
+      });
+
+      scene.add(new THREE.Points(geo, nearStarMat));
+    })();
+
+    /* ════════════════════════════════════════════════════════════
+       GRID  (XZ plane — the "floor" of the coordinate space)
+    ════════════════════════════════════════════════════════════ */
+    const gridGroup = new THREE.Group();
+    scene.add(gridGroup);
+
+    (function buildGrid() {
+      const SIZE  = 700;
+      const DIVS  = 35;
+      const step  = SIZE / DIVS;
+      const verts = [];
+
+      for (let i = 0; i <= DIVS; i++) {
+        const p = -SIZE / 2 + i * step;
+        // Lines along X
+        verts.push(-SIZE/2, 0, p,   SIZE/2, 0, p);
+        // Lines along Z
+        verts.push(p, 0, -SIZE/2,   p, 0,  SIZE/2);
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+      const mat = new THREE.LineBasicMaterial({
+        color: 0x000000,
+        transparent: true,
+        opacity: 0.30,   // boosted — fog was drowning 0.14
+      });
+      const lines = new THREE.LineSegments(geo, mat);
+      gridGroup.add(lines);
+
+      // Brighter center axes
+      const axVerts = [
+        -SIZE/2, 0, 0,   SIZE/2, 0, 0,
+        0, 0, -SIZE/2,   0, 0,  SIZE/2,
+      ];
+      const axGeo = new THREE.BufferGeometry();
+      axGeo.setAttribute('position', new THREE.Float32BufferAttribute(axVerts, 3));
+      const axMat = new THREE.LineBasicMaterial({
+        color: 0x000000, transparent: true, opacity: 0.55,
+      });
+      gridGroup.add(new THREE.LineSegments(axGeo, axMat));
+
+      // Y axis (vertical — completes the 3D coordinate system)
+      const yAxisVerts = [0, -SIZE/2, 0,   0, SIZE/2, 0];
+      const yAxisGeo   = new THREE.BufferGeometry();
+      yAxisGeo.setAttribute('position', new THREE.Float32BufferAttribute(yAxisVerts, 3));
+      const yAxisMat   = new THREE.LineBasicMaterial({
+        color: 0x000000, transparent: true, opacity: 0.55,
+      });
+      gridGroup.add(new THREE.LineSegments(yAxisGeo, yAxisMat));
+    })();
+
+    gridGroup.position.y = -55;
+
+    // Grab material refs by child index so we can recolor them each frame
+    const gridLineMat  = gridGroup.children[0].material;  // faint grid
+    const gridAxisMat  = gridGroup.children[1].material;  // center X/Z axes
+    const gridYAxisMat = gridGroup.children[2].material;  // Y axis
+
+    /* ════════════════════════════════════════════════════════════
+       WAVE  (3D sine wave surface — point cloud)
+    ════════════════════════════════════════════════════════════ */
+    const WAVE_COLS      = 60;
+    const WAVE_ROWS      = 90;
+    const WAVE_TOTAL     = WAVE_COLS * WAVE_ROWS;
+    const SPIRAL_RADIUS  = 220;
+    const wavePositions = new Float32Array(WAVE_TOTAL * 3);
+
+    for (let row = 0; row < WAVE_ROWS; row++) {
+      for (let col = 0; col < WAVE_COLS; col++) {
+        const idx = row * WAVE_COLS + col;
+        wavePositions[idx*3]   = (col / (WAVE_COLS-1) - 0.5) * 580;  // X: -290 to 290
+        wavePositions[idx*3+1] = 0;                                    // Y: set each frame
+        wavePositions[idx*3+2] = -(row / (WAVE_ROWS-1)) * 1100;       // Z: 0 to -1100
+      }
+    }
+
+    // Snapshot original X values — needed to blend toward spiral in animate loop
+    const waveOrigX = new Float32Array(WAVE_TOTAL);
+    for (let i = 0; i < WAVE_TOTAL; i++) waveOrigX[i] = wavePositions[i * 3];
+
+    const waveGeo = new THREE.BufferGeometry();
+    waveGeo.setAttribute('position', new THREE.BufferAttribute(wavePositions, 3));
+
+    const waveMat = new THREE.PointsMaterial({
+      size: 4.5,
+      color: 0x1A5FFF,
+      transparent: true,
+      opacity: 0.88,
+      sizeAttenuation: true,
+      depthWrite: false,
+      depthTest: true,
+    });
+
+    const waveGroup = new THREE.Group();
+    waveGroup.add(new THREE.Points(waveGeo, waveMat));
+    scene.add(waveGroup);
+
+    // Second wave layer for visual parallax / depth
+    const waveGroup2 = waveGroup.clone();
+    waveGroup2.position.y = 30;
+    const waveMat2 = waveMat.clone();
+    waveMat2.opacity = 0.3;
+    waveMat2.color = new THREE.Color(0x5588FF);
+    waveGroup2.children[0].material = waveMat2;
+    scene.add(waveGroup2);
+
+    /* ════════════════════════════════════════════════════════════
+       TORNADO  (mouse-reactive 3D funnel with noise)
+    ════════════════════════════════════════════════════════════ */
+    const TORNADO_STRANDS    = 6;
+    const TORNADO_PTS_STRAND = 220;
+    const TORNADO_TOTAL      = TORNADO_STRANDS * TORNADO_PTS_STRAND;
+    const TORNADO_HEIGHT     = 320;
+    const TORNADO_R_BASE     = 95;
+    const TORNADO_R_TIP      = 4;
+    const TORNADO_TURNS      = 7;
+
+    const tornadoPositions = new Float32Array(TORNADO_TOTAL * 3);
+    const tornadoGeo = new THREE.BufferGeometry();
+    tornadoGeo.setAttribute('position',
+      new THREE.BufferAttribute(tornadoPositions, 3));
+
+    const strandColors = [
+      0xFF1111, 0xCC0000, 0xFF4422, 0xDD1133, 0xFF2200, 0xBB0011
+    ];
+
+    const tornadoGroup = new THREE.Group();
+    for (let s = 0; s < TORNADO_STRANDS; s++) {
+      const strandPts = TORNADO_PTS_STRAND;
+      const strandPos = new Float32Array(strandPts * 3);
+      const strandGeo = new THREE.BufferGeometry();
+      strandGeo.setAttribute('position',
+        new THREE.BufferAttribute(strandPos, 3));
+      const strandMat = new THREE.LineBasicMaterial({
+        color: strandColors[s],
+        transparent: true,
+        opacity: 0.75,
+      });
+      tornadoGroup.add(new THREE.Line(strandGeo, strandMat));
+    }
+
+    const DUST_PTS = 600;
+    const dustPos  = new Float32Array(DUST_PTS * 3);
+    const dustGeo  = new THREE.BufferGeometry();
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+    const dustMat = new THREE.PointsMaterial({
+      size: 3.5,
+      color: 0xFF2222,
+      transparent: true,
+      opacity: 0.55,
+      sizeAttenuation: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    tornadoGroup.add(new THREE.Points(dustGeo, dustMat));
+
+    tornadoGroup.position.set(0, -55, -80);
+    scene.add(tornadoGroup);
+
+    // Velocity state for momentum-based tornado drift
+    const tornadoVel = { x: 0, z: 0 };
+
+    function tornadoNoise(x, y, t) {
+      return  Math.sin(x * 1.9 + y * 2.5 + t * 0.8)  * 0.50
+            + Math.sin(x * 3.7 - y * 1.3 + t * 1.4)  * 0.25
+            + Math.sin(x * 7.1 + y * 4.3 - t * 2.1)  * 0.125;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       COLOR INVERSION HELPERS  (camera below XY plane)
+       Pre-allocated so there are zero allocations inside animate().
+    ════════════════════════════════════════════════════════════ */
+    const _bgLight    = new THREE.Color(0xF5F5F0);  // day: off-white bg
+    const _bgDark     = new THREE.Color(0x050505);  // night: near-black bg
+    const _lineBlack  = new THREE.Color(0x000000);  // day: black grid
+    const _lineWhite  = new THREE.Color(0xffffff);  // night: white grid
+    const _waveBlue   = new THREE.Color(0x1A5FFF);  // day: wave color
+    const _waveAmber  = new THREE.Color(0xE5A000);  // night: true inverse of #1A5FFF
+    const _wave2Blue  = new THREE.Color(0x5588FF);  // day: wave group 2
+    const _wave2Amber = new THREE.Color(0xAA7700);  // night: inverse of #5588FF
+    const _starBlue   = new THREE.Color(0x1A5FFF);  // day: star color
+    const _starWhite  = new THREE.Color(0xffffff);  // night: bright white stars
+    const _cBuf       = new THREE.Color();           // scratch buffer — reused every frame
+
+    /* ════════════════════════════════════════════════════════════
+       SCROLL STATE
+    ════════════════════════════════════════════════════════════ */
+    let scrollRaw     = 0;   // exact page position 0–1, updated on scroll events
+    let scrollVel     = 0;   // momentum carried after scroll stops
+    let scrollDisplay = 0;   // the coasting value actually used for animations
+    let endZoom       = 0;   // 0 = normal FOV, 1 = fully zoomed out
+    let endZoomVel    = 0;   // velocity for end-of-page zoom
+    const BASE_FOV    = 72;
+    let rafId         = null;
+    const brightnessOverlay = document.getElementById('brightness-overlay');
+
+    window.addEventListener('scroll', () => {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      scrollRaw = maxScroll > 0 ? Math.min(Math.max(window.scrollY / maxScroll, 0), 1) : 0;
+    }, { passive: true });
+
+    // When already at the bottom, extra scroll pushes the FOV wider (zoom out)
+    window.addEventListener('wheel', (e) => {
+      if (scrollRaw >= 0.98) {
+        endZoomVel += e.deltaY * 0.00055;
+      }
+    }, { passive: true });
+
+    const mouseNDC = { x: 0, y: 0 };
+    window.addEventListener('mousemove', (e) => {
+      mouseNDC.x = (e.clientX / window.innerWidth)  * 2 - 1;
+      mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    }, { passive: true });
+
+    /* ════════════════════════════════════════════════════════════
+       SECTION VISIBILITY  (scroll-driven, computed every frame)
+    ════════════════════════════════════════════════════════════ */
+    // [id, fadeInStart, fadeInEnd, peakEnd, fadeOutEnd]
+    // Wider peak windows with 600vh scroll driver for unhurried reading
+    const SECTIONS = [
+      ['intro-panel',     -1,    -1,    0.10,  0.20],
+      ['about-panel',    0.12,  0.20,   0.42,  0.52],
+      ['projects-panel', 0.43,  0.53,   0.72,  0.82],
+      ['contact-panel',  0.74,  0.83,   0.97,  1.00],
+    ];
+
+    const sectionEls = {};
+    SECTIONS.forEach(([id]) => { sectionEls[id] = document.getElementById(id); });
+
+    function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+    function computeSectionOpacity(p, fiS, fiE, peakE, foE) {
+      if (fiS < 0) {
+        // Intro: always visible until fadeOut
+        if (p <= peakE)   return 1;
+        if (p >= foE)     return 0;
+        return easeInOut(1 - (p - peakE) / (foE - peakE));
+      }
+      if (p <= fiS) return 0;
+      if (p <= fiE) return easeInOut((p - fiS) / (fiE - fiS));
+      if (p <= peakE) return 1;
+      if (p >= foE)   return 0;
+      return easeInOut(1 - (p - peakE) / (foE - peakE));
+    }
+
+    function computeSectionTY(p, fiS, fiE, peakE, foE) {
+      if (fiS < 0) {
+        if (p <= peakE)   return 0;
+        if (p >= foE)     return -18;
+        return -18 * (1 - easeInOut(1 - (p - peakE) / (foE - peakE)));
+      }
+      if (p <= fiS)   return 18;
+      if (p <= fiE)   return 18 * (1 - easeInOut((p - fiS) / (fiE - fiS)));
+      if (p <= peakE) return 0;
+      if (p >= foE)   return -18;
+      return -18 * (1 - easeInOut(1 - (p - peakE) / (foE - peakE)));
+    }
+
+    let projectsAnimated = false;
+
+    function updateSections(p) {
+      SECTIONS.forEach(([id, fiS, fiE, peakE, foE]) => {
+        const el = sectionEls[id];
+        const op = computeSectionOpacity(p, fiS, fiE, peakE, foE);
+        const ty = computeSectionTY(p, fiS, fiE, peakE, foE);
+
+        el.style.opacity   = op;
+        el.style.transform = `translateY(${ty}px)`;
+        // Panel itself stays pointer-events:none always (CSS); only toggle children
+        Array.from(el.children).forEach(child => {
+          child.style.pointerEvents = op > 0.05 ? 'auto' : 'none';
+        });
+      });
+
+      // One-shot stagger for project cards
+      if (p > 0.50 && !projectsAnimated) {
+        projectsAnimated = true;
+        gsap.fromTo(
+          ['#proj-0', '#proj-1', '#proj-2'],
+          { y: 36, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.65, stagger: 0.14, ease: 'power2.out' }
+        );
+      }
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       ANIMATION LOOP
+    ════════════════════════════════════════════════════════════ */
+    let startTime = null;
+
+    function animate(ts) {
+      controls.update();
+      rafId = requestAnimationFrame(animate);
+      if (document.hidden) return;
+
+      if (!startTime) startTime = ts;
+      const elapsed = (ts - startTime) / 1000; // seconds
+
+      // ── Scroll momentum ─────────────────────────────────────
+      // Spring pulls scrollDisplay toward the real page position,
+      // friction lets it coast after the user stops scrolling.
+      scrollVel     += (scrollRaw - scrollDisplay) * 0.09;  // spring force
+      scrollVel     *= 0.80;                                 // friction (coasts ~0.8s)
+      // Allow tiny overshoot at edges (-0.015 / 1.015) so end-of-page feels bouncy
+      scrollDisplay  = Math.min(Math.max(scrollDisplay + scrollVel, -0.015), 1.015);
+      // Clamp p to 0–1 so no animation math breaks at the edges
+      const p        = Math.min(Math.max(scrollDisplay, 0), 1);
+
+      // ── Wave → spiral blend (driven by scroll progress p) ───
+      //
+      // Helix angle is PRIMARILY driven by Z depth so the spiral winds
+      // continuously as it recedes — col only adds a narrow ribbon spread.
+      // Sine-eased p gives an organic, fluid transition.
+      const easeP      = Math.sin(p * Math.PI * 0.5);  // 0→1, sine ease
+      const HELIX_TURNS = 6;                            // full turns over Z range
+
+      for (let row = 0; row < WAVE_ROWS; row++) {
+        const rowT = row / (WAVE_ROWS - 1);             // 0 (front) → 1 (back)
+
+        for (let col = 0; col < WAVE_COLS; col++) {
+          const idx      = row * WAVE_COLS + col;
+          const x0       = waveOrigX[idx];              // original flat X, frozen
+          const z        = wavePositions[idx * 3 + 2];  // Z is fixed
+
+          // ── Flat wave (base, always computed) ─────────────────
+          const yWave = 52 * Math.sin(0.016*x0 + 0.010*z - 1.1*elapsed)
+                      + 28 * Math.sin(0.028*x0 - 0.018*z - 1.7*elapsed)
+                      + 11 * Math.sin(0.055*x0 + 0.038*z - 3.1*elapsed); // high-freq jiggle
+
+          // ── Helix ─────────────────────────────────────────────
+          // rowT drives the main winding → spiral keeps turning with depth.
+          // colSpread (-0.5..0.5) fans the 60 cols into a ribbon arc.
+          const colSpread  = (col / (WAVE_COLS - 1)) - 0.5;
+          const helixAngle = rowT       * HELIX_TURNS * Math.PI * 2
+                           + colSpread  * Math.PI * 0.7   // ribbon width ~126°
+                           + elapsed    * 0.3;            // slow autonomous spin
+
+          const xSpiral = SPIRAL_RADIUS * Math.cos(helixAngle);
+          const ySpiral = SPIRAL_RADIUS * Math.sin(helixAngle) + yWave * 0.15;
+
+          // ── Sine-eased lerp: wave → helix ─────────────────────
+          wavePositions[idx * 3]     = x0    * (1 - easeP) + xSpiral * easeP;
+          wavePositions[idx * 3 + 1] = yWave * (1 - easeP) + ySpiral * easeP;
+        }
+      }
+      waveGeo.attributes.position.needsUpdate = true;
+
+      waveGroup.position.z = -200 + p * 700;
+      waveGroup.position.y = -30;
+      waveGroup2.position.z = waveGroup.position.z + 80;
+
+      // ── Tornado momentum drift ───────────────────────────────
+      // Mouse pulls the tornado like a magnet — builds velocity, coasts after release
+      const tornadoTargetX = mouseNDC.x * 320;
+      const tornadoTargetZ = -mouseNDC.y * 240 - 60;
+
+      // Acceleration toward target (weak pull so it builds gradually)
+      tornadoVel.x += (tornadoTargetX - tornadoGroup.position.x) * 0.006;
+      tornadoVel.z += (tornadoTargetZ - tornadoGroup.position.z) * 0.006;
+
+      // Friction: 0.97 keeps ~97% of velocity each frame → coasts ~2–3s after mouse stops
+      tornadoVel.x *= 0.82;
+      tornadoVel.z *= 0.82;
+
+      tornadoGroup.position.x += tornadoVel.x;
+      tornadoGroup.position.z += tornadoVel.z;
+      tornadoGroup.position.y  = -55;   // base pinned to grid plane
+
+      // Lean: tip (bottom) stays grounded; wide mouth (top) sways toward mouse
+      const leanX = mouseNDC.x * 55;
+      const leanZ = mouseNDC.y * 30;
+
+      // Mouse distance from centre scales extra turbulence
+      const mDist = Math.sqrt(mouseNDC.x * mouseNDC.x + mouseNDC.y * mouseNDC.y);
+
+      for (let s = 0; s < TORNADO_STRANDS; s++) {
+        const strandGeo = tornadoGroup.children[s].geometry;
+        const pos       = strandGeo.attributes.position.array;
+        const baseAngle = (s / TORNADO_STRANDS) * Math.PI * 2;
+
+        for (let i = 0; i < TORNADO_PTS_STRAND; i++) {
+          const tNorm  = i / (TORNADO_PTS_STRAND - 1);
+          const y      = tNorm * TORNADO_HEIGHT;
+          // tNorm=0 → wide base at grid; tNorm=1 → narrow tip pointing up
+          const radius = TORNADO_R_TIP
+                       + (TORNADO_R_BASE - TORNADO_R_TIP) * (1 - tNorm);
+
+          const angle = baseAngle
+                      + tNorm * TORNADO_TURNS * Math.PI * 2
+                      + elapsed * 1.4;
+          // Turbulence grows with height and mouse distance from centre
+          const nAmp  = radius * (0.22 + mDist * 0.45);
+          const nx    = tornadoNoise(tNorm * 4,      s * 1.3, elapsed) * nAmp;
+          const nz    = tornadoNoise(tNorm * 4 + 99, s * 1.3, elapsed) * nAmp;
+
+          pos[i*3]     = radius * Math.cos(angle) + nx + leanX * tNorm;
+          pos[i*3 + 1] = y;
+          pos[i*3 + 2] = radius * Math.sin(angle) + nz + leanZ * tNorm;
+        }
+        strandGeo.attributes.position.needsUpdate = true;
+      }
+
+      // Dust cloud at base
+      const dustPosArr = tornadoGroup.children[TORNADO_STRANDS].geometry.attributes.position.array;
+      for (let i = 0; i < DUST_PTS; i++) {
+        const dustAngle = (i / DUST_PTS) * Math.PI * 2 + elapsed * 0.6;
+        const dustR     = TORNADO_R_BASE * (0.5 + 0.5 * ((i * 7919) % 100) / 100);
+        const dustY     = ((i * 1013) % 100) / 100 * 40;
+        const dustNoise = tornadoNoise(i * 0.1, dustY, elapsed) * 12;
+        dustPosArr[i*3]     = dustR * Math.cos(dustAngle) + dustNoise;
+        dustPosArr[i*3 + 1] = dustY;
+        dustPosArr[i*3 + 2] = dustR * Math.sin(dustAngle) + dustNoise;
+      }
+      tornadoGroup.children[TORNADO_STRANDS].geometry.attributes.position.needsUpdate = true;
+
+      // ── Ambient neon brightness overlay (last 25% of scroll) ─
+      const bright = p > 0.75 ? ((p - 0.75) / 0.25) * 0.06 : 0;
+      brightnessOverlay.style.background = `rgba(26,95,255,${bright})`;
+
+      // ── Grid auto-rotation & parallax ──────────────────────
+      gridGroup.rotation.y += 0.0008;
+      gridGroup.position.z = p * -120 * 0.20;
+
+      // ── Section visibility ──────────────────────────────────
+      updateSections(p);
+
+      // ── End-of-page zoom-out (FOV widening) ─────────────────
+      // Snaps back toward 0 whenever the user is not at the very bottom
+      if (scrollRaw < 0.95) endZoomVel += (0 - endZoom) * 0.018;  // very gentle spring → slow return
+      endZoomVel *= 0.94;                        // very high friction → coasts even longer
+      endZoom     = Math.min(Math.max(endZoom + endZoomVel, 0), 1);
+      camera.fov  = BASE_FOV + endZoom * 62;     // max 134° — very wide pull-back
+      camera.updateProjectionMatrix();
+
+      // ── Camera-depth color inversion ────────────────────────
+      // Grid plane lives at y = gridGroup.position.y (-55).
+      // When camera dips below it, the scene gradually inverts:
+      //   bg  → black  |  grid → white  |  wave/stars → amber / white
+      {
+        const rawI = (gridGroup.position.y - camera.position.y) / 220;
+        const iT   = Math.min(Math.max(rawI, 0), 1);
+        const iS   = iT * iT * (3 - 2 * iT);  // smoothstep — softer edge
+
+        // Background + fog
+        _cBuf.copy(_bgLight).lerp(_bgDark, iS);
+        renderer.setClearColor(_cBuf, 1);
+        scene.fog.color.copy(_cBuf);
+
+        // Grid lines: black → white
+        _cBuf.copy(_lineBlack).lerp(_lineWhite, iS);
+        gridLineMat.color.copy(_cBuf);
+        gridAxisMat.color.copy(_cBuf);
+        gridYAxisMat.color.copy(_cBuf);
+
+        // Wave point cloud: blue (#1A5FFF) → amber (#E5A000) — true complement
+        _cBuf.copy(_waveBlue).lerp(_waveAmber, iS);
+        waveMat.color.copy(_cBuf);
+        _cBuf.copy(_wave2Blue).lerp(_wave2Amber, iS);
+        waveMat2.color.copy(_cBuf);
+
+        // Stars: blue → white (legible on dark bg)
+        _cBuf.copy(_starBlue).lerp(_starWhite, iS);
+        starMat.color.copy(_cBuf);
+        nearStarMat.color.copy(_cBuf);
+
+        // HTML content: toggle CSS class; transition handles smooth fade
+        document.body.classList.toggle('dark-mode', iS > 0.5);
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    rafId = requestAnimationFrame(animate);
+
+    /* ════════════════════════════════════════════════════════════
+       INTRO ENTRANCE  (page-load animation via GSAP)
+    ════════════════════════════════════════════════════════════ */
+    gsap.registerPlugin(ScrollTrigger);
+
+    window.addEventListener('load', () => {
+      // Force intro visible immediately so the camera can render
+      sectionEls['intro-panel'].style.opacity = '1';
+
+      // Fade drag hint after 4s or on first pointer move
+      const dragHint = document.getElementById('drag-hint');
+      setTimeout(() => dragHint.classList.add('hidden'), 4000);
+      window.addEventListener('pointermove', () =>
+        dragHint.classList.add('hidden'), { once: true });
+
+      // Stagger in name → tagline → hint
+      gsap.from('#intro-name',    { y: 40, opacity: 0, duration: 1.1, delay: 0.35, ease: 'power3.out' });
+      gsap.from('#intro-tagline', { y: 30, opacity: 0, duration: 1.0, delay: 0.65, ease: 'power3.out' });
+      gsap.from('#scroll-hint',   { opacity: 0, duration: 1.2, delay: 1.4 });
+
+      // About card slide from left
+      gsap.set('#about-card', { x: -40 });
+      ScrollTrigger.create({
+        trigger: '#scroll-driver',
+        start: '12% top',
+        onEnter: () => gsap.to('#about-card', { x: 0, duration: 0.75, ease: 'power2.out' }),
+        onLeaveBack: () => gsap.to('#about-card', { x: -40, duration: 0.4, ease: 'power2.in' }),
+      });
+
+      // Resume section slide from right
+      gsap.set('#resume-section', { x: 40 });
+      ScrollTrigger.create({
+        trigger: '#scroll-driver',
+        start: '74% top',
+        onEnter: () => gsap.to('#resume-section', { x: 0, duration: 0.75, ease: 'power2.out' }),
+        onLeaveBack: () => gsap.to('#resume-section', { x: 40, duration: 0.4, ease: 'power2.in' }),
+      });
+    });
+
+    /* ════════════════════════════════════════════════════════════
+       RESIZE
+    ════════════════════════════════════════════════════════════ */
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      controls.update();
+    });
+
+    /* ════════════════════════════════════════════════════════════
+       VISIBILITY  (pause RAF when tab hidden)
+    ════════════════════════════════════════════════════════════ */
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        cancelAnimationFrame(rafId);
+      } else {
+        startTime = null; // reset idle timer
+        rafId = requestAnimationFrame(animate);
+      }
+    });
+
+  </script>
+</body>
+</html>
