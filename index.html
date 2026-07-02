@@ -44,7 +44,7 @@
 
     /* ── SCROLL DRIVER ────────────────────────────────────────── */
     #scroll-driver {
-      height: 600vh;
+      height: 1400vh;
       position: relative;
       z-index: 1;
       pointer-events: none;
@@ -70,7 +70,7 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 1.75rem;
+      gap: 2.5rem;
     }
 
     .intro-name {
@@ -108,41 +108,58 @@
     }
 
     /* ── ABOUT ────────────────────────────────────────────────── */
-    #about-panel { padding: 1.5rem; }
+    #about-panel {
+      flex-direction: column;
+      align-items: center;
+      gap: 2.5rem;
+      padding: 2rem;
+    }
 
     .about-card {
       background: var(--card-bg);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border: 1px solid var(--neon-dim);
-      border-radius: 20px;
-      padding: 3.25rem 3.5rem;
-      max-width: 600px;
+      border-radius: 24px;
+      padding: 3.5rem 5rem;
+      max-width: 700px;
       width: 100%;
-      box-shadow: 0 0 80px rgba(26,95,255,0.06), inset 0 1px 0 rgba(0,0,0,0.04);
+      box-shadow: 0 0 40px rgba(26,95,255,0.04);
     }
 
     .card-label {
-      font-size: 0.72rem;
+      font-size: 1.0rem;
       font-weight: 700;
-      letter-spacing: 0.24em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--neon);
-      margin-bottom: 1.5rem;
+      color: #F03A2F;
+      margin-bottom: 0;
+      background: rgba(255,255,255,0.92);
+      padding: 0.4rem 1.1rem;
+      border-radius: 10px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      transition: background 0.45s ease, box-shadow 0.45s ease;
+    }
+
+    body.dark-mode .card-label {
+      background: rgba(10,10,14,0.88);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.55);
     }
 
     .about-card p {
       font-size: 1.08rem;
       font-weight: 300;
-      line-height: 1.85;
+      line-height: 2;
       color: var(--text);
-      margin-bottom: 2.25rem;
+      margin-bottom: 2.75rem;
     }
 
     .tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6rem;
+      gap: 0.75rem;
     }
 
     .tag {
@@ -150,7 +167,7 @@
       border: 1px solid var(--neon-dim);
       color: var(--neon);
       border-radius: 999px;
-      padding: 0.32rem 0.95rem;
+      padding: 0.42rem 1.1rem;
       font-size: 0.82rem;
       font-weight: 400;
       letter-spacing: 0.05em;
@@ -167,15 +184,15 @@
     #projects-panel {
       flex-direction: column;
       align-items: center;
-      gap: 2rem;
-      padding: 1.5rem;
+      gap: 3rem;
+      padding: 2rem;
     }
 
     .projects-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.4rem;
-      max-width: 1000px;
+      gap: 2rem;
+      max-width: 1120px;
       width: 100%;
     }
 
@@ -184,13 +201,33 @@
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border: 1px solid var(--neon-dim);
-      border-radius: 16px;
-      padding: 2.25rem;
+      border-radius: 20px;
+      padding: 3rem;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.4rem;
       box-shadow: 0 0 40px rgba(26,95,255,0.04);
       transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+    }
+
+    /* ── PROJECT SOLO PANELS ─────────────────────────────────── */
+    .project-solo-panel {
+      flex-direction: column;
+      align-items: center;
+      gap: 2.5rem;
+      padding: 2rem;
+    }
+
+    .project-solo-card {
+      max-width: 660px;
+      width: 100%;
+    }
+
+    .project-counter {
+      font-size: 0.72rem;
+      font-weight: 400;
+      opacity: 0.45;
+      letter-spacing: 0.18em;
     }
 
     .project-card:hover {
@@ -206,11 +243,28 @@
       line-height: 1.3;
     }
 
+    /* Solo layout: h3 is the hero element */
+    .project-solo-card h3 {
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .proj-date {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--text-dim);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-top: 0.4rem;
+    }
+
     .project-card p {
       font-size: 0.9rem;
       font-weight: 300;
       color: var(--text-dim);
-      line-height: 1.72;
+      line-height: 1.9;
       flex: 1;
     }
 
@@ -230,31 +284,72 @@
       letter-spacing: 0.08em;
     }
 
-    /* ── CONTACT / RESUME ─────────────────────────────────────── */
-    #contact-panel {
+    /* ── RESUME SOLO PANELS ──────────────────────────────────── */
+    .resume-solo-panel {
       flex-direction: column;
       align-items: center;
       gap: 2.5rem;
-      padding: 1.5rem;
+      padding: 2rem;
     }
 
-    .resume-section {
+    .resume-solo-card {
       background: var(--card-bg);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border: 1px solid var(--neon-dim);
       border-radius: 20px;
-      padding: 3.25rem 3.5rem;
-      max-width: 860px;
+      padding: 3rem 3.5rem;
+      max-width: 560px;
       width: 100%;
       box-shadow: 0 0 80px rgba(26,95,255,0.06);
+    }
+
+    .resume-solo-card .resume-col h3 {
+      font-size: 0.68rem;
+    }
+
+    /* Skills entries are tightly coupled — no divider needed */
+    #skills-panel .resume-col li.spacer {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 1.1rem;
+    }
+
+    .exp-meta {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: var(--text-dim);
+      letter-spacing: 0.03em;
+      margin-top: 0.25rem;
+      opacity: 0.75;
+    }
+
+    /* ── CONTACT / RESUME ─────────────────────────────────────── */
+    #contact-panel {
+      flex-direction: column;
+      align-items: center;
+      gap: 3rem;
+      padding: 2rem;
+    }
+
+    .resume-section {
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--neon-dim);
+      border-radius: 20px;
+      padding: 2.75rem 3.25rem;
+      max-width: 820px;
+      width: 100%;
+      box-shadow: 0 0 40px rgba(26,95,255,0.04);
     }
 
     .resume-cols {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 2.75rem;
-      margin-bottom: 2.75rem;
+      margin-bottom: 2.5rem;
     }
 
     .resume-col h3 {
@@ -263,31 +358,38 @@
       color: var(--neon);
       text-transform: uppercase;
       letter-spacing: 0.22em;
-      margin-bottom: 1.1rem;
-      padding-bottom: 0.6rem;
+      margin-bottom: 1.6rem;
+      padding-bottom: 0.85rem;
       border-bottom: 1px solid var(--neon-dim);
     }
 
     .resume-col ul { list-style: none; }
 
     .resume-col li {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 300;
-      line-height: 1.9;
+      line-height: 1.75;
       color: var(--text-dim);
     }
 
     .resume-col li strong {
       color: var(--text);
-      font-weight: 400;
+      font-weight: 600;
       display: block;
+      font-size: 0.92rem;
+      letter-spacing: 0.01em;
     }
 
-    .resume-col li.spacer { margin-top: 0.75rem; }
+    .resume-col li.spacer {
+      margin-top: 1.6rem;
+      padding-top: 1.6rem;
+      border-top: 1px solid rgba(26,95,255,0.10);
+    }
 
     .resume-actions {
       display: flex;
       justify-content: center;
+      margin-top: 1rem;
     }
 
     .btn-resume {
@@ -297,8 +399,8 @@
       font-family: 'Space Grotesk', sans-serif;
       font-weight: 700;
       font-size: 0.9rem;
-      padding: 0.8rem 2.6rem;
-      border-radius: 10px;
+      padding: 1rem 3.25rem;
+      border-radius: 12px;
       text-decoration: none;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -314,7 +416,7 @@
 
     .contact-links {
       display: flex;
-      gap: 1.25rem;
+      gap: 1.75rem;
       flex-wrap: wrap;
       justify-content: center;
     }
@@ -322,14 +424,14 @@
     .contact-link {
       display: flex;
       align-items: center;
-      gap: 0.55rem;
+      gap: 0.75rem;
       color: var(--text-dim);
       text-decoration: none;
       font-size: 0.9rem;
       font-weight: 400;
-      padding: 0.65rem 1.3rem;
+      padding: 0.9rem 1.75rem;
       border: 1px solid rgba(0,0,0,0.12);
-      border-radius: 10px;
+      border-radius: 12px;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       background: rgba(0,0,0,0.03);
@@ -354,29 +456,33 @@
       background: rgba(26,95,255,0);
     }
 
-    /* Keep contact section colors fully vivid at scroll end */
+    /* Keep late-scroll panel colors vivid against the brightness overlay */
+    #experience-panel *,
+    #skills-panel *,
     #contact-panel * { color: inherit !important; }
-    #contact-panel .card-label,
-    #contact-panel .resume-col h3 { color: var(--neon) !important; }
-    #contact-panel .btn-resume    { color: #000 !important; }
-    #contact-panel .contact-link  { color: var(--text-dim) !important; }
+    #experience-panel .card-label, #skills-panel .card-label,
+    #contact-panel .card-label     { color: #F03A2F !important; }
+    #experience-panel .resume-col h3,
+    #skills-panel .resume-col h3   { color: var(--neon) !important; }
+    #contact-panel .btn-resume     { color: #000 !important; }
+    #contact-panel .contact-link   { color: var(--text-dim) !important; }
     #contact-panel .contact-link:hover { color: var(--neon) !important; }
 
     /* ── RESPONSIVE ───────────────────────────────────────────── */
     @media (max-width: 768px) {
-      .projects-grid  { grid-template-columns: 1fr; max-width: 440px; }
-      .resume-cols    { grid-template-columns: 1fr; gap: 1.5rem; }
-      .about-card     { padding: 2.25rem 2rem; }
-      .resume-section { padding: 2rem 1.75rem; }
-      .contact-links  { gap: 0.85rem; }
-      #contact-panel  { gap: 1.75rem; }
+      .projects-grid  { grid-template-columns: 1fr; max-width: 500px; }
+      .resume-cols    { grid-template-columns: 1fr; gap: 2rem; }
+      .about-card     { padding: 3rem 2.5rem; }
+      .resume-section { padding: 2.75rem 2.25rem; }
+      .contact-links  { gap: 1rem; }
+      #contact-panel  { gap: 2rem; }
     }
 
     @media (max-width: 480px) {
       .intro-name       { letter-spacing: -0.02em; }
-      #projects-panel   { gap: 1.25rem; }
-      .project-card     { padding: 1.75rem; }
-      .about-card       { padding: 1.75rem 1.5rem; }
+      #projects-panel   { gap: 2rem; }
+      .project-card     { padding: 2.25rem; }
+      .about-card       { padding: 2.25rem 1.75rem; }
     }
 
     /* ── DRAG HINT ────────────────────────────────────────────── */
@@ -402,6 +508,34 @@
       transition: opacity 1s ease;
     }
     #drag-hint.hidden { opacity: 0; }
+
+    /* ── NAV ──────────────────────────────────────────────────── */
+    #site-nav {
+      position: fixed;
+      top: 1.5rem;
+      right: 2rem;
+      z-index: 30;
+      display: flex;
+      gap: 1.75rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--neon);
+      text-decoration: none;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover { color: #999999; }
 
     /* ── DARK MODE  (camera below XY plane) ─────────────────── */
     body {
@@ -445,6 +579,12 @@
 </head>
 <body>
 
+  <nav id="site-nav">
+    <button class="nav-link" data-target="about">About</button>
+    <button class="nav-link" data-target="projects">Projects</button>
+    <button class="nav-link" data-target="resume">Resume</button>
+  </nav>
+
   <div id="drag-hint">
     ☉ drag · orbit &nbsp;·&nbsp; right-drag · pan &nbsp;·&nbsp; ctrl+scroll · zoom &nbsp;·&nbsp; scroll · navigate page
   </div>
@@ -458,7 +598,7 @@
   ═══════════════════════════════════════════════════════════ -->
   <div id="intro-panel" class="section-panel">
     <h1 class="intro-name" id="intro-name">Alex Lopez</h1>
-    <p  class="intro-tagline" id="intro-tagline">Engineer.&nbsp; Builder.&nbsp; Explorer.</p>
+    <p  class="intro-tagline" id="intro-tagline" style="letter-spacing:0.55em;font-size:clamp(1.1rem,3.8vw,2rem);font-weight:300;">Impact</p>
     <p  class="scroll-hint" id="scroll-hint">scroll to explore ↓</p>
   </div>
 
@@ -466,75 +606,152 @@
        PHASE 2 — ABOUT
   ═══════════════════════════════════════════════════════════ -->
   <div id="about-panel" class="section-panel">
+    <p class="card-label" style="letter-spacing:0.20em;">About Me</p>
     <div class="about-card" id="about-card">
-      <p class="card-label">About Me</p>
-      <p></p>
-      <div class="tags"></div>
+      <p>Hi, I'm Alex, a CS and Math student at Northeastern. More than anything, I want to leave things better than I found them. I chase hard problems, seek out people who push me, and only feel satisfied when the work actually matters.</p>
+      <div class="tags">
+        <span class="tag">Python</span>
+        <span class="tag">C++</span>
+        <span class="tag">JavaScript</span>
+        <span class="tag">React</span>
+        <span class="tag">PyTorch</span>
+        <span class="tag">TensorFlow</span>
+        <span class="tag">Three.js</span>
+        <span class="tag">AWS</span>
+        <span class="tag">SQL</span>
+      </div>
+      <p id="impact-word" style="text-align:center;font-size:clamp(2.4rem,7vw,4.2rem);font-weight:700;letter-spacing:-0.02em;color:var(--neon);margin:1.5rem 0 0;opacity:0;transition:opacity 0.4s ease;">Impact.</p>
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════
-       PHASE 3 — PROJECTS
+       PHASE 3a — PROJECT 1
   ═══════════════════════════════════════════════════════════ -->
-  <div id="projects-panel" class="section-panel">
-    <p class="card-label" style="letter-spacing:0.22em;">Selected Projects</p>
-    <div class="projects-grid">
-
-      <div class="project-card" id="proj-0">
-        <h3></h3>
-        <p></p>
-        <div class="tags"></div>
-        <a href="#" class="project-link">View →</a>
+  <div id="proj-panel-0" class="section-panel project-solo-panel">
+    <p class="card-label" style="letter-spacing:0.22em;">Selected Projects &nbsp;·&nbsp; <span class="project-counter">01 / 03</span></p>
+    <div class="project-card project-solo-card">
+      <h3>Twitter / X Scraper <span class="proj-date">Jan 2026</span></h3>
+      <p>Scrapes public tweets without the official API and runs them through a three-layer NLP sentiment ensemble — TextBlob, VADER, and a fine-tuned DistilBERT — to classify sentiment at scale.</p>
+      <div class="tags">
+        <span class="tag">Python</span>
+        <span class="tag">PyTorch</span>
+        <span class="tag">HuggingFace</span>
+        <span class="tag">NLP</span>
       </div>
-
-      <div class="project-card" id="proj-1">
-        <h3></h3>
-        <p></p>
-        <div class="tags"></div>
-        <a href="#" class="project-link">View →</a>
-      </div>
-
-      <div class="project-card" id="proj-2">
-        <h3></h3>
-        <p></p>
-        <div class="tags"></div>
-        <a href="#" class="project-link">View →</a>
-      </div>
-
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════
-       PHASE 4 — RESUME / CONTACT
+       PHASE 3b — PROJECT 2
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="proj-panel-1" class="section-panel project-solo-panel">
+    <p class="card-label" style="letter-spacing:0.22em;">Selected Projects &nbsp;·&nbsp; <span class="project-counter">02 / 03</span></p>
+    <div class="project-card project-solo-card">
+      <h3>IMC Prosperity 3 <span class="proj-date">Mar – Apr 2025</span></h3>
+      <p>Top 8% globally (965 / 13,000). Built strategies across market making, scalping, locational arbitrage, and mean-reversion to optimize risk-adjusted returns.</p>
+      <div class="tags">
+        <span class="tag">Python</span>
+        <span class="tag">Algo Trading</span>
+        <span class="tag">Quant</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PHASE 3c — PROJECT 3
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="proj-panel-2" class="section-panel project-solo-panel">
+    <p class="card-label" style="letter-spacing:0.22em;">Selected Projects &nbsp;·&nbsp; <span class="project-counter">03 / 03</span></p>
+    <div class="project-card project-solo-card">
+      <h3>Momentum Trading Bot <span class="proj-date">Jul – Aug 2024</span></h3>
+      <p>RSI-based day-trading bot on the Dow Jones 30 via Alpaca's API. Achieved an initial CAGR of 8.29%, peaking at 20.37%.</p>
+      <div class="tags">
+        <span class="tag">Python</span>
+        <span class="tag">Alpaca API</span>
+        <span class="tag">Finance</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PHASE 4a — EDUCATION
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="education-panel" class="section-panel resume-solo-panel">
+    <p class="card-label" style="letter-spacing:0.22em;">Resume &nbsp;·&nbsp; <span class="project-counter">Education</span></p>
+    <div class="resume-solo-card">
+      <div class="resume-col">
+        <h3>Education</h3>
+        <ul>
+          <li>
+            <strong>Northeastern University</strong>
+            <span class="exp-meta">BSE — CS &amp; Math, AI Concentration</span>
+            <span class="exp-meta">Sep 2024 – May 2028 &nbsp;·&nbsp; GPA 3.65 &nbsp;/&nbsp; Major 3.84</span>
+          </li>
+          <li class="spacer">
+            <strong>Hopkins School</strong>
+            <span class="exp-meta">Graduated Jun 2024</span>
+            <span class="exp-meta">Varsity Wrestling (Captain) · Football · Track</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PHASE 4b — EXPERIENCE
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="experience-panel" class="section-panel resume-solo-panel">
+    <p class="card-label" style="letter-spacing:0.22em;">Resume &nbsp;·&nbsp; <span class="project-counter">Experience</span></p>
+    <div class="resume-solo-card">
+      <div class="resume-col">
+        <h3>Experience</h3>
+        <ul>
+          <li>
+            <strong>SWE Intern</strong>
+            <span class="exp-meta">Expandya &nbsp;·&nbsp; Jun 2026 – Sep 2026 &nbsp;·&nbsp; Westport, CT</span>
+          </li>
+          <li class="spacer">
+            <strong>Computational Biology Research Asst.</strong>
+            <span class="exp-meta">O'Hern Lab, Yale &nbsp;·&nbsp; Jun – Sep 2023 &nbsp;·&nbsp; New Haven, CT</span>
+          </li>
+          <li class="spacer">
+            <strong>Teaching Assistant — Intro to Databases</strong>
+            <span class="exp-meta">Northeastern &nbsp;·&nbsp; Sep 2025 – Present &nbsp;·&nbsp; Boston, MA</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PHASE 4c — SKILLS
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="skills-panel" class="section-panel resume-solo-panel">
+    <p class="card-label" style="letter-spacing:0.22em;">Resume &nbsp;·&nbsp; <span class="project-counter">Skills</span></p>
+    <div class="resume-solo-card">
+      <div class="resume-col">
+        <h3>Skills</h3>
+        <ul>
+          <li><strong>Languages</strong>C++ · C · Python · Java · JavaScript · OCaml</li>
+          <li class="spacer"><strong>Frameworks</strong>PyTorch · TensorFlow · React · Three.js · AWS · SQL · Pandas · MATLAB</li>
+          <li class="spacer"><strong>Courses</strong>Operating Systems · Data Structures · Advanced Probability · Number Theory · Numerical Methods</li>
+          <li class="spacer"><strong>Interests</strong>Marathon training · Rock climbing · Manchester United</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PHASE 5 — CONTACT
   ═══════════════════════════════════════════════════════════ -->
   <div id="contact-panel" class="section-panel">
-    <div class="resume-section" id="resume-section">
-      <p class="card-label" style="text-align:center;margin-bottom:1.6rem;">Resume</p>
-      <div class="resume-cols">
-
-        <div class="resume-col">
-          <h3>Education</h3>
-          <ul></ul>
-        </div>
-
-        <div class="resume-col">
-          <h3>Experience</h3>
-          <ul></ul>
-        </div>
-
-        <div class="resume-col">
-          <h3>Skills</h3>
-          <ul></ul>
-        </div>
-
-      </div>
-      <div class="resume-actions">
-        <a href="#" class="btn-resume">Download Resume ↓</a>
-      </div>
+    <p class="card-label" style="letter-spacing:0.22em;">Get In Touch</p>
+    <p style="font-size:1.05rem;font-weight:300;color:var(--text-dim);letter-spacing:0.01em;margin-top:-1rem;">Open to opportunities, research, and interesting problems.</p>
+    <div class="resume-actions">
+      <a href="AlexLopez_Resume.pdf" download class="btn-resume">Download Resume ↓</a>
     </div>
-
     <div class="contact-links" id="contact-links">
-      <a href="#" target="_blank" rel="noopener" class="contact-link">
+      <a href="https://github.com/Alex-lop" target="_blank" rel="noopener" class="contact-link">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57
             0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695
@@ -547,7 +764,7 @@
         </svg>
         GitHub
       </a>
-      <a href="#" target="_blank" rel="noopener" class="contact-link">
+      <a href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener" class="contact-link">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136
             2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37
@@ -558,12 +775,12 @@
         </svg>
         LinkedIn
       </a>
-      <a href="mailto:" class="contact-link">
+      <a href="mailto:lopez.alexan@northeastern.edu" class="contact-link">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9
             2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
         </svg>
-        alex@example.com
+        lopez.alexan@northeastern.edu
       </a>
     </div>
   </div>
@@ -668,19 +885,42 @@
 
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
+    // ── Nav jump buttons ────────────────────────────────────────
+    // Each section's target scroll fraction (matches SECTIONS array peaks)
+    const NAV_TARGETS = { about: 0.16, projects: 0.28, resume: 0.64 };
+    document.querySelectorAll('.nav-link[data-target]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const frac = NAV_TARGETS[btn.dataset.target];
+        if (frac == null) return;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        // Snap instantly — no browser smooth scroll — so the spring system
+        // doesn't compound motion on top of the gradual browser scroll.
+        // Then zero out velocity and sync scrollDisplay so the spring is
+        // immediately at equilibrium with no overshoot or drift.
+        window.scrollTo({ top: frac * maxScroll, behavior: 'instant' });
+        scrollRaw     = frac;
+        scrollVel     = 0;
+        scrollDisplay = frac;
+      });
+    });
+
     /* ════════════════════════════════════════════════════════════
        STARS
     ════════════════════════════════════════════════════════════ */
     let starMat, nearStarMat;   // exposed for color inversion
 
     (function buildStars() {
-      const N   = 7500;
+      const N   = 20000;
       const pos = new Float32Array(N * 3);
 
       for (let i = 0; i < N; i++) {
-        pos[i*3]   = (Math.random() - 0.5) * 9000;   // ±4500
-        pos[i*3+1] = (Math.random() - 0.5) * 6000;   // ±3000
-        pos[i*3+2] = Math.random() * -3200 - 50;      // -3250 to -50
+        // Uniform spherical distribution — stars surround the scene in all directions
+        const theta = Math.random() * Math.PI * 2;
+        const phi   = Math.acos(2 * Math.random() - 1);
+        const r     = 2200 + Math.random() * 4500;    // shell between r=2200 and r=6700
+        pos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+        pos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+        pos[i*3+2] = r * Math.cos(phi);
       }
 
       const geo = new THREE.BufferGeometry();
@@ -718,11 +958,13 @@
       const pos = new Float32Array(N * 3);
 
       for (let i = 0; i < N; i++) {
-        pos[i*3]   = (Math.random() - 0.5) * 5000;   // ±2500
-        pos[i*3+1] = (Math.random() - 0.5) * 3600;   // ±1800
-        // Z spans from well in front of the camera (+800) back to -1400,
-        // putting stars at various depths that cross the FOV during orbit.
-        pos[i*3+2] = Math.random() * 2200 - 1400;     // -1400 to +800
+        // Spherical distribution for near-field stars too — scattered in all directions
+        const theta = Math.random() * Math.PI * 2;
+        const phi   = Math.acos(2 * Math.random() - 1);
+        const r     = 400 + Math.random() * 1600;     // shell between r=400 and r=2000
+        pos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+        pos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+        pos[i*3+2] = r * Math.cos(phi);
       }
 
       const geo = new THREE.BufferGeometry();
@@ -751,6 +993,7 @@
 
       scene.add(new THREE.Points(geo, nearStarMat));
     })();
+
 
     /* ════════════════════════════════════════════════════════════
        GRID  (XZ plane — the "floor" of the coordinate space)
@@ -948,6 +1191,7 @@
     const BASE_FOV    = 72;
     let rafId         = null;
     const brightnessOverlay = document.getElementById('brightness-overlay');
+    const impactEl          = document.getElementById('impact-word');
 
     window.addEventListener('scroll', () => {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
@@ -971,12 +1215,17 @@
        SECTION VISIBILITY  (scroll-driven, computed every frame)
     ════════════════════════════════════════════════════════════ */
     // [id, fadeInStart, fadeInEnd, peakEnd, fadeOutEnd]
-    // Wider peak windows with 600vh scroll driver for unhurried reading
+    // 9 sections across 1400vh — each section overlaps the next by ~0.04 for a smooth crossfade
     const SECTIONS = [
-      ['intro-panel',     -1,    -1,    0.10,  0.20],
-      ['about-panel',    0.12,  0.20,   0.42,  0.52],
-      ['projects-panel', 0.43,  0.53,   0.72,  0.82],
-      ['contact-panel',  0.74,  0.83,   0.97,  1.00],
+      ['intro-panel',      -1,    -1,    0.07,  0.13],
+      ['about-panel',     0.09,  0.13,   0.19,  0.25],
+      ['proj-panel-0',    0.21,  0.25,   0.31,  0.37],
+      ['proj-panel-1',    0.33,  0.37,   0.43,  0.49],
+      ['proj-panel-2',    0.45,  0.49,   0.55,  0.61],
+      ['education-panel', 0.57,  0.61,   0.67,  0.73],
+      ['experience-panel',0.69,  0.73,   0.79,  0.85],
+      ['skills-panel',    0.81,  0.85,   0.91,  0.96],
+      ['contact-panel',   0.92,  0.96,   0.99,  1.00],
     ];
 
     const sectionEls = {};
@@ -1001,17 +1250,15 @@
     function computeSectionTY(p, fiS, fiE, peakE, foE) {
       if (fiS < 0) {
         if (p <= peakE)   return 0;
-        if (p >= foE)     return -18;
-        return -18 * (1 - easeInOut(1 - (p - peakE) / (foE - peakE)));
+        if (p >= foE)     return -8;
+        return -8 * (1 - easeInOut(1 - (p - peakE) / (foE - peakE)));
       }
-      if (p <= fiS)   return 18;
-      if (p <= fiE)   return 18 * (1 - easeInOut((p - fiS) / (fiE - fiS)));
+      if (p <= fiS)   return 8;
+      if (p <= fiE)   return 8 * (1 - easeInOut((p - fiS) / (fiE - fiS)));
       if (p <= peakE) return 0;
-      if (p >= foE)   return -18;
-      return -18 * (1 - easeInOut(1 - (p - peakE) / (foE - peakE)));
+      if (p >= foE)   return -8;
+      return -8 * (1 - easeInOut(1 - (p - peakE) / (foE - peakE)));
     }
-
-    let projectsAnimated = false;
 
     function updateSections(p) {
       SECTIONS.forEach(([id, fiS, fiE, peakE, foE]) => {
@@ -1021,21 +1268,10 @@
 
         el.style.opacity   = op;
         el.style.transform = `translateY(${ty}px)`;
-        // Panel itself stays pointer-events:none always (CSS); only toggle children
         Array.from(el.children).forEach(child => {
           child.style.pointerEvents = op > 0.05 ? 'auto' : 'none';
         });
       });
-
-      // One-shot stagger for project cards
-      if (p > 0.50 && !projectsAnimated) {
-        projectsAnimated = true;
-        gsap.fromTo(
-          ['#proj-0', '#proj-1', '#proj-2'],
-          { y: 36, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.65, stagger: 0.14, ease: 'power2.out' }
-        );
-      }
     }
 
     /* ════════════════════════════════════════════════════════════
@@ -1179,6 +1415,11 @@
       // ── Section visibility ──────────────────────────────────
       updateSections(p);
 
+      // ── Impact word — reveals only mid-way through the About section ──
+      // About peak: 0.13–0.19. Impact fades in at 0.16 so the user must
+      // keep scrolling past the initial text before the word appears.
+      impactEl.style.opacity = computeSectionOpacity(p, 0.155, 0.185, 0.19, 0.25);
+
       // ── End-of-page zoom-out (FOV widening) ─────────────────
       // Snaps back toward 0 whenever the user is not at the very bottom
       if (scrollRaw < 0.95) endZoomVel += (0 - endZoom) * 0.018;  // very gentle spring → slow return
@@ -1188,38 +1429,53 @@
       camera.updateProjectionMatrix();
 
       // ── Camera-depth color inversion ────────────────────────
-      // Grid plane lives at y = gridGroup.position.y (-55).
-      // When camera dips below it, the scene gradually inverts:
-      //   bg  → black  |  grid → white  |  wave/stars → amber / white
+      // ── Camera-depth colour system ──────────────────────────────
+      // Two-phase effect driven by how close the camera is to the grid plane (y = -55):
+      //   Phase 1 (above grid): bg darkens as camera descends — "approaching void"
+      //   Phase 2 (below grid): full day→night inversion (existing behaviour)
       {
+        // Phase 2 — below-grid inversion (unchanged logic)
         const rawI = (gridGroup.position.y - camera.position.y) / 220;
         const iT   = Math.min(Math.max(rawI, 0), 1);
-        const iS   = iT * iT * (3 - 2 * iT);  // smoothstep — softer edge
+        const iS   = iT * iT * (3 - 2 * iT);  // smoothstep
 
-        // Background + fog
-        _cBuf.copy(_bgLight).lerp(_bgDark, iS);
+        // Phase 1 — above-grid approach darkening
+        // Range = 130: effect is zero while camera is >130 units above the grid.
+        // Camera spawns 175 units above (y=120, grid y=-55) → zero shading on load.
+        // Darkening only kicks in as you orbit down past y≈75 toward the plane.
+        const aboveGrid  = camera.position.y - gridGroup.position.y;
+        const approachT  = 1 - Math.min(1, Math.max(0, aboveGrid / 130));
+        const approachS  = Math.pow(approachT, 2.2) * 0.88;  // max ~88% dark
+
+        // Unified blend — no branch, so crossing the grid plane is seamless.
+        // approachS drives darkening above; iS takes over below; max() picks the stronger one.
+        const darkBlend  = Math.max(approachS * (1 - iS), iS);
+        const lineDark   = Math.max(approachS * 0.75 * (1 - iS), iS);
+
+        // Background + fog: single lerp from light → dark, continuous across the grid boundary
+        _cBuf.copy(_bgLight).lerp(_bgDark, darkBlend);
         renderer.setClearColor(_cBuf, 1);
         scene.fog.color.copy(_cBuf);
 
         // Grid lines: black → white
-        _cBuf.copy(_lineBlack).lerp(_lineWhite, iS);
+        _cBuf.copy(_lineBlack).lerp(_lineWhite, lineDark);
         gridLineMat.color.copy(_cBuf);
         gridAxisMat.color.copy(_cBuf);
         gridYAxisMat.color.copy(_cBuf);
 
-        // Wave point cloud: blue (#1A5FFF) → amber (#E5A000) — true complement
+        // Wave: blue → amber (only on full inversion)
         _cBuf.copy(_waveBlue).lerp(_waveAmber, iS);
         waveMat.color.copy(_cBuf);
         _cBuf.copy(_wave2Blue).lerp(_wave2Amber, iS);
         waveMat2.color.copy(_cBuf);
 
-        // Stars: blue → white (legible on dark bg)
-        _cBuf.copy(_starBlue).lerp(_starWhite, iS);
+        // Stars: blue → white
+        _cBuf.copy(_starBlue).lerp(_starWhite, darkBlend);
         starMat.color.copy(_cBuf);
         nearStarMat.color.copy(_cBuf);
 
-        // HTML content: toggle CSS class; transition handles smooth fade
-        document.body.classList.toggle('dark-mode', iS > 0.5);
+        // CSS dark-mode: toggle early enough that text stays readable
+        document.body.classList.toggle('dark-mode', darkBlend > 0.45);
       }
 
       renderer.render(scene, camera);
@@ -1251,18 +1507,9 @@
       gsap.set('#about-card', { x: -40 });
       ScrollTrigger.create({
         trigger: '#scroll-driver',
-        start: '12% top',
-        onEnter: () => gsap.to('#about-card', { x: 0, duration: 0.75, ease: 'power2.out' }),
-        onLeaveBack: () => gsap.to('#about-card', { x: -40, duration: 0.4, ease: 'power2.in' }),
-      });
-
-      // Resume section slide from right
-      gsap.set('#resume-section', { x: 40 });
-      ScrollTrigger.create({
-        trigger: '#scroll-driver',
-        start: '74% top',
-        onEnter: () => gsap.to('#resume-section', { x: 0, duration: 0.75, ease: 'power2.out' }),
-        onLeaveBack: () => gsap.to('#resume-section', { x: 40, duration: 0.4, ease: 'power2.in' }),
+        start: '9% top',
+        onEnter:     () => gsap.to('#about-card', { x: 0,   duration: 0.75, ease: 'power2.out' }),
+        onLeaveBack: () => gsap.to('#about-card', { x: -40, duration: 0.4,  ease: 'power2.in'  }),
       });
     });
 
