@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Alex Lopez</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦸</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -25,7 +26,7 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'DM Sans', sans-serif;
       overflow-x: hidden;
     }
 
@@ -44,7 +45,7 @@
 
     /* ── SCROLL DRIVER ────────────────────────────────────────── */
     #scroll-driver {
-      height: 1400vh;
+      height: 1800vh;
       position: relative;
       z-index: 1;
       pointer-events: none;
@@ -52,17 +53,16 @@
 
     /* ── SECTION PANELS ──────────────────────────────────────── */
     .section-panel {
-      position: fixed;
-      inset: 0;
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
+      min-height: 115vh;
       z-index: 10;
-      opacity: 0;
-      pointer-events: none;        /* panel background never blocks canvas */
-      will-change: opacity, transform;
+      opacity: 1;
+      pointer-events: none;
     }
-    /* Only the actual content children should be interactive */
+    /* Only actual content children should be interactive */
     .section-panel > * { pointer-events: auto; }
 
     /* ── INTRO ────────────────────────────────────────────────── */
@@ -74,14 +74,16 @@
     }
 
     .intro-name {
-      font-size: clamp(3.2rem, 11vw, 8.5rem);
-      font-weight: 700;
-      letter-spacing: -0.025em;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(4rem, 13vw, 10rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
       line-height: 1;
       text-shadow: 0 0 60px rgba(0,0,0,0.06);
     }
 
     .intro-tagline {
+      font-family: 'Space Grotesk', sans-serif;
       font-size: clamp(0.95rem, 2.5vw, 1.35rem);
       font-weight: 300;
       color: var(--text-dim);
@@ -107,6 +109,22 @@
       50%       { opacity: 0.8; }
     }
 
+    .boop-label {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      font-family: 'Indie Flower', cursive;
+      font-size: 1.3rem;
+      color: var(--neon);
+      transform: translateX(-50%);
+      animation: boopFloat 0.75s ease-out forwards;
+      user-select: none;
+    }
+    @keyframes boopFloat {
+      0%   { opacity: 1;   transform: translateX(-50%) translateY(0px);   }
+      100% { opacity: 0;   transform: translateX(-50%) translateY(-52px); }
+    }
+
     /* ── ABOUT ────────────────────────────────────────────────── */
     #about-panel {
       flex-direction: column;
@@ -128,8 +146,9 @@
     }
 
     .card-label {
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 1.0rem;
-      font-weight: 700;
+      font-weight: 600;
       letter-spacing: 0.18em;
       text-transform: uppercase;
       color: #F03A2F;
@@ -149,9 +168,10 @@
     }
 
     .about-card p {
-      font-size: 1.08rem;
-      font-weight: 300;
-      line-height: 2;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 400;
+      line-height: 1.85;
       color: var(--text);
       margin-bottom: 2.75rem;
     }
@@ -163,6 +183,7 @@
     }
 
     .tag {
+      font-family: 'DM Sans', sans-serif;
       background: var(--neon-faint);
       border: 1px solid var(--neon-dim);
       color: var(--neon);
@@ -178,6 +199,51 @@
     .tag:hover {
       background: rgba(26,95,255,0.14);
       border-color: rgba(26,95,255,0.5);
+    }
+
+    /* ── ABOUT TWO-COLUMN LAYOUT ────────────────────────────────── */
+    .about-layout {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 3rem;
+      max-width: 1040px;
+      width: 100%;
+    }
+
+    .about-layout .about-card {
+      flex: 1;
+      max-width: none;
+    }
+
+    .about-photo-wrap {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* me_presenting.png is 1024×682 — keep its 3:2 landscape ratio */
+    .about-photo {
+      width: 400px;
+      aspect-ratio: 1024 / 682;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 18px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .about-layout {
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+      }
+      .about-photo {
+        width: min(88vw, 400px);
+        aspect-ratio: 1024 / 682;
+      }
     }
 
     /* ── PROJECTS ─────────────────────────────────────────────── */
@@ -237,8 +303,9 @@
     }
 
     .project-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 1.1rem;
-      font-weight: 700;
+      font-weight: 600;
       color: var(--text);
       line-height: 1.3;
     }
@@ -261,6 +328,7 @@
     }
 
     .project-card p {
+      font-family: 'DM Sans', sans-serif;
       font-size: 0.9rem;
       font-weight: 300;
       color: var(--text-dim);
@@ -304,6 +372,10 @@
       box-shadow: 0 0 80px rgba(26,95,255,0.06);
     }
 
+    #skills-panel.section-panel {
+      min-height: 140vh;
+    }
+
     .resume-solo-card .resume-col h3 {
       font-size: 0.68rem;
     }
@@ -315,6 +387,35 @@
       margin-top: 1.1rem;
     }
 
+    /* ── SKILLS ICON GRID ────────────────────────────────────── */
+    .skills-card {
+      max-width: 700px;
+    }
+
+    .skills-icon-section {
+      margin-bottom: 2rem;
+    }
+
+    .skills-icon-section:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .skills-icon-section h3 {
+      margin-bottom: 1.1rem;
+    }
+
+    .skills-icon-section + .resume-col-footer {
+      margin-top: 2.25rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--neon-dim);
+    }
+
+    .skills-icons img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
     .exp-meta {
       display: block;
       font-size: 0.78rem;
@@ -323,6 +424,107 @@
       letter-spacing: 0.03em;
       margin-top: 0.25rem;
       opacity: 0.75;
+    }
+
+    /* ── O'HERN LAB BANNER ──────────────────────────────────────── */
+    .ohern-banner-wrap {
+      width: 100%;
+      height: 140px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.20);
+      margin-top: 1.1rem;
+    }
+    .ohern-banner {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    /* ── SCROLL REVEAL — images float in from sides ─────────────── */
+    .img-reveal {
+      opacity: 0;
+      transition: opacity 0.72s ease,
+                  transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .img-reveal.from-left  { transform: translateX(-52px); }
+    .img-reveal.from-right { transform: translateX( 52px); }
+    .img-reveal.from-below { transform: translateY( 30px); }
+    .img-reveal.visible    { opacity: 1; transform: none; }
+
+    /* Preserve hobby-card hover lift while img-reveal class stays active */
+    .hobby-card.img-reveal.visible:hover { transform: translateY(-4px); }
+
+    /* ── HOBBIES GRID ──────────────────────────────────────────── */
+    .hobbies-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.4rem;
+      margin-top: 1.1rem;
+    }
+
+    .hobby-card {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: rgba(0,0,0,0.025);
+      transition: transform 0.32s cubic-bezier(0.25,0.46,0.45,0.94),
+                  box-shadow 0.32s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+
+    .hobby-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 36px rgba(0,0,0,0.13);
+    }
+
+    .hobby-img {
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    .hobby-content {
+      padding: 1.2rem 1.35rem 1.35rem;
+    }
+
+    .hobby-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--neon);
+      margin: 0 0 0.55rem;
+    }
+
+    .hobby-desc {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 300;
+      line-height: 1.78;
+      color: var(--text-dim);
+      margin: 0 0 1rem;
+    }
+
+    .hobby-desc:last-child { margin-bottom: 0; }
+
+    /* Interests panel needs a wider card to fit 3 hobby columns */
+    #interests-panel .resume-solo-card {
+      max-width: 920px;
+    }
+
+    @media (max-width: 620px) {
+      .hobbies-grid { grid-template-columns: 1fr; }
+      .hobby-img    { height: 220px; }
+    }
+
+    @media (min-width: 621px) and (max-width: 860px) {
+      .hobbies-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     /* ── CONTACT / RESUME ─────────────────────────────────────── */
@@ -353,8 +555,9 @@
     }
 
     .resume-col h3 {
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 0.7rem;
-      font-weight: 700;
+      font-weight: 600;
       color: var(--neon);
       text-transform: uppercase;
       letter-spacing: 0.22em;
@@ -366,6 +569,7 @@
     .resume-col ul { list-style: none; }
 
     .resume-col li {
+      font-family: 'DM Sans', sans-serif;
       font-size: 0.88rem;
       font-weight: 300;
       line-height: 1.75;
@@ -373,6 +577,7 @@
     }
 
     .resume-col li strong {
+      font-family: 'Space Grotesk', sans-serif;
       color: var(--text);
       font-weight: 600;
       display: block;
@@ -406,6 +611,8 @@
       text-transform: uppercase;
       transition: opacity 0.2s, box-shadow 0.2s, transform 0.2s;
       box-shadow: 0 0 32px rgba(26,95,255,0.38);
+      cursor: pointer;
+      border: none;
     }
 
     .btn-resume:hover {
@@ -464,6 +671,64 @@
     #contact-panel .card-label     { color: #F03A2F !important; }
     #experience-panel .resume-col h3,
     #skills-panel .resume-col h3   { color: var(--neon) !important; }
+    /* ── RESUME PREVIEW PANEL ─────────────────────────────────── */
+    #resume-preview {
+      width: min(720px, 90vw);
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                  opacity    0.35s ease;
+      pointer-events: none;
+    }
+    #resume-preview.open {
+      max-height: 680px;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .resume-preview-frame {
+      width: 100%;
+      height: 580px;
+      border: 1px solid var(--neon-dim);
+      border-radius: 16px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 8px 40px rgba(26,95,255,0.10);
+      margin-top: 1.5rem;
+    }
+    .resume-preview-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    .resume-download-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .btn-resume-dl {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--neon);
+      background: transparent;
+      border: 1.5px solid var(--neon-dim);
+      border-radius: 10px;
+      padding: 0.7rem 2rem;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-resume-dl:hover {
+      background: var(--neon-faint);
+      border-color: var(--neon);
+    }
+
     #contact-panel .btn-resume     { color: #000 !important; }
     #contact-panel .contact-link   { color: var(--text-dim) !important; }
     #contact-panel .contact-link:hover { color: var(--neon) !important; }
@@ -492,7 +757,7 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 20;
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'DM Sans', sans-serif;
       font-size: 0.74rem;
       font-weight: 400;
       letter-spacing: 0.18em;
@@ -523,8 +788,8 @@
     .nav-link {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
+      font-weight: 500;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
       color: var(--neon);
       text-decoration: none;
@@ -591,7 +856,6 @@
 
   <canvas id="bg-canvas"></canvas>
   <div id="brightness-overlay"></div>
-  <div id="scroll-driver"></div>
 
   <!-- ═══════════════════════════════════════════════════════════
        PHASE 1 — INTRO
@@ -607,20 +871,14 @@
   ═══════════════════════════════════════════════════════════ -->
   <div id="about-panel" class="section-panel">
     <p class="card-label" style="letter-spacing:0.20em;">About Me</p>
-    <div class="about-card" id="about-card">
-      <p>Hi, I'm Alex, a CS and Math student at Northeastern. More than anything, I want to leave things better than I found them. I enjoy chasing hard problems, and making meaningful impact through my work, whether it's through cancer research or helping buisness grow!</p>
-      <div class="tags">
-        <span class="tag">Python</span>
-        <span class="tag">C++</span>
-        <span class="tag">JavaScript</span>
-        <span class="tag">React</span>
-        <span class="tag">PyTorch</span>
-        <span class="tag">TensorFlow</span>
-        <span class="tag">Three.js</span>
-        <span class="tag">AWS</span>
-        <span class="tag">SQL</span>
+    <div class="about-layout">
+      <div class="about-card" id="about-card">
+        <p>Hi, I'm Alex, a CS and Math student at Northeastern. More than anything, I want to leave things better than I found them. I enjoy chasing hard problems, and making meaningful <em style="color:var(--neon)">impact</em> through my work, whether it's through cancer research or helping buisness grow!</p>
+        <p id="impact-word" style="font-family:'Space Grotesk',sans-serif;text-align:center;font-size:clamp(2.4rem,7vw,4.2rem);font-weight:700;letter-spacing:-0.02em;color:var(--neon);margin:1.5rem 0 0;opacity:1;">Impact.</p>
       </div>
-      <p id="impact-word" style="text-align:center;font-size:clamp(2.4rem,7vw,4.2rem);font-weight:700;letter-spacing:-0.02em;color:var(--neon);margin:1.5rem 0 0;opacity:0;transition:opacity 0.4s ease;">Impact.</p>
+      <div class="about-photo-wrap img-reveal from-right">
+        <img src="assets/me_presenting.png" alt="Alex Lopez" class="about-photo" />
+      </div>
     </div>
   </div>
 
@@ -631,7 +889,7 @@
     <p class="card-label" style="letter-spacing:0.22em;">Selected Projects &nbsp;·&nbsp; <span class="project-counter">01 / 03</span></p>
     <div class="project-card project-solo-card">
       <h3>Twitter / X Scraper <span class="proj-date">Jan 2026</span></h3>
-      <p>Scrapes public tweets without the official API and runs them through a three-layer NLP sentiment ensemble — TextBlob, VADER, and a fine-tuned DistilBERT — to classify sentiment at scale.</p>
+      <p>Scrapes public tweets without the official API and runs them through a three-layer NLP sentiment ensemble: TextBlob, VADER, and a fine-tuned DistilBERT,  to classify sentiment at scale.</p>
       <div class="tags">
         <span class="tag">Python</span>
         <span class="tag">PyTorch</span>
@@ -648,7 +906,7 @@
     <p class="card-label" style="letter-spacing:0.22em;">Selected Projects &nbsp;·&nbsp; <span class="project-counter">02 / 03</span></p>
     <div class="project-card project-solo-card">
       <h3>IMC Prosperity 3 <span class="proj-date">Mar – Apr 2025</span></h3>
-      <p>Top 8% globally (965 / 13,000). Built strategies across market making, scalping, locational arbitrage, and mean-reversion to optimize risk-adjusted returns.</p>
+      <p>Top 8% globally (912 / 13,000). Built strategies across market making, scalping, locational arbitrage, and mean-reversion to optimize risk-adjusted returns.</p>
       <div class="tags">
         <span class="tag">Python</span>
         <span class="tag">Algo Trading</span>
@@ -663,12 +921,14 @@
   <div id="proj-panel-2" class="section-panel project-solo-panel">
     <p class="card-label" style="letter-spacing:0.22em;">Selected Projects &nbsp;·&nbsp; <span class="project-counter">03 / 03</span></p>
     <div class="project-card project-solo-card">
-      <h3>Momentum Trading Bot <span class="proj-date">Jul – Aug 2024</span></h3>
-      <p>RSI-based day-trading bot on the Dow Jones 30 via Alpaca's API. Achieved an initial CAGR of 8.29%, peaking at 20.37%.</p>
+      <h3>Coin Shroud <span class="proj-date">Apr – May 2025</span></h3>
+      <p>Full-stack crypto investment analytics app (CS 3200) — MySQL backend, middleware API, and Streamlit frontend supporting investor, developer, and regulatory roles. Live data tracking, portfolio management, and compliance reporting, all containerized with Docker Compose.</p>
       <div class="tags">
         <span class="tag">Python</span>
-        <span class="tag">Alpaca API</span>
-        <span class="tag">Finance</span>
+        <span class="tag">MySQL</span>
+        <span class="tag">Streamlit</span>
+        <span class="tag">Docker</span>
+        <span class="tag">REST API</span>
       </div>
     </div>
   </div>
@@ -707,16 +967,19 @@
         <h3>Experience</h3>
         <ul>
           <li>
-            <strong>SWE Intern</strong>
+            <strong><img src="assets/expandya.png" alt="Expandya" style="width:64px;height:64px;border-radius:8px;object-fit:contain;vertical-align:middle;margin-right:10px;background:transparent;" />SWE Intern</strong>
             <span class="exp-meta">Expandya &nbsp;·&nbsp; Jun 2026 – Sep 2026 &nbsp;·&nbsp; Westport, CT</span>
           </li>
           <li class="spacer">
             <strong>Computational Biology Research Asst.</strong>
             <span class="exp-meta">O'Hern Lab, Yale &nbsp;·&nbsp; Jun 2023 – Sep 2023 &nbsp;·&nbsp; New Haven, CT</span>
+            <div class="ohern-banner-wrap img-reveal from-right">
+              <img src="assets/ohern-header4.gif" alt="O'Hern Lab at Yale School of Engineering &amp; Applied Science" class="ohern-banner" />
+            </div>
           </li>
           <li class="spacer">
-            <strong>Teaching Assistant — Intro to Databases</strong>
-            <span class="exp-meta">Northeastern &nbsp;·&nbsp; Sep 2025 – Present &nbsp;·&nbsp; Boston, MA</span>
+            <strong><img src="assets/northeastern.png" alt="Northeastern University" style="width:64px;height:64px;border-radius:8px;object-fit:contain;vertical-align:middle;margin-right:10px;background:white;padding:3px;" />Teaching Assistant — Intro to Databases</strong>
+            <span class="exp-meta">Northeastern University &nbsp;·&nbsp; Sep 2025 – Present &nbsp;·&nbsp; Boston, MA</span>
           </li>
         </ul>
       </div>
@@ -728,15 +991,93 @@
   ═══════════════════════════════════════════════════════════ -->
   <div id="skills-panel" class="section-panel resume-solo-panel">
     <p class="card-label" style="letter-spacing:0.22em;">Resume &nbsp;·&nbsp; <span class="project-counter">Skills</span></p>
+    <div class="resume-solo-card skills-card">
+      <div class="resume-col">
+
+        <div class="skills-icon-section img-reveal from-left">
+          <h3>Languages</h3>
+          <div class="skills-icons">
+            <img src="https://skillicons.dev/icons?i=cpp,c,python,java,js,ts&perline=6" alt="Languages: C++, C, Python, Java, JavaScript, TypeScript" loading="lazy" />
+          </div>
+        </div>
+
+        <div class="skills-icon-section img-reveal from-right" data-reveal-delay="100">
+          <h3>Frameworks &amp; Libraries</h3>
+          <div class="skills-icons">
+            <img src="https://skillicons.dev/icons?i=react,pytorch,tensorflow,threejs,nodejs,nextjs,fastapi,tailwind&perline=8" alt="Frameworks: React, PyTorch, TensorFlow, Three.js, Node.js, Next.js, FastAPI, Tailwind" loading="lazy" />
+          </div>
+        </div>
+
+        <div class="skills-icon-section img-reveal from-left" data-reveal-delay="200">
+          <h3>Databases &amp; Cloud</h3>
+          <div class="skills-icons">
+            <img src="https://skillicons.dev/icons?i=mysql,mongodb,postgresql,redis,aws,docker,git,linux&perline=8" alt="Databases and Cloud: MySQL, MongoDB, PostgreSQL, Redis, AWS, Docker, Git, Linux" loading="lazy" />
+          </div>
+        </div>
+
+        <ul class="resume-col-footer">
+          <li><strong>Courses</strong>Operating Systems · Data Structures · Advanced Probability · Number Theory · Numerical Methods</li>
+          <li class="spacer"><strong>Interests</strong> Weightlifting · Training for my marathon · Golf</li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PHASE 4d — INTERESTS
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="interests-panel" class="section-panel resume-solo-panel">
+    <p class="card-label" style="letter-spacing:0.22em;">Resume &nbsp;·&nbsp; <span class="project-counter">Interests</span></p>
     <div class="resume-solo-card">
       <div class="resume-col">
-        <h3>Skills</h3>
-        <ul>
-          <li><strong>Languages</strong>C++ · C · Python · Java · JavaScript · OCaml</li>
-          <li class="spacer"><strong>Frameworks</strong>PyTorch · TensorFlow · React · Three.js · AWS · SQL · Pandas · MATLAB</li>
-          <li class="spacer"><strong>Courses</strong>Operating Systems · Data Structures · Advanced Probability · Number Theory · Numerical Methods</li>
-          <li class="spacer"><strong>Interests</strong>Marathon training · Rock climbing · Manchester United</li>
-        </ul>
+        <h3>Interests</h3>
+        <div class="hobbies-grid">
+
+          <!-- Running -->
+          <div class="hobby-card img-reveal from-left">
+            <img src="assets/running_team.png" alt="Running with the team" class="hobby-img" style="object-position: center center;" />
+            <div class="hobby-content">
+              <p class="hobby-title">Running</p>
+              <p class="hobby-desc">Training for my first marathon is no joke, but I love every single step of it. Running has been part of my life since joining my high school track team, and chasing that finish line is something I never want to let go of.</p>
+              <div class="contact-links" style="justify-content:flex-start;gap:0;">
+                <a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener" class="contact-link" style="padding:0.65rem 1.2rem;font-size:0.83rem;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+                  </svg>
+                  Check out my Strava!
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Golf -->
+          <div class="hobby-card img-reveal from-below" data-reveal-delay="120">
+            <img src="assets/golf_swing.png" alt="Out on the course" class="hobby-img" style="object-position: center 20%;" />
+            <div class="hobby-content">
+              <p class="hobby-title">Golf</p>
+              <p class="hobby-desc">I picked up golf recently and I've really been loving it. It's one of those sports that really <u><em style="color:var(--neon);font-size:1.35em;">really</em></u> humbles you every single time you step on the course, but that one perfect shot keeps pulling you right back out there.</p>
+            </div>
+          </div>
+
+          <!-- Chess -->
+          <div class="hobby-card img-reveal from-right" data-reveal-delay="240">
+            <img src="assets/chess.jpg" alt="Chess" class="hobby-img" style="object-position: center center;" />
+            <div class="hobby-content">
+              <p class="hobby-title">Chess</p>
+              <p class="hobby-desc">Have been playing chess with friends and online for about 7 years. I really enjoy just messing around and the feeling of incompleteness of the game, that feeling that there's always another level to reach.</p>
+              <div class="contact-links" style="justify-content:flex-start;gap:0;">
+                <a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener" class="contact-link" style="padding:0.65rem 1.2rem;font-size:0.83rem;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M8.73 0C6.55 0 4.79 1.76 4.79 3.94c0 1.04.41 1.98 1.07 2.68L4.1 8.37H2.27v2.45H1v2.45h1.27v1.22H1v2.45h1.27V24h10.27v-7.06H14V14.5h-1.46v-1.22H14v-2.45h-1.46V8.37h-1.82L8.97 6.62c.66-.7 1.07-1.64 1.07-2.68C10.04 1.76 8.87 0 8.73 0zm5.54 2.45v2.45h2.45V2.45zm0 4.9v2.45h2.45V7.35zm0 4.9v2.45h2.45v-2.45zm0 4.9V19.6h2.45v-2.45z"/>
+                  </svg>
+                  Add me on Chess.com!
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
@@ -748,7 +1089,20 @@
     <p class="card-label" style="letter-spacing:0.22em;">Get In Touch</p>
     <p style="font-size:1.05rem;font-weight:300;color:var(--text-dim);letter-spacing:0.01em;margin-top:-1rem;">Open to opportunities, research, and interesting problems.</p>
     <div class="resume-actions">
-      <a href="AlexLopez_Resume.pdf" download class="btn-resume">Download Resume ↓</a>
+      <button id="resume-toggle-btn" class="btn-resume" type="button">View My Resume</button>
+    </div>
+    <div id="resume-preview">
+      <div class="resume-preview-frame">
+        <iframe src="assets/Alex_Lopez_Resume.pdf" title="Alex Lopez Resume"></iframe>
+      </div>
+      <div class="resume-download-row">
+        <a href="assets/Alex_Lopez_Resume.pdf" download="Alex_Lopez_Resume.pdf" class="btn-resume-dl">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-8 4h16v-2H4v2z"/>
+          </svg>
+          Download PDF
+        </a>
+      </div>
     </div>
     <div class="contact-links" id="contact-links">
       <a href="https://github.com/Alex-lop" target="_blank" rel="noopener" class="contact-link">
@@ -886,21 +1240,20 @@
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
     // ── Nav jump buttons ────────────────────────────────────────
-    // Each section's target scroll fraction (matches SECTIONS array peaks)
-    const NAV_TARGETS = { about: 0.16, projects: 0.28, resume: 0.64 };
+    // Sets physScrollTarget to the section's offsetTop and lets the
+    // spring physics in animate() smoothly animate toward it.
+    const NAV_SECTION_IDS = {
+      about:    'about-panel',
+      projects: 'proj-panel-0',
+      resume:   'education-panel',
+    };
     document.querySelectorAll('.nav-link[data-target]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const frac = NAV_TARGETS[btn.dataset.target];
-        if (frac == null) return;
+        const targetEl = document.getElementById(NAV_SECTION_IDS[btn.dataset.target]);
+        if (!targetEl) return;
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-        // Snap instantly — no browser smooth scroll — so the spring system
-        // doesn't compound motion on top of the gradual browser scroll.
-        // Then zero out velocity and sync scrollDisplay so the spring is
-        // immediately at equilibrium with no overshoot or drift.
-        window.scrollTo({ top: frac * maxScroll, behavior: 'instant' });
-        scrollRaw     = frac;
-        scrollVel     = 0;
-        scrollDisplay = frac;
+        physNavTarget  = Math.min(Math.max(targetEl.offsetTop, 0), maxScroll);
+        physScrollVel  = 0; // stop any ongoing glide so the lerp takes over cleanly
       });
     });
 
@@ -1191,88 +1544,52 @@
     const BASE_FOV    = 72;
     let rafId         = null;
     const brightnessOverlay = document.getElementById('brightness-overlay');
-    const impactEl          = document.getElementById('impact-word');
+
+    // ── Ice scroll physics state ─────────────────────────────
+    let physScrollY   = 0;     // animated scroll position (px)
+    let physScrollVel = 0;     // current velocity — decays very slowly (ice)
+    let physNavTarget = null;  // set by nav clicks for smooth lerp; null otherwise
 
     window.addEventListener('scroll', () => {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       scrollRaw = maxScroll > 0 ? Math.min(Math.max(window.scrollY / maxScroll, 0), 1) : 0;
     }, { passive: true });
 
-    // When already at the bottom, extra scroll pushes the FOV wider (zoom out)
+    // Ice wheel handler — prevents browser scroll, adds deltaY as velocity.
+    // physNavTarget is cleared so user scroll always wins over nav animation.
     window.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      physNavTarget  = null;
+      physScrollVel += e.deltaY * 0.32;
       if (scrollRaw >= 0.98) {
         endZoomVel += e.deltaY * 0.00055;
       }
-    }, { passive: true });
+    }, { passive: false });
+
+    // ── Resume preview toggle ──────────────────────────────────────
+    const resumeToggleBtn = document.getElementById('resume-toggle-btn');
+    const resumePreview   = document.getElementById('resume-preview');
+    resumeToggleBtn.addEventListener('click', () => {
+      const opening = !resumePreview.classList.contains('open');
+      resumePreview.classList.toggle('open', opening);
+      resumeToggleBtn.textContent = opening ? 'Close Resume ✕' : 'View My Resume';
+    });
+
+    document.addEventListener('click', (e) => {
+      const boop = document.createElement('span');
+      boop.className = 'boop-label';
+      boop.textContent = '*boop*';
+      boop.style.left = e.clientX + 'px';
+      boop.style.top  = e.clientY + 'px';
+      document.body.appendChild(boop);
+      boop.addEventListener('animationend', () => boop.remove());
+    });
 
     const mouseNDC = { x: 0, y: 0 };
     window.addEventListener('mousemove', (e) => {
       mouseNDC.x = (e.clientX / window.innerWidth)  * 2 - 1;
       mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
     }, { passive: true });
-
-    /* ════════════════════════════════════════════════════════════
-       SECTION VISIBILITY  (scroll-driven, computed every frame)
-    ════════════════════════════════════════════════════════════ */
-    // [id, fadeInStart, fadeInEnd, peakEnd, fadeOutEnd]
-    // 9 sections across 1400vh — each section overlaps the next by ~0.04 for a smooth crossfade
-    const SECTIONS = [
-      ['intro-panel',      -1,    -1,    0.07,  0.13],
-      ['about-panel',     0.09,  0.13,   0.19,  0.25],
-      ['proj-panel-0',    0.21,  0.25,   0.31,  0.37],
-      ['proj-panel-1',    0.33,  0.37,   0.43,  0.49],
-      ['proj-panel-2',    0.45,  0.49,   0.55,  0.61],
-      ['education-panel', 0.57,  0.61,   0.67,  0.73],
-      ['experience-panel',0.69,  0.73,   0.79,  0.85],
-      ['skills-panel',    0.81,  0.85,   0.91,  0.96],
-      ['contact-panel',   0.92,  0.96,   0.99,  1.00],
-    ];
-
-    const sectionEls = {};
-    SECTIONS.forEach(([id]) => { sectionEls[id] = document.getElementById(id); });
-
-    function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
-
-    function computeSectionOpacity(p, fiS, fiE, peakE, foE) {
-      if (fiS < 0) {
-        // Intro: always visible until fadeOut
-        if (p <= peakE)   return 1;
-        if (p >= foE)     return 0;
-        return easeInOut(1 - (p - peakE) / (foE - peakE));
-      }
-      if (p <= fiS) return 0;
-      if (p <= fiE) return easeInOut((p - fiS) / (fiE - fiS));
-      if (p <= peakE) return 1;
-      if (p >= foE)   return 0;
-      return easeInOut(1 - (p - peakE) / (foE - peakE));
-    }
-
-    function computeSectionTY(p, fiS, fiE, peakE, foE) {
-      if (fiS < 0) {
-        if (p <= peakE)   return 0;
-        if (p >= foE)     return -8;
-        return -8 * (1 - easeInOut(1 - (p - peakE) / (foE - peakE)));
-      }
-      if (p <= fiS)   return 8;
-      if (p <= fiE)   return 8 * (1 - easeInOut((p - fiS) / (fiE - fiS)));
-      if (p <= peakE) return 0;
-      if (p >= foE)   return -8;
-      return -8 * (1 - easeInOut(1 - (p - peakE) / (foE - peakE)));
-    }
-
-    function updateSections(p) {
-      SECTIONS.forEach(([id, fiS, fiE, peakE, foE]) => {
-        const el = sectionEls[id];
-        const op = computeSectionOpacity(p, fiS, fiE, peakE, foE);
-        const ty = computeSectionTY(p, fiS, fiE, peakE, foE);
-
-        el.style.opacity   = op;
-        el.style.transform = `translateY(${ty}px)`;
-        Array.from(el.children).forEach(child => {
-          child.style.pointerEvents = op > 0.05 ? 'auto' : 'none';
-        });
-      });
-    }
 
     /* ════════════════════════════════════════════════════════════
        ANIMATION LOOP
@@ -1404,6 +1721,25 @@
       }
       tornadoGroup.children[TORNADO_STRANDS].geometry.attributes.position.needsUpdate = true;
 
+      // ── Ice scroll physics ───────────────────────────────────
+      // Normal: velocity barely decays (0.92 per frame) — like gliding on ice.
+      // Nav click: smooth lerp to target, velocity zeroed, then physics resumes.
+      {
+        const maxScrollPx = document.documentElement.scrollHeight - window.innerHeight;
+        if (physNavTarget !== null) {
+          physScrollY  += (physNavTarget - physScrollY) * 0.1;
+          physScrollVel = 0;
+          if (Math.abs(physNavTarget - physScrollY) < 0.5) {
+            physScrollY   = physNavTarget;
+            physNavTarget = null;
+          }
+        } else {
+          physScrollVel *= 0.86;
+          physScrollY    = Math.min(Math.max(physScrollY + physScrollVel, 0), maxScrollPx);
+        }
+        window.scrollTo({ top: physScrollY, behavior: 'instant' });
+      }
+
       // ── Ambient neon brightness overlay (last 25% of scroll) ─
       const bright = p > 0.75 ? ((p - 0.75) / 0.25) * 0.06 : 0;
       brightnessOverlay.style.background = `rgba(26,95,255,${bright})`;
@@ -1411,14 +1747,6 @@
       // ── Grid auto-rotation & parallax ──────────────────────
       gridGroup.rotation.y += 0.0008;
       gridGroup.position.z = p * -120 * 0.20;
-
-      // ── Section visibility ──────────────────────────────────
-      updateSections(p);
-
-      // ── Impact word — reveals only mid-way through the About section ──
-      // About peak: 0.13–0.19. Impact fades in at 0.16 so the user must
-      // keep scrolling past the initial text before the word appears.
-      impactEl.style.opacity = computeSectionOpacity(p, 0.155, 0.185, 0.19, 0.25);
 
       // ── End-of-page zoom-out (FOV widening) ─────────────────
       // Snaps back toward 0 whenever the user is not at the very bottom
@@ -1489,28 +1817,36 @@
     gsap.registerPlugin(ScrollTrigger);
 
     window.addEventListener('load', () => {
-      // Force intro visible immediately so the camera can render
-      sectionEls['intro-panel'].style.opacity = '1';
-
       // Fade drag hint after 4s or on first pointer move
       const dragHint = document.getElementById('drag-hint');
       setTimeout(() => dragHint.classList.add('hidden'), 4000);
       window.addEventListener('pointermove', () =>
         dragHint.classList.add('hidden'), { once: true });
 
+      // ── Image reveal on scroll ──────────────────────────────────
+      // Every .img-reveal element slides in when entering the viewport
+      // and resets when leaving — so scrolling back replays the animation.
+      // Two thresholds: 0 fires on full exit, 0.1 fires on entry.
+      const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          } else {
+            entry.target.classList.remove('visible');
+          }
+        });
+      }, { threshold: [0, 0.1] });
+
+      document.querySelectorAll('.img-reveal').forEach(el => {
+        const delay = el.dataset.revealDelay;
+        if (delay) el.style.transitionDelay = delay + 'ms';
+        revealObs.observe(el);
+      });
+
       // Stagger in name → tagline → hint
       gsap.from('#intro-name',    { y: 40, opacity: 0, duration: 1.1, delay: 0.35, ease: 'power3.out' });
       gsap.from('#intro-tagline', { y: 30, opacity: 0, duration: 1.0, delay: 0.65, ease: 'power3.out' });
       gsap.from('#scroll-hint',   { opacity: 0, duration: 1.2, delay: 1.4 });
-
-      // About card slide from left
-      gsap.set('#about-card', { x: -40 });
-      ScrollTrigger.create({
-        trigger: '#scroll-driver',
-        start: '9% top',
-        onEnter:     () => gsap.to('#about-card', { x: 0,   duration: 0.75, ease: 'power2.out' }),
-        onLeaveBack: () => gsap.to('#about-card', { x: -40, duration: 0.4,  ease: 'power2.in'  }),
-      });
     });
 
     /* ════════════════════════════════════════════════════════════
