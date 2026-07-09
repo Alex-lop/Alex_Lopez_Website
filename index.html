@@ -523,6 +523,77 @@
       .hobby-img    { height: 220px; }
     }
 
+    /* ── LUNA POLAROID ──────────────────────────────────────── */
+    #interests-panel .resume-solo-card {
+      position: relative;
+      overflow: visible;
+    }
+
+    .luna-float {
+      position: absolute;
+      right: -210px;
+      bottom: 100px;
+      width: 172px;
+      z-index: 20;
+      pointer-events: auto;
+      cursor: default;
+      animation: luna-drift 4.2s ease-in-out infinite;
+    }
+
+    @keyframes luna-drift {
+      0%, 100% { transform: rotate(9deg) translateY(0px);  }
+      50%       { transform: rotate(9deg) translateY(-8px); }
+    }
+
+    .luna-float:hover {
+      animation-play-state: paused;
+      transform: rotate(6deg) scale(1.05) translateY(-4px) !important;
+      transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+
+    .luna-polaroid-wrap {
+      background: #fff;
+      padding: 10px 10px 40px;
+      border-radius: 2px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.26), 0 2px 8px rgba(0,0,0,0.10);
+      width: 100%;
+    }
+
+    .luna-polaroid-wrap img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      object-position: center 25%;
+      display: block;
+    }
+
+    .luna-polaroid-caption {
+      text-align: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: #444;
+      margin-top: 7px;
+      line-height: 1.1;
+    }
+
+    /* Annotation sits above the polaroid — no leftward reach into the card */
+    .luna-annotation-svg {
+      position: absolute;
+      top: -76px;
+      left: 0;
+      width: 165px;
+      height: 76px;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    /* Hide polaroid on narrow viewports — no room to the side */
+    @media (max-width: 1370px) {
+      .luna-float { display: none; }
+    }
+
     @media (min-width: 621px) and (max-width: 860px) {
       .hobbies-grid { grid-template-columns: repeat(2, 1fr); }
     }
@@ -840,6 +911,88 @@
       background:   rgba(0,0,0,0.55);
       border-color: rgba(255,255,255,0.10);
     }
+
+    /* ── LIGHTBOX ──────────────────────────────────────────────────── */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: rgba(0,0,0,0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+    #lightbox.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #lightbox-img {
+      max-width: 88vw;
+      max-height: 86vh;
+      border-radius: 18px;
+      box-shadow: 0 32px 90px rgba(0,0,0,0.6);
+      object-fit: contain;
+      transform: scale(0.88);
+      transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: default;
+      display: block;
+    }
+    #lightbox.open #lightbox-img { transform: scale(1); }
+    #lightbox-close {
+      position: absolute;
+      top: 1.4rem;
+      right: 1.6rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.88);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, border-color 0.2s;
+      line-height: 1;
+    }
+    #lightbox-close:hover {
+      background: rgba(255,255,255,0.22);
+      border-color: rgba(255,255,255,0.40);
+    }
+    .lightbox-trigger { cursor: zoom-in; }
+
+    /* ── TAG TOOLTIPS ──────────────────────────────────────────────── */
+    .tag[data-tip] { position: relative; }
+    .tag[data-tip]::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 7px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: rgba(10,10,18,0.93);
+      color: #f0f0f0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.69rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      padding: 0.28rem 0.62rem;
+      border-radius: 6px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      z-index: 200;
+    }
+    .tag[data-tip]:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   </style>
 </head>
 <body>
@@ -877,7 +1030,7 @@
         <p id="impact-word" style="font-family:'Space Grotesk',sans-serif;text-align:center;font-size:clamp(2.4rem,7vw,4.2rem);font-weight:700;letter-spacing:-0.02em;color:var(--neon);margin:1.5rem 0 0;opacity:1;">Impact.</p>
       </div>
       <div class="about-photo-wrap img-reveal from-right">
-        <img src="assets/me_presenting.png" alt="Alex Lopez" class="about-photo" />
+        <img src="assets/me_presenting.png" alt="Alex Lopez" class="about-photo lightbox-trigger" />
       </div>
     </div>
   </div>
@@ -892,9 +1045,9 @@
       <p>Scrapes public tweets without the official API and runs them through a three-layer NLP sentiment ensemble: TextBlob, VADER, and a fine-tuned DistilBERT,  to classify sentiment at scale.</p>
       <div class="tags">
         <span class="tag">Python</span>
-        <span class="tag">PyTorch</span>
-        <span class="tag">HuggingFace</span>
-        <span class="tag">NLP</span>
+        <span class="tag" data-tip="Deep learning framework by Meta">PyTorch</span>
+        <span class="tag" data-tip="Open-source ML model hub & library">HuggingFace</span>
+        <span class="tag" data-tip="Natural Language Processing">NLP</span>
       </div>
     </div>
   </div>
@@ -909,8 +1062,8 @@
       <p>Top 8% globally (912 / 13,000). Built strategies across market making, scalping, locational arbitrage, and mean-reversion to optimize risk-adjusted returns.</p>
       <div class="tags">
         <span class="tag">Python</span>
-        <span class="tag">Algo Trading</span>
-        <span class="tag">Quant</span>
+        <span class="tag" data-tip="Algorithm-driven automated trading">Algo Trading</span>
+        <span class="tag" data-tip="Quantitative finance strategies">Quant</span>
       </div>
     </div>
   </div>
@@ -926,9 +1079,9 @@
       <div class="tags">
         <span class="tag">Python</span>
         <span class="tag">MySQL</span>
-        <span class="tag">Streamlit</span>
-        <span class="tag">Docker</span>
-        <span class="tag">REST API</span>
+        <span class="tag" data-tip="Python web UI framework for data apps">Streamlit</span>
+        <span class="tag" data-tip="App containerization & deployment platform">Docker</span>
+        <span class="tag" data-tip="HTTP-based API architecture">REST API</span>
       </div>
     </div>
   </div>
@@ -974,7 +1127,7 @@
             <strong>Computational Biology Research Asst.</strong>
             <span class="exp-meta">O'Hern Lab, Yale &nbsp;·&nbsp; Jun 2023 – Sep 2023 &nbsp;·&nbsp; New Haven, CT</span>
             <div class="ohern-banner-wrap img-reveal from-right">
-              <img src="assets/ohern-header4.gif" alt="O'Hern Lab at Yale School of Engineering &amp; Applied Science" class="ohern-banner" />
+              <img src="assets/ohern-header4.gif" alt="O'Hern Lab at Yale School of Engineering &amp; Applied Science" class="ohern-banner lightbox-trigger" />
             </div>
           </li>
           <li class="spacer">
@@ -1036,7 +1189,7 @@
 
           <!-- Running -->
           <div class="hobby-card img-reveal from-left">
-            <img src="assets/running_team.png" alt="Running with the team" class="hobby-img" style="object-position: center center;" />
+            <img src="assets/running_team.png" alt="Running with the team" class="hobby-img lightbox-trigger" style="object-position: center center;" />
             <div class="hobby-content">
               <p class="hobby-title">Running</p>
               <p class="hobby-desc">Training for my first marathon is no joke, but I love every single step of it. Running has been part of my life since joining my high school track team, and chasing that finish line is something I never want to let go of.</p>
@@ -1053,7 +1206,7 @@
 
           <!-- Golf -->
           <div class="hobby-card img-reveal from-below" data-reveal-delay="120">
-            <img src="assets/golf_swing.png" alt="Out on the course" class="hobby-img" style="object-position: center 20%;" />
+            <img src="assets/golf_swing.png" alt="Out on the course" class="hobby-img lightbox-trigger" style="object-position: center 20%;" />
             <div class="hobby-content">
               <p class="hobby-title">Golf</p>
               <p class="hobby-desc">I picked up golf recently and I've really been loving it. It's one of those sports that really <u><em style="color:var(--neon);font-size:1.35em;">really</em></u> humbles you every single time you step on the course, but that one perfect shot keeps pulling you right back out there.</p>
@@ -1062,7 +1215,7 @@
 
           <!-- Chess -->
           <div class="hobby-card img-reveal from-right" data-reveal-delay="240">
-            <img src="assets/chess.jpg" alt="Chess" class="hobby-img" style="object-position: center center;" />
+            <img src="assets/chess.jpg" alt="Chess" class="hobby-img lightbox-trigger" style="object-position: center center;" />
             <div class="hobby-content">
               <p class="hobby-title">Chess</p>
               <p class="hobby-desc">Have been playing chess with friends and online for about 7 years. I really enjoy just messing around and the feeling of incompleteness of the game, that feeling that there's always another level to reach.</p>
@@ -1078,6 +1231,26 @@
           </div>
 
         </div>
+
+        <!-- Luna floating polaroid — peeks outside the card to the right -->
+        <div class="luna-float" aria-label="Luna the bunny">
+          <!-- Hand-drawn swirl annotation -->
+          <svg class="luna-annotation-svg" viewBox="0 0 165 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Label above the photo -->
+            <text x="22" y="20" font-family="'DM Sans', sans-serif" font-size="16" font-style="italic" font-weight="500" fill="#000">Luna my bunny!</text>
+            <!-- Arrow curves down from text toward the top of the photo -->
+            <path d="M 70 28 C 68 44, 62 57, 58 70"
+                  stroke="#000" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.65"/>
+            <!-- Arrowhead pointing down -->
+            <path d="M 54 65 L 58 70 L 62 65"
+                  stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.65"/>
+          </svg>
+          <div class="luna-polaroid-wrap">
+            <img src="assets/lunaa.png" alt="Luna the bunny" />
+            <p class="luna-polaroid-caption">Luna 🐰</p>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -1575,6 +1748,39 @@
       resumeToggleBtn.textContent = opening ? 'Close Resume ✕' : 'View My Resume';
     });
 
+    // ── Lightbox ──────────────────────────────────────────────────
+    const lightbox    = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+
+    function openLightbox(src, alt) {
+      lightboxImg.src = src;
+      lightboxImg.alt = alt || '';
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.lightbox-trigger').forEach(img => {
+      img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openLightbox(img.src, img.alt);
+      });
+    });
+
+    document.getElementById('lightbox-close').addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeLightbox();
+    });
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+    });
+
     document.addEventListener('click', (e) => {
       const boop = document.createElement('span');
       boop.className = 'boop-label';
@@ -1872,5 +2078,11 @@
     });
 
   </script>
+
+  <!-- ── LIGHTBOX OVERLAY ─────────────────────────────────────── -->
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button id="lightbox-close" aria-label="Close preview">✕</button>
+    <img id="lightbox-img" src="" alt="" />
+  </div>
 </body>
 </html>
