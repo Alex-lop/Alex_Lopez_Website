@@ -464,10 +464,14 @@ if (renderer) {
   const brightnessOverlay = document.getElementById("brightness-overlay");
 
   let rawScrollProgress = 0;
+  let rawOutroProgress = 0;
   let sceneProgress = 0;
+  const sceneOutro = document.getElementById("scene-outro");
   function updateScrollProgress() {
     const maximum = document.documentElement.scrollHeight - window.innerHeight;
-    rawScrollProgress = maximum > 0 ? clamp(window.scrollY / maximum, 0, 1) : 0;
+    const contentEnd = Math.max(sceneOutro.offsetTop - window.innerHeight, 1);
+    rawScrollProgress = clamp(window.scrollY / contentEnd, 0, 1);
+    rawOutroProgress = clamp((window.scrollY - contentEnd) / Math.max(maximum - contentEnd, 1), 0, 1);
   }
   updateScrollProgress();
   sceneProgress = rawScrollProgress;
@@ -567,7 +571,8 @@ if (renderer) {
 
     const endProgress = clamp((progress - 0.92) / 0.08, 0, 1);
     const endEase = endProgress * endProgress * (3 - 2 * endProgress);
-    camera.fov = 72 + endEase * 52;
+    const outroEase = rawOutroProgress * rawOutroProgress * (3 - 2 * rawOutroProgress);
+    camera.fov = 72 + endEase * 52 + outroEase * 28;
     camera.updateProjectionMatrix();
 
     const belowGrid = clamp((gridGroup.position.y - camera.position.y) / 220, 0, 1);

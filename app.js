@@ -35,7 +35,7 @@ function iceEase(t) {
 }
 
 function navigationDuration(distance) {
-  return clamp(1100 + Math.abs(distance) * 0.55, 1400, 2800);
+  return clamp(900 + Math.abs(distance) * 0.42, 1200, 2300);
 }
 
 function runGlide(now = performance.now()) {
@@ -184,6 +184,7 @@ const navLinks = new Map([...document.querySelectorAll("[data-nav]")].map((link)
 const navSections = [...document.querySelectorAll("[data-nav-section]")];
 const backToTop = document.getElementById("back-to-top");
 const laterPanel = document.getElementById("proj-panel-1");
+const sceneOutro = document.getElementById("scene-outro");
 let scrollUiFrame = 0;
 
 function updateScrollUi() {
@@ -198,6 +199,7 @@ function updateScrollUi() {
     else link.removeAttribute("aria-current");
   });
   backToTop.classList.toggle("visible", window.scrollY > laterPanel.offsetTop - window.innerHeight * 0.5);
+  document.body.classList.toggle("scene-outro-active", window.scrollY > sceneOutro.offsetTop - window.innerHeight * 0.35);
   scrollUiFrame = 0;
 }
 

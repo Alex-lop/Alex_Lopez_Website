@@ -52,6 +52,7 @@ restored_panels = {
     "skills-panel",
     "interests-panel",
     "contact-panel",
+    "scene-outro",
 }
 assert restored_panels <= site.ids, f"Missing restored anchors: {sorted(restored_panels - site.ids)}"
 assert site.project_panels == 3, f"Expected three project panels, found {site.project_panels}"
@@ -87,5 +88,7 @@ assert "const pulsePurple = 0x7c3aed" in SCRIPTS
 assert 'document.addEventListener("pointerup"' in SCRIPTS
 assert "const pulseBoltPointCount = 15" in SCRIPTS
 assert "const lineColor = below ? 0x1a5fff : pulsePurple" in SCRIPTS
+assert HTML.count("https://skillicons.dev/icons?i=") == 4
+assert "const outroEase" in SCRIPTS and "scene-outro-active" in SCRIPTS
 
 print(f"Site check passed: {len(site.ids)} ids, {len(site.anchors)} links, {len(site.assets)} local assets")

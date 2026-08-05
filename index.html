@@ -29,9 +29,8 @@
   <nav id="site-nav" aria-label="Primary navigation">
     <a class="nav-link" href="#about-panel" data-scroll-link data-nav="about">About</a>
     <a class="nav-link" href="#proj-panel-0" data-scroll-link data-nav="projects">Projects</a>
-    <a class="nav-link" href="#experience-panel" data-scroll-link data-nav="experience">Experience</a>
-    <a class="nav-link" href="#contact-panel" data-scroll-link data-nav="contact">Contact</a>
     <a class="nav-link" href="#education-panel" data-scroll-link data-nav="resume">Résumé</a>
+    <a class="nav-link" href="#contact-panel" data-scroll-link data-nav="contact">Contact</a>
   </nav>
   <p id="drag-hint" aria-hidden="true">drag orbit · right-drag pan · middle-drag zoom · scroll explore</p>
   <canvas id="bg-canvas" aria-hidden="true"></canvas>
@@ -52,9 +51,8 @@
           <p class="impact-word">Impact.</p>
         </article>
         <figure class="about-photo-wrap image-reveal">
-          <button class="about-photo-stack image-button" type="button" data-lightbox-src="assets/me-presenting.jpg" data-lightbox-alt="Alex Lopez presenting computational biology research at the O’Hern Lab" aria-label="Enlarge photo of Alex presenting research">
-            <img class="about-photo about-photo--main" src="assets/me-presenting-portrait.jpg" width="460" height="576" loading="lazy" alt="Alex Lopez presenting computational biology research">
-            <img class="about-photo about-photo--inset" src="assets/me-presenting-poster.jpg" width="384" height="384" loading="lazy" alt="" aria-hidden="true">
+          <button class="image-button" type="button" data-lightbox-src="assets/me-presenting.jpg" data-lightbox-alt="Alex Lopez presenting computational biology research at the O’Hern Lab" aria-label="Enlarge photo of Alex presenting research">
+            <img class="about-photo" src="assets/me-presenting.jpg" width="900" height="599" loading="lazy" alt="Alex Lopez presenting computational biology research">
           </button>
           <figcaption>Presenting research from the O’Hern Lab.</figcaption>
         </figure>
@@ -67,10 +65,10 @@
         <img class="project-accent project-accent--wide" src="assets/projects/reglineage-logo.png" width="1316" height="394" loading="lazy" alt="RegLineage logo">
         <div class="project-heading"><h3 id="project-1-title">RegLineage</h3><p class="project-meta">July 2026 – Present</p></div>
         <p>A governed analytics system that turns business questions into policy-gated aggregate analyses with human approval, deterministic DuckDB execution, DataHub lineage, and fresh read-back verification.</p>
+        <small class="project-note">Uses deterministic synthetic analytical fixtures today.</small>
         <ul class="tags" aria-label="RegLineage technologies"><li>Python</li><li>FastAPI</li><li>DuckDB</li><li>DataHub</li><li>MCP</li></ul>
         <div class="project-footer">
           <a class="project-link" href="https://github.com/Alex-lop/RegLineage" target="_blank" rel="noopener noreferrer">Repository <span aria-hidden="true">↗</span></a>
-          <span class="project-note">Uses deterministic synthetic analytical fixtures today.</span>
         </div>
       </article>
     </section>
@@ -79,7 +77,7 @@
       <h2 class="card-label">Selected Projects · <span class="project-counter">02 / 03</span></h2>
       <article class="glass-card project-card">
         <img class="project-accent" src="assets/projects/x-api-analyst.jpg" width="500" height="500" loading="lazy" alt="X API Analyst project artwork">
-        <div class="project-heading"><h3 id="project-2-title">X API Analyst</h3><p class="project-subtitle">Repository: X-Scraper</p><p class="project-meta">June 2026 – Present</p></div>
+        <div class="project-heading"><h3 id="project-2-title">X API Analyst</h3><p class="project-meta">June 2026 – Present</p></div>
         <p>A local, bring-your-own-token workbench for collecting public X posts through the official recent-search API, with resumable jobs, immutable SQLite snapshots, exact cache reuse, JSON/CSV exports, and an optional MCP bridge.</p>
         <ul class="tags" aria-label="X API Analyst technologies"><li>Python</li><li>Flask</li><li>SQLite</li><li>X API</li><li>MCP</li></ul>
         <div class="project-footer"><a class="project-link" href="https://github.com/Alex-lop/X-Scraper" target="_blank" rel="noopener noreferrer">Repository <span aria-hidden="true">↗</span></a></div>
@@ -107,7 +105,7 @@
       </article>
     </section>
 
-    <section id="experience-panel" class="section-panel resume-solo-panel" data-nav-section="experience" aria-labelledby="experience-title">
+    <section id="experience-panel" class="section-panel resume-solo-panel" data-nav-section="resume" aria-labelledby="experience-title">
       <h2 class="card-label" id="experience-title">Résumé · <span class="project-counter">Experience</span></h2>
       <article class="glass-card resume-card experience-card">
         <h3>Experience</h3>
@@ -127,10 +125,10 @@
       <article class="glass-card resume-card skills-card">
         <h3>Skills</h3>
         <dl class="skills-grid">
-          <div><dt>Languages</dt><dd>Python, C++, C, Java, JavaScript, OCaml, Kotlin</dd></div>
-          <div><dt>Backend &amp; Data</dt><dd>SQL, FastAPI, Flask, DataHub, DuckDB, SQLite</dd></div>
-          <div><dt>ML &amp; Analysis</dt><dd>PyTorch, TensorFlow, Pandas, MATLAB</dd></div>
-          <div><dt>Tools &amp; Infrastructure</dt><dd>AWS, Docker, Git, Three.js</dd></div>
+          <div><dt>Languages</dt><dd>Python, C++, C, Java, JavaScript, OCaml, Kotlin<img class="skill-icons" src="https://skillicons.dev/icons?i=python,cpp,c,java,js,kotlin&amp;perline=6" loading="lazy" alt="Python, C++, C, Java, JavaScript, and Kotlin icons"></dd></div>
+          <div><dt>Backend &amp; Data</dt><dd>SQL, FastAPI, Flask, DataHub, DuckDB, SQLite<img class="skill-icons" src="https://skillicons.dev/icons?i=fastapi,flask,sqlite&amp;perline=6" loading="lazy" alt="FastAPI, Flask, and SQLite icons"></dd></div>
+          <div><dt>ML &amp; Analysis</dt><dd>PyTorch, TensorFlow, Pandas, MATLAB<img class="skill-icons" src="https://skillicons.dev/icons?i=pytorch,tensorflow&amp;perline=6" loading="lazy" alt="PyTorch and TensorFlow icons"></dd></div>
+          <div><dt>Tools &amp; Infrastructure</dt><dd>AWS, Docker, Git, Three.js<img class="skill-icons" src="https://skillicons.dev/icons?i=aws,docker,git,threejs&amp;perline=6" loading="lazy" alt="AWS, Docker, Git, and Three.js icons"></dd></div>
         </dl>
       </article>
     </section>
@@ -165,6 +163,7 @@
         <div class="contact-links"><a href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
       </article>
     </section>
+    <div id="scene-outro" aria-hidden="true"></div>
   </main>
 
   <a class="back-to-top" id="back-to-top" href="#intro-panel" data-scroll-link aria-label="Back to the opening">↑ Top</a>
