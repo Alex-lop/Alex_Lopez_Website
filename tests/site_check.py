@@ -80,5 +80,9 @@ assert "prefers-reduced-motion: reduce" in SCRIPTS
 assert "OrbitControls" in SCRIPTS
 assert "addEventListener(\"wheel\"" in SCRIPTS
 assert "window.scrollTo" in SCRIPTS
+assert "Training for my first marathon is no joke" in HTML
+assert 'class="golf-emphasis"' in HTML and "feeling of incompleteness" in HTML
+assert "gridGroup.add(group)" in SCRIPTS and "const pulseDuration = 1700" in SCRIPTS
+assert "const pulsePurple = 0x7c3aed" in SCRIPTS
 
 print(f"Site check passed: {len(site.ids)} ids, {len(site.anchors)} links, {len(site.assets)} local assets")

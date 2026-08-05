@@ -275,16 +275,42 @@ main { position: relative; z-index: 2; pointer-events: none; }
 .resume-list span { margin-top: 0.28rem; color: var(--text-dim); font-size: 0.77rem; opacity: 0.82; }
 .resume-list p { margin: 0.6rem 0 0; color: var(--text-dim); font-size: 0.83rem; font-weight: 300; }
 .experience-card { max-width: 700px; }
-.experience-card strong { display: flex; align-items: center; gap: 0.7rem; }
-.experience-card strong img { width: 42px; height: 42px; object-fit: contain; border-radius: 8px; }
-.ohern-button {
-  width: min(280px, 100%);
-  margin-top: 1.1rem;
-  overflow: hidden;
-  border-radius: 10px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.14);
+.experience-card strong { display: flex; flex-wrap: wrap; align-items: center; gap: 0.9rem; }
+.experience-card .employer-logo {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
 }
-.ohern-button img { width: 100%; aspect-ratio: 908 / 300; object-fit: cover; object-position: center; display: block; }
+.experience-card .employer-logo--expandya {
+  width: 46px;
+  height: 46px;
+}
+.experience-card .employer-logo--northeastern {
+  width: 112px;
+  height: 38px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+.ohern-button {
+  display: block;
+  width: min(100%, 320px);
+  margin-top: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+.ohern-button img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
 .skills-card { max-width: 700px; }
 .skills-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6rem 2.2rem; margin: 0; }
 .skills-grid div { padding-top: 0.8rem; border-top: 1px solid var(--neon-dim); }
@@ -292,7 +318,7 @@ main { position: relative; z-index: 2; pointer-events: none; }
 .skills-grid dd { margin: 0.4rem 0 0; color: var(--text-dim); font-size: 0.78rem; line-height: 1.7; }
 
 .interests-panel { min-height: 130vh; }
-.interests-card { position: relative; max-width: 920px; padding-bottom: clamp(2.4rem, 5vw, 3.4rem); overflow: visible; }
+.interests-card { position: relative; max-width: 920px; overflow: visible; }
 .hobbies-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
 .hobby-card { overflow: hidden; background: rgba(0, 0, 0, 0.025); border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 14px; }
 .hobby-card .image-button { border-radius: 14px 14px 0 0; }
@@ -303,36 +329,55 @@ main { position: relative; z-index: 2; pointer-events: none; }
 .hobby-card > div { padding: 1.1rem 1.2rem 1.25rem; }
 .hobby-card h4 { margin: 0 0 0.5rem; color: var(--neon); font-family: "Space Grotesk", sans-serif; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; }
 .hobby-card p { margin: 0 0 0.8rem; color: var(--text-dim); font-size: 0.8rem; font-weight: 300; }
+.golf-emphasis { color: var(--neon); font-size: 1.35em; }
 .luna-float {
   position: absolute;
-  right: -1.5rem;
-  bottom: -1.6rem;
-  width: 118px;
+  right: -215px;
+  bottom: 85px;
+  width: 196px;
   margin: 0;
-  transform: rotate(5deg);
   animation: luna-drift 4.2s ease-in-out infinite;
 }
 @keyframes luna-drift {
-  0%, 100% { transform: rotate(5deg) translateY(0); }
-  50% { transform: rotate(5deg) translateY(-7px); }
+  0%, 100% { transform: rotate(8deg) translateY(0); }
+  50% { transform: rotate(8deg) translateY(-8px); }
 }
 .luna-note {
   display: block;
-  margin-top: 0.45rem;
+  margin: 0 0 0.5rem;
+  color: var(--text);
+  font-size: 0.84rem;
+  font-style: italic;
+  text-align: center;
+}
+.luna-polaroid {
+  padding: 10px 10px 32px;
+  background: white;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.26);
+}
+.luna-polaroid img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  object-fit: cover;
+  object-position: center 38%;
+}
+.luna-polaroid figcaption {
+  margin-top: 7px;
+  color: #444;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.8rem;
+  text-align: center;
+}
+.luna-role {
+  display: block;
+  margin-top: 0.55rem;
   color: var(--text-dim);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-style: italic;
   letter-spacing: 0.04em;
   text-align: center;
 }
-.luna-polaroid {
-  padding: 8px 8px 28px;
-  background: white;
-  border-radius: 2px;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
-}
-.luna-polaroid img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; }
-.luna-polaroid figcaption { margin-top: 6px; color: #444; font-family: "Space Grotesk", sans-serif; font-size: 0.72rem; text-align: center; }
 
 .contact-panel { min-height: 125vh; gap: 2rem; padding-bottom: 8rem; }
 .contact-intro { margin: -0.5rem 0 0; color: var(--text-dim); font-size: 0.96rem; font-weight: 300; text-align: center; }
@@ -366,15 +411,7 @@ body.dark-mode #drag-hint { color: rgba(255, 255, 255, 0.5); background: rgba(0,
 body.dark-mode .scroll-hint { color: rgba(255, 255, 255, 0.38); }
 body.dark-mode .hobby-card { background: rgba(255, 255, 255, 0.035); border-color: rgba(255, 255, 255, 0.08); }
 
-@media (max-width: 1100px) {
-  .luna-float {
-    position: static;
-    width: 104px;
-    margin: 1.6rem auto 0;
-    transform: none;
-    animation: none;
-  }
-}
+@media (max-width: 1370px) { .luna-float { display: none; } }
 @media (max-width: 768px) {
   #bg-canvas { touch-action: pan-y; cursor: default; }
   #drag-hint { display: none; }
@@ -393,7 +430,8 @@ body.dark-mode .hobby-card { background: rgba(255, 255, 255, 0.035); border-colo
   .hobby-card .image-button { border-radius: 14px 0 0 14px; height: 100%; }
   .hobby-card .image-button img { height: 100%; min-height: 168px; }
   .interests-panel { min-height: 180vh; }
-  .ohern-button { width: min(240px, 100%); }
+  .experience-card .employer-logo--expandya { width: 42px; height: 42px; }
+  .experience-card .employer-logo--northeastern { width: 100px; height: 34px; }
 }
 @media (max-width: 520px) {
   #site-nav { top: 1.2rem; gap: 0.58rem; }

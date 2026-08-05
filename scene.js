@@ -236,10 +236,15 @@ if (renderer) {
 
   const pulseRingGeometry = new THREE.RingGeometry(4, 6, 40);
   const pulseBranchPointCount = 9;
+  const pulseDuration = 1700;
+  const pulseStrikeHeight = 160;
+  const pulsePurple = 0x7c3aed;
+  const pulsePurpleDark = 0xb18cff;
+  const pulseDot = makeDotTexture("255,255,255");
   const pulsePool = Array.from({ length: 4 }, () => {
     const group = new THREE.Group();
     const ringMaterial = new THREE.MeshBasicMaterial({
-      color: 0x1a5fff,
+      color: pulsePurple,
       transparent: true,
       opacity: 0,
       side: THREE.DoubleSide,
@@ -251,11 +256,25 @@ if (renderer) {
     ring.position.y = 0.35;
     group.add(ring);
 
-    const branches = Array.from({ length: 4 }, () => {
+    const strikeGeometry = new THREE.BufferGeometry();
+    strikeGeometry.setAttribute("position", new THREE.Float32BufferAttribute([
+      0, pulseStrikeHeight, 0,
+      0, pulseStrikeHeight, 0,
+    ], 3));
+    const strike = new THREE.Line(strikeGeometry, new THREE.LineBasicMaterial({
+      color: pulsePurple,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.NormalBlending,
+    }));
+    group.add(strike);
+
+    const branches = Array.from({ length: 3 }, () => {
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(pulseBranchPointCount * 3), 3));
       const material = new THREE.LineBasicMaterial({
-        color: 0x1a5fff,
+        color: pulsePurple,
         transparent: true,
         opacity: 0,
         depthWrite: false,
@@ -267,11 +286,11 @@ if (renderer) {
     });
 
     const sparkGeometry = new THREE.BufferGeometry();
-    sparkGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(4 * 3), 3));
+    sparkGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(3 * 3), 3));
     const sparks = new THREE.Points(sparkGeometry, new THREE.PointsMaterial({
-      map: blueDot,
-      color: 0x7da6ff,
-      size: 13,
+      map: pulseDot,
+      color: 0xa855f7,
+      size: 16,
       transparent: true,
       opacity: 0,
       depthWrite: false,
@@ -279,17 +298,16 @@ if (renderer) {
     }));
     group.add(sparks);
     group.visible = false;
-    scene.add(group);
+    gridGroup.add(group);
     return {
       group,
       ring,
+      strike,
       branches,
       sparks,
       started: 0,
-      duration: 780,
+      duration: pulseDuration,
       branchCount: 0,
-      lift: 1,
-      paths: Array.from({ length: 4 }, () => new Float32Array(pulseBranchPointCount * 3)),
     };
   });
 
@@ -300,64 +318,59 @@ if (renderer) {
     [-1, 0, 0],
     [0, 0, -1],
   ];
-  const pulseVerticalDirections = [
-    [0, 1, 0],
-    [0, -1, 0],
-  ];
-
   let pulseCursor = 0;
   let pulseThemeBelow = false;
+  const pulseLocalPoint = new THREE.Vector3();
 
   function applyPulseTheme(pulse, below) {
-    // Above: electric blue on cream. Below: light ink that reads like inverted black type.
-    const lineColor = below ? 0xe8e8e8 : 0x1a5fff;
-    const sparkColor = below ? 0xffffff : 0x7da6ff;
-    const blending = below ? THREE.NormalBlending : THREE.AdditiveBlending;
+    const lineColor = below ? pulsePurpleDark : pulsePurple;
+    const sparkColor = below ? 0xe0c8ff : 0xa855f7;
+    const blending = below ? THREE.AdditiveBlending : THREE.NormalBlending;
     pulse.ring.material.color.setHex(lineColor);
     pulse.ring.material.blending = blending;
+    pulse.strike.material.color.setHex(lineColor);
+    pulse.strike.material.blending = blending;
     pulse.branches.forEach((branch) => {
       branch.material.color.setHex(lineColor);
       branch.material.blending = blending;
     });
     pulse.sparks.material.color.setHex(sparkColor);
     pulse.sparks.material.blending = blending;
-    pulse.sparks.material.map = below ? null : blueDot;
+    pulse.sparks.material.map = pulseDot;
   }
 
-  function writePulseBranch(target, direction, steps, seed, lift) {
-    const [directionX, directionY, directionZ] = direction;
+  function writePulseBranch(target, direction, steps, seed) {
+    const [directionX, , directionZ] = direction;
     const length = steps * gridStep;
-    const vertical = Math.abs(directionY) > 0.5;
     for (let pointIndex = 0; pointIndex < pulseBranchPointCount; pointIndex += 1) {
       const progress = pointIndex / (pulseBranchPointCount - 1);
-      const jag = Math.sin(pointIndex * 4.1 + seed) * (vertical ? 0.55 : 0.9);
-      const jag2 = Math.cos(pointIndex * 2.7 + seed * 1.3) * (vertical ? 0.45 : 0.55);
-      const rise = vertical
-        ? 0
-        : lift * (1.8 + Math.sin(progress * Math.PI) * 10 + Math.sin(pointIndex * 3.3 + seed) * 1.4);
-      target[pointIndex * 3] = directionX * length * progress + (vertical ? jag * gridStep * 0.35 : 0);
-      target[pointIndex * 3 + 1] = directionY * length * progress * (0.55 + lift * 0.45) + rise + jag * 0.35;
-      target[pointIndex * 3 + 2] = directionZ * length * progress + (vertical ? jag2 * gridStep * 0.35 : 0);
+      const flicker = Math.sin(pointIndex * 4.1 + seed) * 0.55;
+      target[pointIndex * 3] = directionX * length * progress;
+      target[pointIndex * 3 + 1] = 0.8 + flicker;
+      target[pointIndex * 3 + 2] = directionZ * length * progress;
     }
   }
 
   function triggerGridPulse(point, milliseconds) {
     const pulse = pulsePool[pulseCursor];
     pulseCursor = (pulseCursor + 1) % pulsePool.length;
+    gridGroup.worldToLocal(pulseLocalPoint.copy(point));
     pulse.group.position.set(
-      Math.round(point.x / gridStep) * gridStep,
-      gridGroup.position.y,
-      Math.round(point.z / gridStep) * gridStep,
+      clamp(Math.round(pulseLocalPoint.x / gridStep) * gridStep, -gridSize / 2, gridSize / 2),
+      0,
+      clamp(Math.round(pulseLocalPoint.z / gridStep) * gridStep, -gridSize / 2, gridSize / 2),
     );
     pulse.group.visible = true;
     pulse.started = milliseconds;
-    pulse.duration = reducedMotion ? 160 : 920;
-    pulse.lift = 1;
+    pulse.duration = reducedMotion ? 360 : pulseDuration;
     pulse.ring.scale.setScalar(0.45);
+    const strikePositions = pulse.strike.geometry.attributes.position.array;
+    strikePositions[4] = pulseStrikeHeight;
+    pulse.strike.geometry.attributes.position.needsUpdate = true;
     applyPulseTheme(pulse, pulseThemeBelow);
 
     const directionOffset = pulseCursor % 4;
-    const branchCount = 3 + pulseCursor % 2;
+    const branchCount = 3;
     pulse.branchCount = branchCount;
     const sparkPositions = pulse.sparks.geometry.attributes.position.array;
 
@@ -367,22 +380,17 @@ if (renderer) {
         return;
       }
 
-      const useVertical = branchIndex === branchCount - 1 || (branchIndex === 0 && pulseCursor % 2 === 0);
-      const direction = useVertical
-        ? pulseVerticalDirections[(branchIndex + pulseCursor) % pulseVerticalDirections.length]
-        : pulseFloorDirections[(branchIndex + directionOffset) % pulseFloorDirections.length];
-      const steps = useVertical
-        ? 2 + (branchIndex + pulseCursor) % 3
-        : 2 + (branchIndex + pulseCursor) % 3;
-      writePulseBranch(pulse.paths[branchIndex], direction, steps, branchIndex * 11 + pulseCursor * 3, 1);
-      branch.geometry.attributes.position.array.set(pulse.paths[branchIndex]);
+      const direction = pulseFloorDirections[(branchIndex + directionOffset) % pulseFloorDirections.length];
+      const steps = 2 + (branchIndex + pulseCursor) % 3;
+      const positions = branch.geometry.attributes.position.array;
+      writePulseBranch(positions, direction, steps, branchIndex * 11 + pulseCursor * 3);
       branch.geometry.setDrawRange(0, pulseBranchPointCount);
       branch.geometry.attributes.position.needsUpdate = true;
 
       const tip = (pulseBranchPointCount - 1) * 3;
-      sparkPositions[branchIndex * 3] = pulse.paths[branchIndex][tip];
-      sparkPositions[branchIndex * 3 + 1] = pulse.paths[branchIndex][tip + 1];
-      sparkPositions[branchIndex * 3 + 2] = pulse.paths[branchIndex][tip + 2];
+      sparkPositions[branchIndex * 3] = positions[tip];
+      sparkPositions[branchIndex * 3 + 1] = positions[tip + 1];
+      sparkPositions[branchIndex * 3 + 2] = positions[tip + 2];
     });
     pulse.sparks.geometry.setDrawRange(0, branchCount);
     pulse.sparks.geometry.attributes.position.needsUpdate = true;
@@ -411,6 +419,7 @@ if (renderer) {
       -(event.clientY / window.innerHeight) * 2 + 1,
     );
     raycaster.setFromCamera(pointerNdc, camera);
+    gridPlane.constant = -gridGroup.position.y;
     if (raycaster.ray.intersectPlane(gridPlane, intersection)) triggerGridPulse(intersection, performance.now());
     clickStart = null;
   });
@@ -447,37 +456,18 @@ if (renderer) {
         return;
       }
 
-      // Rise into the vertical axis, then settle flat onto the floor plane.
-      const settle = progress * progress * (3 - 2 * progress);
-      const lift = 1 - settle;
-      pulse.lift = lift;
-      const fade = 1 - progress;
-      const sparkPositions = pulse.sparks.geometry.attributes.position.array;
-
-      pulse.branches.forEach((branch, branchIndex) => {
-        if (branchIndex >= pulse.branchCount) return;
-        const path = pulse.paths[branchIndex];
-        const positions = branch.geometry.attributes.position.array;
-        for (let pointIndex = 0; pointIndex < pulseBranchPointCount; pointIndex += 1) {
-          const index = pointIndex * 3;
-          const planeY = path[index + 1] * 0.08;
-          positions[index] = path[index];
-          positions[index + 1] = path[index + 1] * lift + planeY * settle;
-          positions[index + 2] = path[index + 2];
-        }
-        branch.geometry.attributes.position.needsUpdate = true;
-        branch.material.opacity = fade * (pulseThemeBelow ? 0.85 : 0.95);
-
-        const tip = (pulseBranchPointCount - 1) * 3;
-        sparkPositions[branchIndex * 3] = positions[tip];
-        sparkPositions[branchIndex * 3 + 1] = positions[tip + 1];
-        sparkPositions[branchIndex * 3 + 2] = positions[tip + 2];
+      const impact = clamp(progress / 0.18, 0, 1);
+      const fade = progress < 0.62 ? 1 : 1 - (progress - 0.62) / 0.38;
+      const strikePositions = pulse.strike.geometry.attributes.position.array;
+      strikePositions[4] = pulseStrikeHeight * (1 - impact);
+      pulse.strike.geometry.attributes.position.needsUpdate = true;
+      pulse.strike.material.opacity = progress < 0.24 ? (1 - progress / 0.24) * 0.95 : 0;
+      pulse.branches.forEach((branch) => {
+        branch.material.opacity = impact * fade * (pulseThemeBelow ? 0.9 : 1);
       });
-
-      pulse.sparks.geometry.attributes.position.needsUpdate = true;
-      pulse.ring.scale.setScalar(reducedMotion ? 1.8 : 0.45 + progress * 3.6);
-      pulse.ring.material.opacity = fade * (pulseThemeBelow ? 0.55 : 0.7);
-      pulse.sparks.material.opacity = Math.sin(progress * Math.PI) * (pulseThemeBelow ? 0.7 : 0.9);
+      pulse.ring.scale.setScalar(reducedMotion ? 1.8 : 0.45 + Math.min(progress / 0.7, 1) * 3.6);
+      pulse.ring.material.opacity = impact * fade * (pulseThemeBelow ? 0.7 : 0.85);
+      pulse.sparks.material.opacity = impact * fade * (0.72 + Math.sin(progress * 12) * 0.16);
     });
   }
 
