@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">RegLineage purpose-bound analytics workflow</title>
+  <desc id="desc">A browser sends a question and human approvals to RegLineage. RegLineage performs governed discovery, a deterministic policy gate, fixed DuckDB execution over synthetic fixture rows, a publication gate, and trust receipt verification. It reads governance from DataHub, writes the published graph and Context Document, performs a fresh read-back, and can hand evidence to an optional external read-only MCP verifier.</desc>
+
+  <defs>
+    <marker id="arrow-black" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#111111"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1A5FFF"/>
+    </marker>
+    <style>
+      text { font-family: "Inter", "Helvetica Neue", Arial, sans-serif; fill: #111111; }
+      .section { font-size: 20px; font-weight: 700; letter-spacing: .08em; }
+      .card-title { font-size: 17px; font-weight: 700; }
+      .card-copy { font-size: 14px; }
+      .small { font-size: 13px; }
+      .on-dark { fill: #FFFFFF; }
+      .blue-text { fill: #1A5FFF; }
+      .accent-text { fill: #1A5FFF; }
+      .arrow { fill: none; stroke: #111111; stroke-width: 2.5; marker-end: url(#arrow-black); }
+      .blue-arrow { fill: none; stroke: #1A5FFF; stroke-width: 2.5; marker-end: url(#arrow-blue); }
+    </style>
+  </defs>
+
+  <rect width="1200" height="900" fill="#F5F5F0"/>
+
+  <rect x="40" y="35" width="1120" height="145" rx="18" fill="#FFFFFF" stroke="#111111" stroke-width="2"/>
+  <text x="70" y="70" class="section">BROWSER</text>
+  <rect x="70" y="92" width="250" height="60" rx="12" fill="#F5F5F0" stroke="#1A5FFF" stroke-width="2"/>
+  <text x="195" y="118" text-anchor="middle" class="card-title">Business question</text>
+  <text x="195" y="139" text-anchor="middle" class="card-copy">purpose and requested dimensions</text>
+  <rect x="475" y="92" width="250" height="60" rx="12" fill="#F5F5F0" stroke="#1A5FFF" stroke-width="2"/>
+  <text x="600" y="118" text-anchor="middle" class="card-title">Human approvals</text>
+  <text x="600" y="139" text-anchor="middle" class="card-copy">plan, then aggregate result</text>
+  <rect x="880" y="92" width="250" height="60" rx="12" fill="#F5F5F0" stroke="#16784B" stroke-width="2"/>
+  <text x="1005" y="118" text-anchor="middle" class="card-title">Aggregate result</text>
+  <text x="1005" y="139" text-anchor="middle" class="card-copy">evidence and trust receipt</text>
+
+  <path d="M 195 152 V 218" class="blue-arrow"/>
+  <path d="M 600 152 V 218" class="arrow"/>
+  <path d="M 1005 218 V 152" class="arrow"/>
+
+  <rect x="40" y="220" width="1120" height="280" rx="18" fill="#111111"/>
+  <text x="70" y="258" class="section on-dark">REGLINEAGE</text>
+  <text x="1130" y="258" text-anchor="end" class="small on-dark">deterministic control + execution plane</text>
+
+  <rect x="65" y="285" width="198" height="145" rx="12" fill="#FFFFFF"/>
+  <text x="164" y="319" text-anchor="middle" class="card-title">Governed discovery</text>
+  <text x="164" y="349" text-anchor="middle" class="card-copy">
+    <tspan x="164" dy="0">exact metadata and</tspan>
+    <tspan x="164" dy="20">approved context reads</tspan>
+  </text>
+
+  <rect x="283" y="285" width="198" height="145" rx="12" fill="#FFFFFF"/>
+  <text x="382" y="319" text-anchor="middle" class="card-title">Policy gate</text>
+  <text x="382" y="349" text-anchor="middle" class="card-copy">
+    <tspan x="382" dy="0">deterministic, hash-bound,</tspan>
+    <tspan x="382" dy="20">fails closed on drift</tspan>
+  </text>
+
+  <rect x="501" y="285" width="198" height="145" rx="12" fill="#FFFFFF"/>
+  <text x="600" y="319" text-anchor="middle" class="card-title">Fixed DuckDB</text>
+  <text x="600" y="346" text-anchor="middle" class="card-copy">aggregate-only execution</text>
+  <rect x="520" y="373" width="160" height="38" rx="8" fill="#EAF0FF" stroke="#1A5FFF"/>
+  <text x="600" y="389" text-anchor="middle" class="small accent-text">synthetic fixture rows</text>
+  <text x="600" y="404" text-anchor="middle" class="small accent-text">today</text>
+
+  <rect x="719" y="285" width="198" height="145" rx="12" fill="#FFFFFF"/>
+  <text x="818" y="319" text-anchor="middle" class="card-title">Publication gate</text>
+  <text x="818" y="349" text-anchor="middle" class="card-copy">
+    <tspan x="818" dy="0">approval, drift and</tspan>
+    <tspan x="818" dy="20">leakage checks</tspan>
+  </text>
+
+  <rect x="937" y="285" width="198" height="145" rx="12" fill="#FFFFFF"/>
+  <text x="1036" y="319" text-anchor="middle" class="card-title">Trust receipt</text>
+  <text x="1036" y="349" text-anchor="middle" class="card-copy">
+    <tspan x="1036" dy="0">fresh graph agreement</tspan>
+    <tspan x="1036" dy="20">with recorded hashes</tspan>
+  </text>
+
+  <path d="M 263 357 H 277" class="blue-arrow"/>
+  <path d="M 481 357 H 495" class="blue-arrow"/>
+  <path d="M 699 357 H 713" class="blue-arrow"/>
+  <path d="M 917 357 H 931" class="blue-arrow"/>
+  <text x="600" y="468" text-anchor="middle" class="small on-dark">RegLineage—not an LLM or MCP—owns policy, fixed SQL, approvals, execution, and publication.</text>
+
+  <rect x="40" y="540" width="1120" height="200" rx="18" fill="#FFFFFF" stroke="#1A5FFF" stroke-width="2"/>
+  <text x="70" y="578" class="section blue-text">DATAHUB</text>
+  <text x="1130" y="578" text-anchor="end" class="small">governance + publication system of record</text>
+
+  <rect x="70" y="605" width="300" height="100" rx="12" fill="#EAF0FF" stroke="#1A5FFF"/>
+  <text x="220" y="636" text-anchor="middle" class="card-title">Metadata + approved context</text>
+  <text x="220" y="663" text-anchor="middle" class="card-copy">
+    <tspan x="220" dy="0">schema, classifications, ownership,</tspan>
+    <tspan x="220" dy="19">policy, profile, Context Documents</tspan>
+  </text>
+
+  <rect x="445" y="605" width="310" height="100" rx="12" fill="#EAF0FF" stroke="#1A5FFF"/>
+  <text x="600" y="636" text-anchor="middle" class="card-title">Published governed graph</text>
+  <text x="600" y="663" text-anchor="middle" class="card-copy">
+    <tspan x="600" dy="0">Dataset · DataFlow · DataJob · lineage</tspan>
+    <tspan x="600" dy="19">approved Context Document</tspan>
+  </text>
+
+  <rect x="830" y="605" width="300" height="100" rx="12" fill="#E7F5ED" stroke="#16784B"/>
+  <text x="980" y="636" text-anchor="middle" class="card-title">Fresh read-back</text>
+  <text x="980" y="663" text-anchor="middle" class="card-copy">
+    <tspan x="980" dy="0">schema, lineage, document,</tspan>
+    <tspan x="980" dy="19">integrity anchors</tspan>
+  </text>
+
+  <path d="M 220 605 V 520 H 164 V 436" class="blue-arrow"/>
+  <path d="M 818 430 V 505 H 600 V 599" class="blue-arrow"/>
+  <path d="M 755 655 H 824" class="blue-arrow"/>
+  <path d="M 980 605 V 505 H 1036 V 436" class="blue-arrow"/>
+  <text x="240" y="525" class="small blue-text">governance reads</text>
+  <text x="620" y="525" class="small blue-text">verified writes</text>
+  <text x="1000" y="525" class="small blue-text">fresh verification</text>
+
+  <path d="M 980 705 V 780" class="arrow"/>
+  <rect x="730" y="785" width="400" height="78" rx="14" fill="#F5F5F0" stroke="#111111" stroke-width="2" stroke-dasharray="7 6"/>
+  <text x="930" y="817" text-anchor="middle" class="card-title">Optional external MCP verification</text>
+  <text x="930" y="842" text-anchor="middle" class="card-copy">separate read-only PAT · post-publication only</text>
+</svg>

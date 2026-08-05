@@ -1,2088 +1,317 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alex Lopez</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦸</text></svg>" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --neon:       #1A5FFF;
-      --neon-dim:   rgba(26,95,255,0.30);
-      --neon-faint: rgba(26,95,255,0.08);
-      --bg:         #F5F5F0;
-      --text:       #111111;
-      --text-dim:   #555555;
-      --card-bg:    rgba(255,255,255,0.82);
-    }
-
-    html { scroll-behavior: auto; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      overflow-x: hidden;
-    }
-
-    /* ── CANVAS ───────────────────────────────────────────────── */
-    #bg-canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      z-index: 0;
-      display: block;
-      cursor: grab;
-    }
-    #bg-canvas.dragging  { cursor: grabbing; }
-    #bg-canvas.panning   { cursor: move; }
-    #bg-canvas.dollying  { cursor: ns-resize; }
-
-    /* ── SCROLL DRIVER ────────────────────────────────────────── */
-    #scroll-driver {
-      height: 1800vh;
-      position: relative;
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    /* ── SECTION PANELS ──────────────────────────────────────── */
-    .section-panel {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 115vh;
-      z-index: 10;
-      opacity: 1;
-      pointer-events: none;
-    }
-    /* Only actual content children should be interactive */
-    .section-panel > * { pointer-events: auto; }
-
-    /* ── INTRO ────────────────────────────────────────────────── */
-    #intro-panel {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 2.5rem;
-    }
-
-    .intro-name {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(4rem, 13vw, 10rem);
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      line-height: 1;
-      text-shadow: 0 0 60px rgba(0,0,0,0.06);
-    }
-
-    .intro-tagline {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(0.95rem, 2.5vw, 1.35rem);
-      font-weight: 300;
-      color: var(--text-dim);
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-    }
-
-    .scroll-hint {
-      position: fixed;
-      bottom: 2.75rem;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.76rem;
-      color: rgba(0,0,0,0.32);
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      animation: hintPulse 2.6s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    @keyframes hintPulse {
-      0%, 100% { opacity: 0.25; }
-      50%       { opacity: 0.8; }
-    }
-
-    .boop-label {
-      position: fixed;
-      pointer-events: none;
-      z-index: 9999;
-      font-family: 'Indie Flower', cursive;
-      font-size: 1.3rem;
-      color: var(--neon);
-      transform: translateX(-50%);
-      animation: boopFloat 0.75s ease-out forwards;
-      user-select: none;
-    }
-    @keyframes boopFloat {
-      0%   { opacity: 1;   transform: translateX(-50%) translateY(0px);   }
-      100% { opacity: 0;   transform: translateX(-50%) translateY(-52px); }
-    }
-
-    /* ── ABOUT ────────────────────────────────────────────────── */
-    #about-panel {
-      flex-direction: column;
-      align-items: center;
-      gap: 2.5rem;
-      padding: 2rem;
-    }
-
-    .about-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid var(--neon-dim);
-      border-radius: 24px;
-      padding: 3.5rem 5rem;
-      max-width: 700px;
-      width: 100%;
-      box-shadow: 0 0 40px rgba(26,95,255,0.04);
-    }
-
-    .card-label {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.0rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: #F03A2F;
-      margin-bottom: 0;
-      background: rgba(255,255,255,0.92);
-      padding: 0.4rem 1.1rem;
-      border-radius: 10px;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      transition: background 0.45s ease, box-shadow 0.45s ease;
-    }
-
-    body.dark-mode .card-label {
-      background: rgba(10,10,14,0.88);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.55);
-    }
-
-    .about-card p {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 400;
-      line-height: 1.85;
-      color: var(--text);
-      margin-bottom: 2.75rem;
-    }
-
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-
-    .tag {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--neon-faint);
-      border: 1px solid var(--neon-dim);
-      color: var(--neon);
-      border-radius: 999px;
-      padding: 0.42rem 1.1rem;
-      font-size: 0.82rem;
-      font-weight: 400;
-      letter-spacing: 0.05em;
-      white-space: nowrap;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .tag:hover {
-      background: rgba(26,95,255,0.14);
-      border-color: rgba(26,95,255,0.5);
-    }
-
-    /* ── ABOUT TWO-COLUMN LAYOUT ────────────────────────────────── */
-    .about-layout {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 3rem;
-      max-width: 1040px;
-      width: 100%;
-    }
-
-    .about-layout .about-card {
-      flex: 1;
-      max-width: none;
-    }
-
-    .about-photo-wrap {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* me_presenting.png is 1024×682 — keep its 3:2 landscape ratio */
-    .about-photo {
-      width: 400px;
-      aspect-ratio: 1024 / 682;
-      object-fit: cover;
-      object-position: center top;
-      border-radius: 18px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.35);
-      display: block;
-    }
-
-    @media (max-width: 768px) {
-      .about-layout {
-        flex-direction: column;
-        align-items: center;
-        gap: 2rem;
-      }
-      .about-photo {
-        width: min(88vw, 400px);
-        aspect-ratio: 1024 / 682;
-      }
-    }
-
-    /* ── PROJECTS ─────────────────────────────────────────────── */
-    #projects-panel {
-      flex-direction: column;
-      align-items: center;
-      gap: 3rem;
-      padding: 2rem;
-    }
-
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
-      max-width: 1120px;
-      width: 100%;
-    }
-
-    .project-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid var(--neon-dim);
-      border-radius: 20px;
-      padding: 3rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.4rem;
-      box-shadow: 0 0 40px rgba(26,95,255,0.04);
-      transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
-    }
-
-    /* ── PROJECT SOLO PANELS ─────────────────────────────────── */
-    .project-solo-panel {
-      flex-direction: column;
-      align-items: center;
-      gap: 2.5rem;
-      padding: 2rem;
-    }
-
-    .project-solo-card {
-      max-width: 660px;
-      width: 100%;
-    }
-
-    .project-counter {
-      font-size: 0.72rem;
-      font-weight: 400;
-      opacity: 0.45;
-      letter-spacing: 0.18em;
-    }
-
-    .project-card:hover {
-      border-color: rgba(26,95,255,0.55);
-      box-shadow: 0 0 56px rgba(26,95,255,0.12);
-      transform: translateY(-2px);
-    }
-
-    .project-card h3 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.3;
-    }
-
-    /* Solo layout: h3 is the hero element */
-    .project-solo-card h3 {
-      font-size: 1.6rem;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    .proj-date {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 400;
-      color: var(--text-dim);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      margin-top: 0.4rem;
-    }
-
-    .project-card p {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 300;
-      color: var(--text-dim);
-      line-height: 1.9;
-      flex: 1;
-    }
-
-    .project-link {
-      color: var(--neon);
-      text-decoration: none;
-      font-size: 0.88rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.2s, letter-spacing 0.2s;
-      align-self: flex-start;
-    }
-
-    .project-link:hover {
-      border-bottom-color: var(--neon);
-      letter-spacing: 0.08em;
-    }
-
-    /* ── RESUME SOLO PANELS ──────────────────────────────────── */
-    .resume-solo-panel {
-      flex-direction: column;
-      align-items: center;
-      gap: 2.5rem;
-      padding: 2rem;
-    }
-
-    .resume-solo-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid var(--neon-dim);
-      border-radius: 20px;
-      padding: 3rem 3.5rem;
-      max-width: 560px;
-      width: 100%;
-      box-shadow: 0 0 80px rgba(26,95,255,0.06);
-    }
-
-    #skills-panel.section-panel {
-      min-height: 140vh;
-    }
-
-    .resume-solo-card .resume-col h3 {
-      font-size: 0.68rem;
-    }
-
-    /* Skills entries are tightly coupled — no divider needed */
-    #skills-panel .resume-col li.spacer {
-      border-top: none;
-      padding-top: 0;
-      margin-top: 1.1rem;
-    }
-
-    /* ── SKILLS ICON GRID ────────────────────────────────────── */
-    .skills-card {
-      max-width: 700px;
-    }
-
-    .skills-icon-section {
-      margin-bottom: 2rem;
-    }
-
-    .skills-icon-section:last-of-type {
-      margin-bottom: 0;
-    }
-
-    .skills-icon-section h3 {
-      margin-bottom: 1.1rem;
-    }
-
-    .skills-icon-section + .resume-col-footer {
-      margin-top: 2.25rem;
-      padding-top: 2rem;
-      border-top: 1px solid var(--neon-dim);
-    }
-
-    .skills-icons img {
-      max-width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .exp-meta {
-      display: block;
-      font-size: 0.78rem;
-      font-weight: 400;
-      color: var(--text-dim);
-      letter-spacing: 0.03em;
-      margin-top: 0.25rem;
-      opacity: 0.75;
-    }
-
-    /* ── O'HERN LAB BANNER ──────────────────────────────────────── */
-    .ohern-banner-wrap {
-      width: 100%;
-      height: 140px;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.20);
-      margin-top: 1.1rem;
-    }
-    .ohern-banner {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center center;
-      display: block;
-      transition: opacity 0.55s ease, transform 0.55s ease;
-    }
-
-    /* ── SCROLL REVEAL — images float in from sides ─────────────── */
-    .img-reveal {
-      opacity: 0;
-      transition: opacity 0.72s ease,
-                  transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .img-reveal.from-left  { transform: translateX(-52px); }
-    .img-reveal.from-right { transform: translateX( 52px); }
-    .img-reveal.from-below { transform: translateY( 30px); }
-    .img-reveal.visible    { opacity: 1; transform: none; }
-
-    /* Preserve hobby-card hover lift while img-reveal class stays active */
-    .hobby-card.img-reveal.visible:hover { transform: translateY(-4px); }
-
-    /* ── HOBBIES GRID ──────────────────────────────────────────── */
-    .hobbies-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.4rem;
-      margin-top: 1.1rem;
-    }
-
-    .hobby-card {
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid rgba(0,0,0,0.08);
-      background: rgba(0,0,0,0.025);
-      transition: transform 0.32s cubic-bezier(0.25,0.46,0.45,0.94),
-                  box-shadow 0.32s cubic-bezier(0.25,0.46,0.45,0.94);
-    }
-
-    .hobby-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 36px rgba(0,0,0,0.13);
-    }
-
-    .hobby-img {
-      width: 100%;
-      height: 210px;
-      object-fit: cover;
-      object-position: center top;
-      display: block;
-    }
-
-    .hobby-content {
-      padding: 1.2rem 1.35rem 1.35rem;
-    }
-
-    .hobby-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--neon);
-      margin: 0 0 0.55rem;
-    }
-
-    .hobby-desc {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.875rem;
-      font-weight: 300;
-      line-height: 1.78;
-      color: var(--text-dim);
-      margin: 0 0 1rem;
-    }
-
-    .hobby-desc:last-child { margin-bottom: 0; }
-
-    /* Interests panel needs a wider card to fit 3 hobby columns */
-    #interests-panel .resume-solo-card {
-      max-width: 920px;
-    }
-
-    @media (max-width: 620px) {
-      .hobbies-grid { grid-template-columns: 1fr; }
-      .hobby-img    { height: 220px; }
-    }
-
-    /* ── LUNA POLAROID ──────────────────────────────────────── */
-    #interests-panel .resume-solo-card {
-      position: relative;
-      overflow: visible;
-    }
-
-    .luna-float {
-      position: absolute;
-      right: -210px;
-      bottom: 100px;
-      width: 172px;
-      z-index: 20;
-      pointer-events: auto;
-      cursor: default;
-      animation: luna-drift 4.2s ease-in-out infinite;
-    }
-
-    @keyframes luna-drift {
-      0%, 100% { transform: rotate(9deg) translateY(0px);  }
-      50%       { transform: rotate(9deg) translateY(-8px); }
-    }
-
-    .luna-float:hover {
-      animation-play-state: paused;
-      transform: rotate(6deg) scale(1.05) translateY(-4px) !important;
-      transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
-    }
-
-    .luna-polaroid-wrap {
-      background: #fff;
-      padding: 10px 10px 40px;
-      border-radius: 2px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.26), 0 2px 8px rgba(0,0,0,0.10);
-      width: 100%;
-    }
-
-    .luna-polaroid-wrap img {
-      width: 100%;
-      aspect-ratio: 3/4;
-      object-fit: cover;
-      object-position: center 25%;
-      display: block;
-    }
-
-    .luna-polaroid-caption {
-      text-align: center;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      color: #444;
-      margin-top: 7px;
-      line-height: 1.1;
-    }
-
-    /* Annotation sits above the polaroid — no leftward reach into the card */
-    .luna-annotation-svg {
-      position: absolute;
-      top: -76px;
-      left: 0;
-      width: 165px;
-      height: 76px;
-      overflow: visible;
-      pointer-events: none;
-    }
-
-    /* Hide polaroid on narrow viewports — no room to the side */
-    @media (max-width: 1370px) {
-      .luna-float { display: none; }
-    }
-
-    @media (min-width: 621px) and (max-width: 860px) {
-      .hobbies-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    /* ── CONTACT / RESUME ─────────────────────────────────────── */
-    #contact-panel {
-      flex-direction: column;
-      align-items: center;
-      gap: 3rem;
-      padding: 2rem;
-    }
-
-    .resume-section {
-      background: var(--card-bg);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid var(--neon-dim);
-      border-radius: 20px;
-      padding: 2.75rem 3.25rem;
-      max-width: 820px;
-      width: 100%;
-      box-shadow: 0 0 40px rgba(26,95,255,0.04);
-    }
-
-    .resume-cols {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2.75rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .resume-col h3 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: var(--neon);
-      text-transform: uppercase;
-      letter-spacing: 0.22em;
-      margin-bottom: 1.6rem;
-      padding-bottom: 0.85rem;
-      border-bottom: 1px solid var(--neon-dim);
-    }
-
-    .resume-col ul { list-style: none; }
-
-    .resume-col li {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 300;
-      line-height: 1.75;
-      color: var(--text-dim);
-    }
-
-    .resume-col li strong {
-      font-family: 'Space Grotesk', sans-serif;
-      color: var(--text);
-      font-weight: 600;
-      display: block;
-      font-size: 0.92rem;
-      letter-spacing: 0.01em;
-    }
-
-    .resume-col li.spacer {
-      margin-top: 1.6rem;
-      padding-top: 1.6rem;
-      border-top: 1px solid rgba(26,95,255,0.10);
-    }
-
-    .resume-actions {
-      display: flex;
-      justify-content: center;
-      margin-top: 1rem;
-    }
-
-    .btn-resume {
-      display: inline-block;
-      background: var(--neon);
-      color: #000;
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 0.9rem;
-      padding: 1rem 3.25rem;
-      border-radius: 12px;
-      text-decoration: none;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      transition: opacity 0.2s, box-shadow 0.2s, transform 0.2s;
-      box-shadow: 0 0 32px rgba(26,95,255,0.38);
-      cursor: pointer;
-      border: none;
-    }
-
-    .btn-resume:hover {
-      opacity: 0.9;
-      box-shadow: 0 0 48px rgba(26,95,255,0.60);
-      transform: translateY(-1px);
-    }
-
-    .contact-links {
-      display: flex;
-      gap: 1.75rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .contact-link {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: var(--text-dim);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 400;
-      padding: 0.9rem 1.75rem;
-      border: 1px solid rgba(0,0,0,0.12);
-      border-radius: 12px;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      background: rgba(0,0,0,0.03);
-      transition: color 0.22s, border-color 0.22s, background 0.22s, transform 0.22s;
-    }
-
-    .contact-link:hover {
-      color: var(--neon);
-      border-color: var(--neon-dim);
-      background: var(--neon-faint);
-      transform: translateY(-1px);
-    }
-
-    .contact-link svg { flex-shrink: 0; }
-
-    /* ── BRIGHTNESS OVERLAY ──────────────────────────────────── */
-    #brightness-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      background: rgba(26,95,255,0);
-    }
-
-    /* Keep late-scroll panel colors vivid against the brightness overlay */
-    #experience-panel *,
-    #skills-panel *,
-    #contact-panel * { color: inherit !important; }
-    #experience-panel .card-label, #skills-panel .card-label,
-    #contact-panel .card-label     { color: #F03A2F !important; }
-    #experience-panel .resume-col h3,
-    #skills-panel .resume-col h3   { color: var(--neon) !important; }
-    /* ── RESUME PREVIEW PANEL ─────────────────────────────────── */
-    #resume-preview {
-      width: min(720px, 90vw);
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: max-height 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-                  opacity    0.35s ease;
-      pointer-events: none;
-    }
-    #resume-preview.open {
-      max-height: 680px;
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .resume-preview-frame {
-      width: 100%;
-      height: 580px;
-      border: 1px solid var(--neon-dim);
-      border-radius: 16px;
-      overflow: hidden;
-      background: white;
-      box-shadow: 0 8px 40px rgba(26,95,255,0.10);
-      margin-top: 1.5rem;
-    }
-    .resume-preview-frame iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-    }
-    .resume-download-row {
-      display: flex;
-      justify-content: center;
-      margin-top: 1rem;
-    }
-    .btn-resume-dl {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 600;
-      font-size: 0.82rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--neon);
-      background: transparent;
-      border: 1.5px solid var(--neon-dim);
-      border-radius: 10px;
-      padding: 0.7rem 2rem;
-      text-decoration: none;
-      transition: background 0.2s, border-color 0.2s;
-    }
-    .btn-resume-dl:hover {
-      background: var(--neon-faint);
-      border-color: var(--neon);
-    }
-
-    #contact-panel .btn-resume     { color: #000 !important; }
-    #contact-panel .contact-link   { color: var(--text-dim) !important; }
-    #contact-panel .contact-link:hover { color: var(--neon) !important; }
-
-    /* ── RESPONSIVE ───────────────────────────────────────────── */
-    @media (max-width: 768px) {
-      .projects-grid  { grid-template-columns: 1fr; max-width: 500px; }
-      .resume-cols    { grid-template-columns: 1fr; gap: 2rem; }
-      .about-card     { padding: 3rem 2.5rem; }
-      .resume-section { padding: 2.75rem 2.25rem; }
-      .contact-links  { gap: 1rem; }
-      #contact-panel  { gap: 2rem; }
-    }
-
-    @media (max-width: 480px) {
-      .intro-name       { letter-spacing: -0.02em; }
-      #projects-panel   { gap: 2rem; }
-      .project-card     { padding: 2.25rem; }
-      .about-card       { padding: 2.25rem 1.75rem; }
-    }
-
-    /* ── DRAG HINT ────────────────────────────────────────────── */
-    #drag-hint {
-      position: fixed;
-      bottom: 5.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 20;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.74rem;
-      font-weight: 400;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: rgba(0,0,0,0.38);
-      background: rgba(255,255,255,0.60);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(0,0,0,0.08);
-      border-radius: 999px;
-      padding: 0.42rem 1.2rem;
-      pointer-events: none;
-      transition: opacity 1s ease;
-    }
-    #drag-hint.hidden { opacity: 0; }
-
-    /* ── NAV ──────────────────────────────────────────────────── */
-    #site-nav {
-      position: fixed;
-      top: 1.5rem;
-      right: 2rem;
-      z-index: 30;
-      display: flex;
-      gap: 1.75rem;
-      align-items: center;
-    }
-
-    .nav-link {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--neon);
-      text-decoration: none;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
-      transition: color 0.2s;
-    }
-
-    .nav-link:hover { color: #999999; }
-
-    /* ── DARK MODE  (camera below XY plane) ─────────────────── */
-    body {
-      transition:
-        color            0.45s ease,
-        background-color 0.45s ease;
-    }
-    body.dark-mode {
-      --text:     #e8e8e8;
-      --text-dim: #aaaaaa;
-      --card-bg:  rgba(18,18,18,0.85);
-      background: #050505;
-      color:      #e8e8e8;
-    }
-    body.dark-mode .intro-name {
-      text-shadow: 0 0 28px rgba(229,160,0,0.55);
-    }
-    body.dark-mode .project-card,
-    body.dark-mode .about-card {
-      border-color: rgba(229,160,0,0.18);
-      box-shadow:   0 0 18px rgba(229,160,0,0.08);
-    }
-    body.dark-mode .project-card:hover,
-    body.dark-mode .about-card:hover {
-      border-color: rgba(229,160,0,0.45);
-      box-shadow:   0 0 28px rgba(229,160,0,0.18);
-    }
-    body.dark-mode .project-tag {
-      background: rgba(229,160,0,0.12);
-      color:      #E5A000;
-    }
-    body.dark-mode a { color: #E5A000; }
-    body.dark-mode a:hover { color: #ffcc44; }
-    body.dark-mode .scroll-hint { color: rgba(255,255,255,0.38); }
-    body.dark-mode #drag-hint {
-      color:        rgba(255,255,255,0.50);
-      background:   rgba(0,0,0,0.55);
-      border-color: rgba(255,255,255,0.10);
-    }
-
-    /* ── LIGHTBOX ──────────────────────────────────────────────────── */
-    #lightbox {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      background: rgba(0,0,0,0.82);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.28s ease;
-    }
-    #lightbox.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    #lightbox-img {
-      max-width: 88vw;
-      max-height: 86vh;
-      border-radius: 18px;
-      box-shadow: 0 32px 90px rgba(0,0,0,0.6);
-      object-fit: contain;
-      transform: scale(0.88);
-      transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
-      cursor: default;
-      display: block;
-    }
-    #lightbox.open #lightbox-img { transform: scale(1); }
-    #lightbox-close {
-      position: absolute;
-      top: 1.4rem;
-      right: 1.6rem;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.10);
-      color: rgba(255,255,255,0.88);
-      font-size: 1.1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s, border-color 0.2s;
-      line-height: 1;
-    }
-    #lightbox-close:hover {
-      background: rgba(255,255,255,0.22);
-      border-color: rgba(255,255,255,0.40);
-    }
-    .lightbox-trigger { cursor: zoom-in; }
-
-    /* ── TAG TOOLTIPS ──────────────────────────────────────────────── */
-    .tag[data-tip] { position: relative; }
-    .tag[data-tip]::after {
-      content: attr(data-tip);
-      position: absolute;
-      bottom: calc(100% + 7px);
-      left: 50%;
-      transform: translateX(-50%) translateY(4px);
-      background: rgba(10,10,18,0.93);
-      color: #f0f0f0;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.69rem;
-      font-weight: 400;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-      padding: 0.28rem 0.62rem;
-      border-radius: 6px;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.18s ease, transform 0.18s ease;
-      z-index: 200;
-    }
-    .tag[data-tip]:hover::after {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-  </style>
-</head>
-<body>
-
-  <nav id="site-nav">
-    <button class="nav-link" data-target="about">About</button>
-    <button class="nav-link" data-target="projects">Projects</button>
-    <button class="nav-link" data-target="resume">Resume</button>
-  </nav>
-
-  <div id="drag-hint">
-    ☉ drag · orbit &nbsp;·&nbsp; right-drag · pan &nbsp;·&nbsp; ctrl+scroll · zoom &nbsp;·&nbsp; scroll · navigate page
-  </div>
-
-  <canvas id="bg-canvas"></canvas>
-  <div id="brightness-overlay"></div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       PHASE 1 — INTRO
-  ═══════════════════════════════════════════════════════════ -->
-  <div id="intro-panel" class="section-panel">
-    <h1 class="intro-name" id="intro-name">Alex Lopez</h1>
-    <p  class="intro-tagline" id="intro-tagline" style="letter-spacing:0.55em;font-size:clamp(1.1rem,3.8vw,2rem);font-weight:300;">Impact</p>
-    <p  class="scroll-hint" id="scroll-hint">scroll to explore ↓</p>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       PHASE 2 — ABOUT
-  ═══════════════════════════════════════════════════════════ -->
-  <div id="about-panel" class="section-panel">
-    <p class="card-label" style="letter-spacing:0.20em;">About Me</p>
-    <div class="about-layout">
-      <div class="about-card" id="about-card">
-        <p>Hi, I'm Alex, a CS and Math student at Northeastern. More than anything, I want to leave things better than I found them. I enjoy chasing hard problems, and making meaningful <em style="color:var(--neon)">impact</em> through my work, whether it's through cancer research or helping buisness grow!</p>
-        <p id="impact-word" style="font-family:'Space Grotesk',sans-serif;text-align:center;font-size:clamp(2.4rem,7vw,4.2rem);font-weight:700;letter-spacing:-0.02em;color:var(--neon);margin:1.5rem 0 0;opacity:1;">Impact.</p>
-      </div>
-      <div class="about-photo-wrap img-reveal from-right">
-        <img src="assets/me_presenting.png" alt="Alex Lopez" class="about-photo lightbox-trigger" />
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       PHASE 3a — PROJECT 1
-  ═══════════════════════════════════════════════════════════ -->
-  <div id="proj-panel-0" class="section-panel project-solo-panel">
-    <p class="card-label" style="letter-spacing:0.22em;">Selected Projects &nbsp;·&nbsp; <span class="project-counter">01 / 03</span></p>
-    <div class="project-card project-solo-card">
-      <h3>Twitter / X Scraper <span class="proj-date">Jan 2026</span></h3>
-      <p>Scrapes public tweets without the official API and runs them through a three-layer NLP sentiment ensemble: TextBlob, VADER, and a fine-tuned DistilBERT,  to classify sentiment at scale.</p>
-      <div class="tags">
-        <span class="tag">Python</span>
-        <span class="tag" data-tip="Deep learning framework by Meta">PyTorch</span>
-        <span class="tag" data-tip="Open-source ML model hub & library">HuggingFace</span>
-        <span class="tag" data-tip="Natural Language Processing">NLP</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       PHASE 3b — PROJECT 2
-  ═══════════════════════════════════════════════════════════ -->
-  <div id="proj-panel-1" class="section-panel project-solo-panel">
-    <p class="card-label" style="letter-spacing:0.22em;">Selected Projects &nbsp;·&nbsp; <span class="project-counter">02 / 03</span></p>
-    <div class="project-card project-solo-card">
-      <h3>IMC Prosperity 3 <span class="proj-date">Mar – Apr 2025</span></h3>
-      <p>Top 8% globally (912 / 13,000). Built strategies across market making, scalping, locational arbitrage, and mean-reversion to optimize risk-adjusted returns.</p>
-      <div class="tags">
-        <span class="tag">Python</span>
-        <span class="tag" data-tip="Algorithm-driven automated trading">Algo Trading</span>
-        <span class="tag" data-tip="Quantitative finance strategies">Quant</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       PHASE 3c — PROJECT 3
-  ═══════════════════════════════════════════════════════════ -->
-  <div id="proj-panel-2" class="section-panel project-solo-panel">
-    <p class="card-label" style="letter-spacing:0.22em;">Selected Projects &nbsp;·&nbsp; <span class="project-counter">03 / 03</span></p>
-    <div class="project-card project-solo-card">
-      <h3>Coin Shroud <span class="proj-date">Apr – May 2025</span></h3>
-      <p>Full-stack crypto investment analytics app (CS 3200) — MySQL backend, middleware API, and Streamlit frontend supporting investor, developer, and regulatory roles. Live data tracking, portfolio management, and compliance reporting, all containerized with Docker Compose.</p>
-      <div class="tags">
-        <span class="tag">Python</span>
-        <span class="tag">MySQL</span>
-        <span class="tag" data-tip="Python web UI framework for data apps">Streamlit</span>
-        <span class="tag" data-tip="App containerization & deployment platform">Docker</span>
-        <span class="tag" data-tip="HTTP-based API architecture">REST API</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       PHASE 4a — EDUCATION
-  ═══════════════════════════════════════════════════════════ -->
-  <div id="education-panel" class="section-panel resume-solo-panel">
-    <p class="card-label" style="letter-spacing:0.22em;">Resume &nbsp;·&nbsp; <span class="project-counter">Education</span></p>
-    <div class="resume-solo-card">
-      <div class="resume-col">
-        <h3>Education</h3>
-        <ul>
-          <li>
-            <strong>Northeastern University</strong>
-            <span class="exp-meta">BSE — CS &amp; Math, AI Concentration</span>
-            <span class="exp-meta">Sep 2024 – May 2028 &nbsp;·&nbsp; GPA 3.65 &nbsp;/&nbsp; Major 3.84</span>
-          </li>
-          <li class="spacer">
-            <strong>Hopkins School</strong>
-            <span class="exp-meta">Graduated Jun 2024</span>
-            <span class="exp-meta">Varsity Wrestling (Captain) · Football · Track</span>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       PHASE 4b — EXPERIENCE
-  ═══════════════════════════════════════════════════════════ -->
-  <div id="experience-panel" class="section-panel resume-solo-panel">
-    <p class="card-label" style="letter-spacing:0.22em;">Resume &nbsp;·&nbsp; <span class="project-counter">Experience</span></p>
-    <div class="resume-solo-card">
-      <div class="resume-col">
-        <h3>Experience</h3>
-        <ul>
-          <li>
-            <strong><img src="assets/expandya.png" alt="Expandya" style="width:64px;height:64px;border-radius:8px;object-fit:contain;vertical-align:middle;margin-right:10px;background:transparent;" />SWE Intern</strong>
-            <span class="exp-meta">Expandya &nbsp;·&nbsp; Jun 2026 – Sep 2026 &nbsp;·&nbsp; Westport, CT</span>
-          </li>
-          <li class="spacer">
-            <strong>Computational Biology Research Asst.</strong>
-            <span class="exp-meta">O'Hern Lab, Yale &nbsp;·&nbsp; Jun 2023 – Sep 2023 &nbsp;·&nbsp; New Haven, CT</span>
-            <div class="ohern-banner-wrap img-reveal from-right">
-              <img src="assets/ohern-header4.gif" alt="O'Hern Lab at Yale School of Engineering &amp; Applied Science" class="ohern-banner lightbox-trigger" />
-            </div>
-          </li>
-          <li class="spacer">
-            <strong><img src="assets/northeastern.png" alt="Northeastern University" style="width:64px;height:64px;border-radius:8px;object-fit:contain;vertical-align:middle;margin-right:10px;background:white;padding:3px;" />Teaching Assistant — Intro to Databases</strong>
-            <span class="exp-meta">Northeastern University &nbsp;·&nbsp; Sep 2025 – Present &nbsp;·&nbsp; Boston, MA</span>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       PHASE 4c — SKILLS
-  ═══════════════════════════════════════════════════════════ -->
-  <div id="skills-panel" class="section-panel resume-solo-panel">
-    <p class="card-label" style="letter-spacing:0.22em;">Resume &nbsp;·&nbsp; <span class="project-counter">Skills</span></p>
-    <div class="resume-solo-card skills-card">
-      <div class="resume-col">
-
-        <div class="skills-icon-section img-reveal from-left">
-          <h3>Languages</h3>
-          <div class="skills-icons">
-            <img src="https://skillicons.dev/icons?i=cpp,c,python,java,js,ts&perline=6" alt="Languages: C++, C, Python, Java, JavaScript, TypeScript" loading="lazy" />
-          </div>
-        </div>
-
-        <div class="skills-icon-section img-reveal from-right" data-reveal-delay="100">
-          <h3>Frameworks &amp; Libraries</h3>
-          <div class="skills-icons">
-            <img src="https://skillicons.dev/icons?i=react,pytorch,tensorflow,threejs,nodejs,nextjs,fastapi,tailwind&perline=8" alt="Frameworks: React, PyTorch, TensorFlow, Three.js, Node.js, Next.js, FastAPI, Tailwind" loading="lazy" />
-          </div>
-        </div>
-
-        <div class="skills-icon-section img-reveal from-left" data-reveal-delay="200">
-          <h3>Databases &amp; Cloud</h3>
-          <div class="skills-icons">
-            <img src="https://skillicons.dev/icons?i=mysql,mongodb,postgresql,redis,aws,docker,git,linux&perline=8" alt="Databases and Cloud: MySQL, MongoDB, PostgreSQL, Redis, AWS, Docker, Git, Linux" loading="lazy" />
-          </div>
-        </div>
-
-        <ul class="resume-col-footer">
-          <li><strong>Courses</strong>Operating Systems · Data Structures · Advanced Probability · Number Theory · Numerical Methods</li>
-          <li class="spacer"><strong>Interests</strong> Weightlifting · Training for my marathon · Golf</li>
-        </ul>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       PHASE 4d — INTERESTS
-  ═══════════════════════════════════════════════════════════ -->
-  <div id="interests-panel" class="section-panel resume-solo-panel">
-    <p class="card-label" style="letter-spacing:0.22em;">Resume &nbsp;·&nbsp; <span class="project-counter">Interests</span></p>
-    <div class="resume-solo-card">
-      <div class="resume-col">
-        <h3>Interests</h3>
-        <div class="hobbies-grid">
-
-          <!-- Running -->
-          <div class="hobby-card img-reveal from-left">
-            <img src="assets/running_team.png" alt="Running with the team" class="hobby-img lightbox-trigger" style="object-position: center center;" />
-            <div class="hobby-content">
-              <p class="hobby-title">Running</p>
-              <p class="hobby-desc">Training for my first marathon is no joke, but I love every single step of it. Running has been part of my life since joining my high school track team, and chasing that finish line is something I never want to let go of.</p>
-              <div class="contact-links" style="justify-content:flex-start;gap:0;">
-                <a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener" class="contact-link" style="padding:0.65rem 1.2rem;font-size:0.83rem;">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
-                  </svg>
-                  Check out my Strava!
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Golf -->
-          <div class="hobby-card img-reveal from-below" data-reveal-delay="120">
-            <img src="assets/golf_swing.png" alt="Out on the course" class="hobby-img lightbox-trigger" style="object-position: center 20%;" />
-            <div class="hobby-content">
-              <p class="hobby-title">Golf</p>
-              <p class="hobby-desc">I picked up golf recently and I've really been loving it. It's one of those sports that really <u><em style="color:var(--neon);font-size:1.35em;">really</em></u> humbles you every single time you step on the course, but that one perfect shot keeps pulling you right back out there.</p>
-            </div>
-          </div>
-
-          <!-- Chess -->
-          <div class="hobby-card img-reveal from-right" data-reveal-delay="240">
-            <img src="assets/chess.jpg" alt="Chess" class="hobby-img lightbox-trigger" style="object-position: center center;" />
-            <div class="hobby-content">
-              <p class="hobby-title">Chess</p>
-              <p class="hobby-desc">Have been playing chess with friends and online for about 7 years. I really enjoy just messing around and the feeling of incompleteness of the game, that feeling that there's always another level to reach.</p>
-              <div class="contact-links" style="justify-content:flex-start;gap:0;">
-                <a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener" class="contact-link" style="padding:0.65rem 1.2rem;font-size:0.83rem;">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M8.73 0C6.55 0 4.79 1.76 4.79 3.94c0 1.04.41 1.98 1.07 2.68L4.1 8.37H2.27v2.45H1v2.45h1.27v1.22H1v2.45h1.27V24h10.27v-7.06H14V14.5h-1.46v-1.22H14v-2.45h-1.46V8.37h-1.82L8.97 6.62c.66-.7 1.07-1.64 1.07-2.68C10.04 1.76 8.87 0 8.73 0zm5.54 2.45v2.45h2.45V2.45zm0 4.9v2.45h2.45V7.35zm0 4.9v2.45h2.45v-2.45zm0 4.9V19.6h2.45v-2.45z"/>
-                  </svg>
-                  Add me on Chess.com!
-                </a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Luna floating polaroid — peeks outside the card to the right -->
-        <div class="luna-float" aria-label="Luna the bunny">
-          <!-- Hand-drawn swirl annotation -->
-          <svg class="luna-annotation-svg" viewBox="0 0 165 76" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Label above the photo -->
-            <text x="22" y="20" font-family="'DM Sans', sans-serif" font-size="16" font-style="italic" font-weight="500" fill="#000">Luna my bunny!</text>
-            <!-- Arrow curves down from text toward the top of the photo -->
-            <path d="M 70 28 C 68 44, 62 57, 58 70"
-                  stroke="#000" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.65"/>
-            <!-- Arrowhead pointing down -->
-            <path d="M 54 65 L 58 70 L 62 65"
-                  stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.65"/>
-          </svg>
-          <div class="luna-polaroid-wrap">
-            <img src="assets/lunaa.png" alt="Luna the bunny" />
-            <p class="luna-polaroid-caption">Luna 🐰</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       PHASE 5 — CONTACT
-  ═══════════════════════════════════════════════════════════ -->
-  <div id="contact-panel" class="section-panel">
-    <p class="card-label" style="letter-spacing:0.22em;">Get In Touch</p>
-    <p style="font-size:1.05rem;font-weight:300;color:var(--text-dim);letter-spacing:0.01em;margin-top:-1rem;">Open to opportunities, research, and interesting problems.</p>
-    <div class="resume-actions">
-      <button id="resume-toggle-btn" class="btn-resume" type="button">View My Resume</button>
-    </div>
-    <div id="resume-preview">
-      <div class="resume-preview-frame">
-        <iframe src="assets/Alex_Lopez_Resume.pdf" title="Alex Lopez Resume"></iframe>
-      </div>
-      <div class="resume-download-row">
-        <a href="assets/Alex_Lopez_Resume.pdf" download="Alex_Lopez_Resume.pdf" class="btn-resume-dl">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-8 4h16v-2H4v2z"/>
-          </svg>
-          Download PDF
-        </a>
-      </div>
-    </div>
-    <div class="contact-links" id="contact-links">
-      <a href="https://github.com/Alex-lop" target="_blank" rel="noopener" class="contact-link">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57
-            0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695
-            -.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99
-            .105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225
-            -.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405
-            c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225
-            0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3
-            0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
-        </svg>
-        GitHub
-      </a>
-      <a href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener" class="contact-link">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136
-            2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37
-            4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063
-            2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542
-            C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0
-            22.222 0h.003z"/>
-        </svg>
-        LinkedIn
-      </a>
-      <a href="mailto:lopez.alexan@northeastern.edu" class="contact-link">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9
-            2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-        </svg>
-        lopez.alexan@northeastern.edu
-      </a>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       SCRIPTS
-  ═══════════════════════════════════════════════════════════ -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f5f0">
+  <meta name="description" content="Alex Lopez is a software engineer building reliable data, AI, and analytics systems, with work spanning governed analytics, backend infrastructure, and applied machine learning.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Alex Lopez">
+  <meta property="og:title" content="Alex Lopez — Software Engineer">
+  <meta property="og:description" content="Software engineer building reliable data, AI, and analytics systems.">
+  <meta property="og:image" content="assets/me-presenting.jpg">
+  <meta property="og:image:alt" content="Alex Lopez presenting computational biology research">
+  <title>Alex Lopez — Software Engineer | Data, AI &amp; Analytics</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-family='Arial,sans-serif' font-size='25' font-weight='700' fill='%23f5f5f0'%3EAL%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
   <script type="importmap">
-  {
-    "imports": {
-      "three":         "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
-    }
-  }
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js" } }
   </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-
-  <script type="module">
-    import * as THREE from 'three';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-    /* ════════════════════════════════════════════════════════════
-       RENDERER
-    ════════════════════════════════════════════════════════════ */
-    const canvas   = document.getElementById('bg-canvas');
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0xF5F5F0, 1);
-
-    const scene  = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0xF5F5F0, 0.00025);   // gentle — enough for depth, won't bleach grid
-    const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.5, 6000);
-    camera.position.set(0, 120, 520);    // lower + slightly further back — grid is clearly in frame
-    camera.lookAt(0, 0, 0);
-
-    const controls = new OrbitControls(camera, canvas);
-    controls.target.set(0, -55, 0);
-
-    // ── Movement axes ──────────────────────────────────────────
-    controls.enableRotate      = true;
-    controls.enablePan         = true;
-    controls.enableZoom        = true;
-    controls.enableDamping     = true;
-    controls.dampingFactor     = 0.06;
-    controls.rotateSpeed       = 0.55;
-    controls.panSpeed          = 0.7;
-    controls.zoomSpeed         = 0.55;
-    controls.screenSpacePanning= true;
-
-    // ── Distance limits ────────────────────────────────────────
-    controls.minDistance  = 80;
-    controls.maxDistance  = 900;
-
-    // ── Mouse button map ───────────────────────────────────────
-    controls.mouseButtons = {
-      LEFT:   THREE.MOUSE.ROTATE,
-      MIDDLE: THREE.MOUSE.DOLLY,
-      RIGHT:  THREE.MOUSE.PAN,
-    };
-
-    // ── Touch ──────────────────────────────────────────────────
-    controls.touches = {
-      ONE: THREE.TOUCH.ROTATE,
-      TWO: THREE.TOUCH.DOLLY_PAN,
-    };
-
-    // ── Auto-rotate: pauses on interaction, resumes after 2.5s ─
-    controls.autoRotate      = true;
-    controls.autoRotateSpeed = 0.3;
-
-    controls.update();
-
-    // Wheel always scrolls the page — zoom via middle-mouse-button drag only.
-    // This avoids any conflict between page scroll and scene zoom.
-    controls.enableZoom = false;
-
-    // Cursor feedback: driven by raw canvas pointer events (always fires)
-    canvas.addEventListener('pointerdown', (e) => {
-      canvas.classList.remove('panning', 'dollying');
-      if (e.button === 0) canvas.classList.add('dragging');
-      if (e.button === 1) canvas.classList.add('dollying');
-      if (e.button === 2) canvas.classList.add('panning');
-    });
-    window.addEventListener('pointerup', () => {
-      canvas.classList.remove('dragging', 'panning', 'dollying');
-    });
-
-    // Auto-rotate pause/resume: use OrbitControls' own events — fire
-    // regardless of DOM layering, so they always work correctly.
-    controls.addEventListener('start', () => {
-      controls.autoRotate = false;
-      clearTimeout(window._orbitTimer);
-    });
-    controls.addEventListener('end', () => {
-      window._orbitTimer = setTimeout(() => {
-        controls.autoRotate = true;
-      }, 2500);
-    });
-
-    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-
-    // ── Nav jump buttons ────────────────────────────────────────
-    // Sets physScrollTarget to the section's offsetTop and lets the
-    // spring physics in animate() smoothly animate toward it.
-    const NAV_SECTION_IDS = {
-      about:    'about-panel',
-      projects: 'proj-panel-0',
-      resume:   'education-panel',
-    };
-    document.querySelectorAll('.nav-link[data-target]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetEl = document.getElementById(NAV_SECTION_IDS[btn.dataset.target]);
-        if (!targetEl) return;
-        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-        physNavTarget  = Math.min(Math.max(targetEl.offsetTop, 0), maxScroll);
-        physScrollVel  = 0; // stop any ongoing glide so the lerp takes over cleanly
-      });
-    });
-
-    /* ════════════════════════════════════════════════════════════
-       STARS
-    ════════════════════════════════════════════════════════════ */
-    let starMat, nearStarMat;   // exposed for color inversion
-
-    (function buildStars() {
-      const N   = 20000;
-      const pos = new Float32Array(N * 3);
-
-      for (let i = 0; i < N; i++) {
-        // Uniform spherical distribution — stars surround the scene in all directions
-        const theta = Math.random() * Math.PI * 2;
-        const phi   = Math.acos(2 * Math.random() - 1);
-        const r     = 2200 + Math.random() * 4500;    // shell between r=2200 and r=6700
-        pos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
-        pos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
-        pos[i*3+2] = r * Math.cos(phi);
-      }
-
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-
-      // Soft radial sprite for stars
-      const starCanvas = document.createElement('canvas');
-      starCanvas.width  = 16; starCanvas.height = 16;
-      const sc = starCanvas.getContext('2d');
-      const sg = sc.createRadialGradient(8,8,0, 8,8,8);
-      sg.addColorStop(0,   'rgba(26,95,255,1)');
-      sg.addColorStop(0.4, 'rgba(26,95,255,0.6)');
-      sg.addColorStop(1,   'rgba(26,95,255,0)');
-      sc.fillStyle = sg;
-      sc.fillRect(0, 0, 16, 16);
-      const starTex = new THREE.CanvasTexture(starCanvas);
-
-      starMat = new THREE.PointsMaterial({
-        map: starTex,
-        size: 4.5,
-        transparent: true,
-        opacity: 0.55,
-        sizeAttenuation: true,
-        blending: THREE.NormalBlending,
-        depthWrite: false,
-      });
-
-      scene.add(new THREE.Points(geo, starMat));
-    })();
-
-    // Near-field stars — sparse layer around the camera's Z range so
-    // they occasionally drift across the view as the scene rotates.
-    (function buildNearStars() {
-      const N   = 950;
-      const pos = new Float32Array(N * 3);
-
-      for (let i = 0; i < N; i++) {
-        // Spherical distribution for near-field stars too — scattered in all directions
-        const theta = Math.random() * Math.PI * 2;
-        const phi   = Math.acos(2 * Math.random() - 1);
-        const r     = 400 + Math.random() * 1600;     // shell between r=400 and r=2000
-        pos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
-        pos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
-        pos[i*3+2] = r * Math.cos(phi);
-      }
-
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-
-      const nearStarCanvas = document.createElement('canvas');
-      nearStarCanvas.width  = 12; nearStarCanvas.height = 12;
-      const nc = nearStarCanvas.getContext('2d');
-      const ng = nc.createRadialGradient(6,6,0, 6,6,6);
-      ng.addColorStop(0,   'rgba(26,95,255,1)');
-      ng.addColorStop(0.35,'rgba(26,95,255,0.5)');
-      ng.addColorStop(1,   'rgba(26,95,255,0)');
-      nc.fillStyle = ng;
-      nc.fillRect(0, 0, 12, 12);
-      const nearStarTex = new THREE.CanvasTexture(nearStarCanvas);
-
-      nearStarMat = new THREE.PointsMaterial({
-        map: nearStarTex,
-        size: 3.2,
-        transparent: true,
-        opacity: 0.32,
-        sizeAttenuation: true,
-        blending: THREE.NormalBlending,
-        depthWrite: false,
-      });
-
-      scene.add(new THREE.Points(geo, nearStarMat));
-    })();
-
-
-    /* ════════════════════════════════════════════════════════════
-       GRID  (XZ plane — the "floor" of the coordinate space)
-    ════════════════════════════════════════════════════════════ */
-    const gridGroup = new THREE.Group();
-    scene.add(gridGroup);
-
-    (function buildGrid() {
-      const SIZE  = 700;
-      const DIVS  = 35;
-      const step  = SIZE / DIVS;
-      const verts = [];
-
-      for (let i = 0; i <= DIVS; i++) {
-        const p = -SIZE / 2 + i * step;
-        // Lines along X
-        verts.push(-SIZE/2, 0, p,   SIZE/2, 0, p);
-        // Lines along Z
-        verts.push(p, 0, -SIZE/2,   p, 0,  SIZE/2);
-      }
-
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
-      const mat = new THREE.LineBasicMaterial({
-        color: 0x000000,
-        transparent: true,
-        opacity: 0.30,   // boosted — fog was drowning 0.14
-      });
-      const lines = new THREE.LineSegments(geo, mat);
-      gridGroup.add(lines);
-
-      // Brighter center axes
-      const axVerts = [
-        -SIZE/2, 0, 0,   SIZE/2, 0, 0,
-        0, 0, -SIZE/2,   0, 0,  SIZE/2,
-      ];
-      const axGeo = new THREE.BufferGeometry();
-      axGeo.setAttribute('position', new THREE.Float32BufferAttribute(axVerts, 3));
-      const axMat = new THREE.LineBasicMaterial({
-        color: 0x000000, transparent: true, opacity: 0.55,
-      });
-      gridGroup.add(new THREE.LineSegments(axGeo, axMat));
-
-      // Y axis (vertical — completes the 3D coordinate system)
-      const yAxisVerts = [0, -SIZE/2, 0,   0, SIZE/2, 0];
-      const yAxisGeo   = new THREE.BufferGeometry();
-      yAxisGeo.setAttribute('position', new THREE.Float32BufferAttribute(yAxisVerts, 3));
-      const yAxisMat   = new THREE.LineBasicMaterial({
-        color: 0x000000, transparent: true, opacity: 0.55,
-      });
-      gridGroup.add(new THREE.LineSegments(yAxisGeo, yAxisMat));
-    })();
-
-    gridGroup.position.y = -55;
-
-    // Grab material refs by child index so we can recolor them each frame
-    const gridLineMat  = gridGroup.children[0].material;  // faint grid
-    const gridAxisMat  = gridGroup.children[1].material;  // center X/Z axes
-    const gridYAxisMat = gridGroup.children[2].material;  // Y axis
-
-    /* ════════════════════════════════════════════════════════════
-       WAVE  (3D sine wave surface — point cloud)
-    ════════════════════════════════════════════════════════════ */
-    const WAVE_COLS      = 60;
-    const WAVE_ROWS      = 90;
-    const WAVE_TOTAL     = WAVE_COLS * WAVE_ROWS;
-    const SPIRAL_RADIUS  = 220;
-    const wavePositions = new Float32Array(WAVE_TOTAL * 3);
-
-    for (let row = 0; row < WAVE_ROWS; row++) {
-      for (let col = 0; col < WAVE_COLS; col++) {
-        const idx = row * WAVE_COLS + col;
-        wavePositions[idx*3]   = (col / (WAVE_COLS-1) - 0.5) * 580;  // X: -290 to 290
-        wavePositions[idx*3+1] = 0;                                    // Y: set each frame
-        wavePositions[idx*3+2] = -(row / (WAVE_ROWS-1)) * 1100;       // Z: 0 to -1100
-      }
-    }
-
-    // Snapshot original X values — needed to blend toward spiral in animate loop
-    const waveOrigX = new Float32Array(WAVE_TOTAL);
-    for (let i = 0; i < WAVE_TOTAL; i++) waveOrigX[i] = wavePositions[i * 3];
-
-    const waveGeo = new THREE.BufferGeometry();
-    waveGeo.setAttribute('position', new THREE.BufferAttribute(wavePositions, 3));
-
-    const waveMat = new THREE.PointsMaterial({
-      size: 4.5,
-      color: 0x1A5FFF,
-      transparent: true,
-      opacity: 0.88,
-      sizeAttenuation: true,
-      depthWrite: false,
-      depthTest: true,
-    });
-
-    const waveGroup = new THREE.Group();
-    waveGroup.add(new THREE.Points(waveGeo, waveMat));
-    scene.add(waveGroup);
-
-    // Second wave layer for visual parallax / depth
-    const waveGroup2 = waveGroup.clone();
-    waveGroup2.position.y = 30;
-    const waveMat2 = waveMat.clone();
-    waveMat2.opacity = 0.3;
-    waveMat2.color = new THREE.Color(0x5588FF);
-    waveGroup2.children[0].material = waveMat2;
-    scene.add(waveGroup2);
-
-    /* ════════════════════════════════════════════════════════════
-       TORNADO  (mouse-reactive 3D funnel with noise)
-    ════════════════════════════════════════════════════════════ */
-    const TORNADO_STRANDS    = 6;
-    const TORNADO_PTS_STRAND = 220;
-    const TORNADO_TOTAL      = TORNADO_STRANDS * TORNADO_PTS_STRAND;
-    const TORNADO_HEIGHT     = 320;
-    const TORNADO_R_BASE     = 95;
-    const TORNADO_R_TIP      = 4;
-    const TORNADO_TURNS      = 7;
-
-    const tornadoPositions = new Float32Array(TORNADO_TOTAL * 3);
-    const tornadoGeo = new THREE.BufferGeometry();
-    tornadoGeo.setAttribute('position',
-      new THREE.BufferAttribute(tornadoPositions, 3));
-
-    const strandColors = [
-      0xFF1111, 0xCC0000, 0xFF4422, 0xDD1133, 0xFF2200, 0xBB0011
-    ];
-
-    const tornadoGroup = new THREE.Group();
-    for (let s = 0; s < TORNADO_STRANDS; s++) {
-      const strandPts = TORNADO_PTS_STRAND;
-      const strandPos = new Float32Array(strandPts * 3);
-      const strandGeo = new THREE.BufferGeometry();
-      strandGeo.setAttribute('position',
-        new THREE.BufferAttribute(strandPos, 3));
-      const strandMat = new THREE.LineBasicMaterial({
-        color: strandColors[s],
-        transparent: true,
-        opacity: 0.75,
-      });
-      tornadoGroup.add(new THREE.Line(strandGeo, strandMat));
-    }
-
-    const DUST_PTS = 600;
-    const dustPos  = new Float32Array(DUST_PTS * 3);
-    const dustGeo  = new THREE.BufferGeometry();
-    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
-    const dustMat = new THREE.PointsMaterial({
-      size: 3.5,
-      color: 0xFF2222,
-      transparent: true,
-      opacity: 0.55,
-      sizeAttenuation: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-    });
-    tornadoGroup.add(new THREE.Points(dustGeo, dustMat));
-
-    tornadoGroup.position.set(0, -55, -80);
-    scene.add(tornadoGroup);
-
-    // Velocity state for momentum-based tornado drift
-    const tornadoVel = { x: 0, z: 0 };
-
-    function tornadoNoise(x, y, t) {
-      return  Math.sin(x * 1.9 + y * 2.5 + t * 0.8)  * 0.50
-            + Math.sin(x * 3.7 - y * 1.3 + t * 1.4)  * 0.25
-            + Math.sin(x * 7.1 + y * 4.3 - t * 2.1)  * 0.125;
-    }
-
-    /* ════════════════════════════════════════════════════════════
-       COLOR INVERSION HELPERS  (camera below XY plane)
-       Pre-allocated so there are zero allocations inside animate().
-    ════════════════════════════════════════════════════════════ */
-    const _bgLight    = new THREE.Color(0xF5F5F0);  // day: off-white bg
-    const _bgDark     = new THREE.Color(0x050505);  // night: near-black bg
-    const _lineBlack  = new THREE.Color(0x000000);  // day: black grid
-    const _lineWhite  = new THREE.Color(0xffffff);  // night: white grid
-    const _waveBlue   = new THREE.Color(0x1A5FFF);  // day: wave color
-    const _waveAmber  = new THREE.Color(0xE5A000);  // night: true inverse of #1A5FFF
-    const _wave2Blue  = new THREE.Color(0x5588FF);  // day: wave group 2
-    const _wave2Amber = new THREE.Color(0xAA7700);  // night: inverse of #5588FF
-    const _starBlue   = new THREE.Color(0x1A5FFF);  // day: star color
-    const _starWhite  = new THREE.Color(0xffffff);  // night: bright white stars
-    const _cBuf       = new THREE.Color();           // scratch buffer — reused every frame
-
-    /* ════════════════════════════════════════════════════════════
-       SCROLL STATE
-    ════════════════════════════════════════════════════════════ */
-    let scrollRaw     = 0;   // exact page position 0–1, updated on scroll events
-    let scrollVel     = 0;   // momentum carried after scroll stops
-    let scrollDisplay = 0;   // the coasting value actually used for animations
-    let endZoom       = 0;   // 0 = normal FOV, 1 = fully zoomed out
-    let endZoomVel    = 0;   // velocity for end-of-page zoom
-    const BASE_FOV    = 72;
-    let rafId         = null;
-    const brightnessOverlay = document.getElementById('brightness-overlay');
-
-    // ── Ice scroll physics state ─────────────────────────────
-    let physScrollY   = 0;     // animated scroll position (px)
-    let physScrollVel = 0;     // current velocity — decays very slowly (ice)
-    let physNavTarget = null;  // set by nav clicks for smooth lerp; null otherwise
-
-    window.addEventListener('scroll', () => {
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      scrollRaw = maxScroll > 0 ? Math.min(Math.max(window.scrollY / maxScroll, 0), 1) : 0;
-    }, { passive: true });
-
-    // Ice wheel handler — prevents browser scroll, adds deltaY as velocity.
-    // physNavTarget is cleared so user scroll always wins over nav animation.
-    window.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      physNavTarget  = null;
-      physScrollVel += e.deltaY * 0.32;
-      if (scrollRaw >= 0.98) {
-        endZoomVel += e.deltaY * 0.00055;
-      }
-    }, { passive: false });
-
-    // ── Resume preview toggle ──────────────────────────────────────
-    const resumeToggleBtn = document.getElementById('resume-toggle-btn');
-    const resumePreview   = document.getElementById('resume-preview');
-    resumeToggleBtn.addEventListener('click', () => {
-      const opening = !resumePreview.classList.contains('open');
-      resumePreview.classList.toggle('open', opening);
-      resumeToggleBtn.textContent = opening ? 'Close Resume ✕' : 'View My Resume';
-    });
-
-    // ── Lightbox ──────────────────────────────────────────────────
-    const lightbox    = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-
-    function openLightbox(src, alt) {
-      lightboxImg.src = src;
-      lightboxImg.alt = alt || '';
-      lightbox.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeLightbox() {
-      lightbox.classList.remove('open');
-      document.body.style.overflow = '';
-    }
-
-    document.querySelectorAll('.lightbox-trigger').forEach(img => {
-      img.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openLightbox(img.src, img.alt);
-      });
-    });
-
-    document.getElementById('lightbox-close').addEventListener('click', (e) => {
-      e.stopPropagation();
-      closeLightbox();
-    });
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) closeLightbox();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
-    });
-
-    document.addEventListener('click', (e) => {
-      const boop = document.createElement('span');
-      boop.className = 'boop-label';
-      boop.textContent = '*boop*';
-      boop.style.left = e.clientX + 'px';
-      boop.style.top  = e.clientY + 'px';
-      document.body.appendChild(boop);
-      boop.addEventListener('animationend', () => boop.remove());
-    });
-
-    const mouseNDC = { x: 0, y: 0 };
-    window.addEventListener('mousemove', (e) => {
-      mouseNDC.x = (e.clientX / window.innerWidth)  * 2 - 1;
-      mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
-    }, { passive: true });
-
-    /* ════════════════════════════════════════════════════════════
-       ANIMATION LOOP
-    ════════════════════════════════════════════════════════════ */
-    let startTime = null;
-
-    function animate(ts) {
-      controls.update();
-      rafId = requestAnimationFrame(animate);
-      if (document.hidden) return;
-
-      if (!startTime) startTime = ts;
-      const elapsed = (ts - startTime) / 1000; // seconds
-
-      // ── Scroll momentum ─────────────────────────────────────
-      // Spring pulls scrollDisplay toward the real page position,
-      // friction lets it coast after the user stops scrolling.
-      scrollVel     += (scrollRaw - scrollDisplay) * 0.09;  // spring force
-      scrollVel     *= 0.80;                                 // friction (coasts ~0.8s)
-      // Allow tiny overshoot at edges (-0.015 / 1.015) so end-of-page feels bouncy
-      scrollDisplay  = Math.min(Math.max(scrollDisplay + scrollVel, -0.015), 1.015);
-      // Clamp p to 0–1 so no animation math breaks at the edges
-      const p        = Math.min(Math.max(scrollDisplay, 0), 1);
-
-      // ── Wave → spiral blend (driven by scroll progress p) ───
-      //
-      // Helix angle is PRIMARILY driven by Z depth so the spiral winds
-      // continuously as it recedes — col only adds a narrow ribbon spread.
-      // Sine-eased p gives an organic, fluid transition.
-      const easeP      = Math.sin(p * Math.PI * 0.5);  // 0→1, sine ease
-      const HELIX_TURNS = 6;                            // full turns over Z range
-
-      for (let row = 0; row < WAVE_ROWS; row++) {
-        const rowT = row / (WAVE_ROWS - 1);             // 0 (front) → 1 (back)
-
-        for (let col = 0; col < WAVE_COLS; col++) {
-          const idx      = row * WAVE_COLS + col;
-          const x0       = waveOrigX[idx];              // original flat X, frozen
-          const z        = wavePositions[idx * 3 + 2];  // Z is fixed
-
-          // ── Flat wave (base, always computed) ─────────────────
-          const yWave = 52 * Math.sin(0.016*x0 + 0.010*z - 1.1*elapsed)
-                      + 28 * Math.sin(0.028*x0 - 0.018*z - 1.7*elapsed)
-                      + 11 * Math.sin(0.055*x0 + 0.038*z - 3.1*elapsed); // high-freq jiggle
-
-          // ── Helix ─────────────────────────────────────────────
-          // rowT drives the main winding → spiral keeps turning with depth.
-          // colSpread (-0.5..0.5) fans the 60 cols into a ribbon arc.
-          const colSpread  = (col / (WAVE_COLS - 1)) - 0.5;
-          const helixAngle = rowT       * HELIX_TURNS * Math.PI * 2
-                           + colSpread  * Math.PI * 0.7   // ribbon width ~126°
-                           + elapsed    * 0.3;            // slow autonomous spin
-
-          const xSpiral = SPIRAL_RADIUS * Math.cos(helixAngle);
-          const ySpiral = SPIRAL_RADIUS * Math.sin(helixAngle) + yWave * 0.15;
-
-          // ── Sine-eased lerp: wave → helix ─────────────────────
-          wavePositions[idx * 3]     = x0    * (1 - easeP) + xSpiral * easeP;
-          wavePositions[idx * 3 + 1] = yWave * (1 - easeP) + ySpiral * easeP;
-        }
-      }
-      waveGeo.attributes.position.needsUpdate = true;
-
-      waveGroup.position.z = -200 + p * 700;
-      waveGroup.position.y = -30;
-      waveGroup2.position.z = waveGroup.position.z + 80;
-
-      // ── Tornado momentum drift ───────────────────────────────
-      // Mouse pulls the tornado like a magnet — builds velocity, coasts after release
-      const tornadoTargetX = mouseNDC.x * 320;
-      const tornadoTargetZ = -mouseNDC.y * 240 - 60;
-
-      // Acceleration toward target (weak pull so it builds gradually)
-      tornadoVel.x += (tornadoTargetX - tornadoGroup.position.x) * 0.006;
-      tornadoVel.z += (tornadoTargetZ - tornadoGroup.position.z) * 0.006;
-
-      // Friction: 0.97 keeps ~97% of velocity each frame → coasts ~2–3s after mouse stops
-      tornadoVel.x *= 0.82;
-      tornadoVel.z *= 0.82;
-
-      tornadoGroup.position.x += tornadoVel.x;
-      tornadoGroup.position.z += tornadoVel.z;
-      tornadoGroup.position.y  = -55;   // base pinned to grid plane
-
-      // Lean: tip (bottom) stays grounded; wide mouth (top) sways toward mouse
-      const leanX = mouseNDC.x * 55;
-      const leanZ = mouseNDC.y * 30;
-
-      // Mouse distance from centre scales extra turbulence
-      const mDist = Math.sqrt(mouseNDC.x * mouseNDC.x + mouseNDC.y * mouseNDC.y);
-
-      for (let s = 0; s < TORNADO_STRANDS; s++) {
-        const strandGeo = tornadoGroup.children[s].geometry;
-        const pos       = strandGeo.attributes.position.array;
-        const baseAngle = (s / TORNADO_STRANDS) * Math.PI * 2;
-
-        for (let i = 0; i < TORNADO_PTS_STRAND; i++) {
-          const tNorm  = i / (TORNADO_PTS_STRAND - 1);
-          const y      = tNorm * TORNADO_HEIGHT;
-          // tNorm=0 → wide base at grid; tNorm=1 → narrow tip pointing up
-          const radius = TORNADO_R_TIP
-                       + (TORNADO_R_BASE - TORNADO_R_TIP) * (1 - tNorm);
-
-          const angle = baseAngle
-                      + tNorm * TORNADO_TURNS * Math.PI * 2
-                      + elapsed * 1.4;
-          // Turbulence grows with height and mouse distance from centre
-          const nAmp  = radius * (0.22 + mDist * 0.45);
-          const nx    = tornadoNoise(tNorm * 4,      s * 1.3, elapsed) * nAmp;
-          const nz    = tornadoNoise(tNorm * 4 + 99, s * 1.3, elapsed) * nAmp;
-
-          pos[i*3]     = radius * Math.cos(angle) + nx + leanX * tNorm;
-          pos[i*3 + 1] = y;
-          pos[i*3 + 2] = radius * Math.sin(angle) + nz + leanZ * tNorm;
-        }
-        strandGeo.attributes.position.needsUpdate = true;
-      }
-
-      // Dust cloud at base
-      const dustPosArr = tornadoGroup.children[TORNADO_STRANDS].geometry.attributes.position.array;
-      for (let i = 0; i < DUST_PTS; i++) {
-        const dustAngle = (i / DUST_PTS) * Math.PI * 2 + elapsed * 0.6;
-        const dustR     = TORNADO_R_BASE * (0.5 + 0.5 * ((i * 7919) % 100) / 100);
-        const dustY     = ((i * 1013) % 100) / 100 * 40;
-        const dustNoise = tornadoNoise(i * 0.1, dustY, elapsed) * 12;
-        dustPosArr[i*3]     = dustR * Math.cos(dustAngle) + dustNoise;
-        dustPosArr[i*3 + 1] = dustY;
-        dustPosArr[i*3 + 2] = dustR * Math.sin(dustAngle) + dustNoise;
-      }
-      tornadoGroup.children[TORNADO_STRANDS].geometry.attributes.position.needsUpdate = true;
-
-      // ── Ice scroll physics ───────────────────────────────────
-      // Normal: velocity barely decays (0.92 per frame) — like gliding on ice.
-      // Nav click: smooth lerp to target, velocity zeroed, then physics resumes.
-      {
-        const maxScrollPx = document.documentElement.scrollHeight - window.innerHeight;
-        if (physNavTarget !== null) {
-          physScrollY  += (physNavTarget - physScrollY) * 0.1;
-          physScrollVel = 0;
-          if (Math.abs(physNavTarget - physScrollY) < 0.5) {
-            physScrollY   = physNavTarget;
-            physNavTarget = null;
-          }
-        } else {
-          physScrollVel *= 0.86;
-          physScrollY    = Math.min(Math.max(physScrollY + physScrollVel, 0), maxScrollPx);
-        }
-        window.scrollTo({ top: physScrollY, behavior: 'instant' });
-      }
-
-      // ── Ambient neon brightness overlay (last 25% of scroll) ─
-      const bright = p > 0.75 ? ((p - 0.75) / 0.25) * 0.06 : 0;
-      brightnessOverlay.style.background = `rgba(26,95,255,${bright})`;
-
-      // ── Grid auto-rotation & parallax ──────────────────────
-      gridGroup.rotation.y += 0.0008;
-      gridGroup.position.z = p * -120 * 0.20;
-
-      // ── End-of-page zoom-out (FOV widening) ─────────────────
-      // Snaps back toward 0 whenever the user is not at the very bottom
-      if (scrollRaw < 0.95) endZoomVel += (0 - endZoom) * 0.018;  // very gentle spring → slow return
-      endZoomVel *= 0.94;                        // very high friction → coasts even longer
-      endZoom     = Math.min(Math.max(endZoom + endZoomVel, 0), 1);
-      camera.fov  = BASE_FOV + endZoom * 62;     // max 134° — very wide pull-back
-      camera.updateProjectionMatrix();
-
-      // ── Camera-depth color inversion ────────────────────────
-      // ── Camera-depth colour system ──────────────────────────────
-      // Two-phase effect driven by how close the camera is to the grid plane (y = -55):
-      //   Phase 1 (above grid): bg darkens as camera descends — "approaching void"
-      //   Phase 2 (below grid): full day→night inversion (existing behaviour)
-      {
-        // Phase 2 — below-grid inversion (unchanged logic)
-        const rawI = (gridGroup.position.y - camera.position.y) / 220;
-        const iT   = Math.min(Math.max(rawI, 0), 1);
-        const iS   = iT * iT * (3 - 2 * iT);  // smoothstep
-
-        // Phase 1 — above-grid approach darkening
-        // Range = 130: effect is zero while camera is >130 units above the grid.
-        // Camera spawns 175 units above (y=120, grid y=-55) → zero shading on load.
-        // Darkening only kicks in as you orbit down past y≈75 toward the plane.
-        const aboveGrid  = camera.position.y - gridGroup.position.y;
-        const approachT  = 1 - Math.min(1, Math.max(0, aboveGrid / 130));
-        const approachS  = Math.pow(approachT, 2.2) * 0.88;  // max ~88% dark
-
-        // Unified blend — no branch, so crossing the grid plane is seamless.
-        // approachS drives darkening above; iS takes over below; max() picks the stronger one.
-        const darkBlend  = Math.max(approachS * (1 - iS), iS);
-        const lineDark   = Math.max(approachS * 0.75 * (1 - iS), iS);
-
-        // Background + fog: single lerp from light → dark, continuous across the grid boundary
-        _cBuf.copy(_bgLight).lerp(_bgDark, darkBlend);
-        renderer.setClearColor(_cBuf, 1);
-        scene.fog.color.copy(_cBuf);
-
-        // Grid lines: black → white
-        _cBuf.copy(_lineBlack).lerp(_lineWhite, lineDark);
-        gridLineMat.color.copy(_cBuf);
-        gridAxisMat.color.copy(_cBuf);
-        gridYAxisMat.color.copy(_cBuf);
-
-        // Wave: blue → amber (only on full inversion)
-        _cBuf.copy(_waveBlue).lerp(_waveAmber, iS);
-        waveMat.color.copy(_cBuf);
-        _cBuf.copy(_wave2Blue).lerp(_wave2Amber, iS);
-        waveMat2.color.copy(_cBuf);
-
-        // Stars: blue → white
-        _cBuf.copy(_starBlue).lerp(_starWhite, darkBlend);
-        starMat.color.copy(_cBuf);
-        nearStarMat.color.copy(_cBuf);
-
-        // CSS dark-mode: toggle early enough that text stays readable
-        document.body.classList.toggle('dark-mode', darkBlend > 0.45);
-      }
-
-      renderer.render(scene, camera);
-    }
-
-    rafId = requestAnimationFrame(animate);
-
-    /* ════════════════════════════════════════════════════════════
-       INTRO ENTRANCE  (page-load animation via GSAP)
-    ════════════════════════════════════════════════════════════ */
-    gsap.registerPlugin(ScrollTrigger);
-
-    window.addEventListener('load', () => {
-      // Fade drag hint after 4s or on first pointer move
-      const dragHint = document.getElementById('drag-hint');
-      setTimeout(() => dragHint.classList.add('hidden'), 4000);
-      window.addEventListener('pointermove', () =>
-        dragHint.classList.add('hidden'), { once: true });
-
-      // ── Image reveal on scroll ──────────────────────────────────
-      // Every .img-reveal element slides in when entering the viewport
-      // and resets when leaving — so scrolling back replays the animation.
-      // Two thresholds: 0 fires on full exit, 0.1 fires on entry.
-      const revealObs = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          } else {
-            entry.target.classList.remove('visible');
-          }
-        });
-      }, { threshold: [0, 0.1] });
-
-      document.querySelectorAll('.img-reveal').forEach(el => {
-        const delay = el.dataset.revealDelay;
-        if (delay) el.style.transitionDelay = delay + 'ms';
-        revealObs.observe(el);
-      });
-
-      // Stagger in name → tagline → hint
-      gsap.from('#intro-name',    { y: 40, opacity: 0, duration: 1.1, delay: 0.35, ease: 'power3.out' });
-      gsap.from('#intro-tagline', { y: 30, opacity: 0, duration: 1.0, delay: 0.65, ease: 'power3.out' });
-      gsap.from('#scroll-hint',   { opacity: 0, duration: 1.2, delay: 1.4 });
-    });
-
-    /* ════════════════════════════════════════════════════════════
-       RESIZE
-    ════════════════════════════════════════════════════════════ */
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      controls.update();
-    });
-
-    /* ════════════════════════════════════════════════════════════
-       VISIBILITY  (pause RAF when tab hidden)
-    ════════════════════════════════════════════════════════════ */
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        cancelAnimationFrame(rafId);
-      } else {
-        startTime = null; // reset idle timer
-        rafId = requestAnimationFrame(animate);
-      }
-    });
-
-  </script>
-
-  <!-- ── LIGHTBOX OVERLAY ─────────────────────────────────────── -->
-  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
-    <button id="lightbox-close" aria-label="Close preview">✕</button>
-    <img id="lightbox-img" src="" alt="" />
-  </div>
+  <script type="module" src="app.js"></script>
+  <script type="module" src="scene.js"></script>
+</head>
+<body id="top" data-resume-url="assets/Alex_Lopez_Resume.pdf">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div class="page-progress" aria-hidden="true"><span id="page-progress-bar"></span></div>
+
+  <header class="site-header" id="site-header">
+    <div class="nav-shell">
+      <a class="brand" href="#top" aria-label="Alex Lopez, back to top">AL</a>
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">
+        <span class="sr-only">Toggle navigation</span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Primary navigation">
+        <a class="nav-link" href="#work" data-section-link="work">Work</a>
+        <a class="nav-link" href="#experience" data-section-link="experience">Experience</a>
+        <a class="nav-link" href="#about" data-section-link="about">About</a>
+        <a class="nav-link" href="#contact" data-section-link="contact">Contact</a>
+        <a class="nav-link nav-resume" href="assets/Alex_Lopez_Resume.pdf" data-resume-link target="_blank" rel="noopener noreferrer" aria-label="View Alex Lopez résumé PDF in a new tab">Résumé <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+  <div class="scene-scrim" aria-hidden="true"></div>
+
+  <main id="main-content">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="shell hero-layout">
+        <div class="hero-copy">
+          <p class="eyebrow">Software Engineer · Northeastern CS + Math</p>
+          <h1 id="hero-title">Alex Lopez</h1>
+          <p class="hero-lede">Software engineer building reliable data, AI, and analytics systems.</p>
+          <p class="hero-intro">Computer Science and Mathematics at Northeastern, focused on backend engineering, governed AI, and turning complex data into useful products.</p>
+          <div class="hero-actions" aria-label="Primary actions">
+            <a class="button button-primary" href="#work">View selected work</a>
+            <a class="button button-secondary" href="assets/Alex_Lopez_Resume.pdf" data-resume-link target="_blank" rel="noopener noreferrer" aria-label="View Alex Lopez résumé PDF in a new tab">View résumé <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="hero-socials" aria-label="Social profiles">
+            <a href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">GitHub profile <span aria-hidden="true">↗</span></a>
+            <a href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener noreferrer">LinkedIn profile <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+
+        <ul class="impact-strip" aria-label="Selected impact">
+          <li><strong>50M+</strong><span>E-commerce rows optimized</span></li>
+          <li><strong>10K+</strong><span>Protein variants analyzed</span></li>
+          <li><strong>Top 8%</strong><span>IMC Prosperity 3 globally</span></li>
+        </ul>
+      </div>
+      <a class="scroll-cue" href="#work">Selected work <span aria-hidden="true">↓</span></a>
+    </section>
+
+    <section class="content-section section-surface" id="work" data-nav-section="work" aria-labelledby="work-title">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="eyebrow">Selected Work</p>
+          <h2 id="work-title">Systems that make complex data useful—and trustworthy.</h2>
+          <p>Three projects that best represent how I work across governed analytics, data tooling, and quantitative problem-solving.</p>
+        </div>
+
+        <div class="work-grid">
+          <article class="project-card project-featured">
+            <div class="project-copy">
+              <header class="project-header">
+                <div>
+                  <p class="project-kicker">Governed AI Analytics · DataHub</p>
+                  <h3>RegLineage</h3>
+                </div>
+                <p class="project-date">July 2026 – Present</p>
+              </header>
+              <p class="project-description">RegLineage turns a business question into a policy-gated aggregate analysis with human approvals, deterministic execution, DataHub lineage, and a freshly verified trust receipt.</p>
+              <p class="project-detail">It reads governance context, binds approvals to immutable plan hashes, runs fixed DuckDB analysis, publishes approved assets and lineage to DataHub, and verifies fresh state before issuing evidence.</p>
+              <p class="project-boundary"><strong>Current boundary:</strong> Live DataHub metadata, governance, publication, and read-back are implemented. Analytical rows are presently deterministic synthetic fixtures, not a connected production warehouse.</p>
+              <ul class="tag-list" aria-label="RegLineage technologies">
+                <li>Python</li><li>FastAPI</li><li>DuckDB</li><li>DataHub</li><li>MCP</li>
+              </ul>
+              <a class="project-link" href="https://github.com/Alex-lop/RegLineage" target="_blank" rel="noopener noreferrer" aria-label="View the RegLineage repository on GitHub">View repository <span aria-hidden="true">↗</span></a>
+            </div>
+            <figure class="project-visual project-visual-featured">
+              <img src="assets/projects/reglineage-workflow.svg" width="1200" height="900" loading="lazy" alt="RegLineage workflow from governed business question through approvals, deterministic analysis, DataHub publication, and verified evidence">
+              <figcaption>Governed question → verified evidence</figcaption>
+            </figure>
+          </article>
+
+          <div class="supporting-projects">
+            <article class="project-card project-supporting">
+              <figure class="project-visual project-visual-x">
+                <img src="assets/projects/x-api-analyst.jpg" width="562" height="640" loading="lazy" alt="X API Analyst project artwork combining the X mark with search and data nodes">
+              </figure>
+              <div class="project-copy">
+                <header class="project-header">
+                  <div>
+                    <p class="project-kicker">Repository: X-Scraper</p>
+                    <h3>X API Analyst</h3>
+                  </div>
+                  <p class="project-date">June 2026 – Present</p>
+                </header>
+                <p class="project-description">A local, bring-your-own-token workbench for collecting public X posts through the official recent-search API, with immutable SQLite snapshots, resumable jobs, exact cache reuse, JSON/CSV exports, and an optional MCP bridge.</p>
+                <ul class="tag-list" aria-label="X API Analyst technologies">
+                  <li>Python</li><li>Flask</li><li>SQLite</li><li>X API</li><li>MCP</li>
+                </ul>
+                <a class="project-link" href="https://github.com/Alex-lop/X-Scraper" target="_blank" rel="noopener noreferrer" aria-label="View the X-Scraper repository for X API Analyst on GitHub">View repository <span aria-hidden="true">↗</span></a>
+              </div>
+            </article>
+
+            <article class="project-card project-supporting project-imc">
+              <div class="project-stat" aria-label="Placed 912th out of roughly 13,000 teams, top 8 percent globally">
+                <span class="project-rank">912</span>
+                <span class="project-field">of ~13,000 teams</span>
+                <strong>Top 8% globally</strong>
+              </div>
+              <div class="project-copy">
+                <header class="project-header">
+                  <div><h3>IMC Prosperity 3</h3></div>
+                  <p class="project-date">March 2025 – April 2025</p>
+                </header>
+                <p class="project-description">Placed 912th out of roughly 13,000 teams—top 8% globally—in IMC Prosperity 3. Collaborated on market-making, scalping, locational-arbitrage, and mean-reversion strategies while balancing execution quality and risk-adjusted returns.</p>
+                <ul class="tag-list" aria-label="IMC Prosperity 3 technologies and methods">
+                  <li>Python</li><li>Algorithmic Trading</li><li>Market Making</li><li>Quantitative Research</li>
+                </ul>
+                <p class="private-label">
+                  <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3m-9 0h8a2 2 0 0 1 2 2v7H6v-7a2 2 0 0 1 2-2Z"/></svg>
+                  Private competition repository
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section" id="experience" data-nav-section="experience" aria-labelledby="experience-title">
+      <div class="shell narrow-shell">
+        <div class="section-heading">
+          <p class="eyebrow">Experience</p>
+          <h2 id="experience-title">Engineering work grounded in scale, clarity, and useful outcomes.</h2>
+        </div>
+
+        <ol class="timeline">
+          <li>
+            <div class="timeline-marker"><img src="assets/expandya.jpg" width="52" height="52" alt=""></div>
+            <article>
+              <header>
+                <h3>Software Engineering Intern <span>— Expandya</span></h3>
+                <p>June 2026 – September 2026 · Westport, CT</p>
+              </header>
+              <p>Engineered Python and C++ data systems for e-commerce workloads exceeding 50 million rows, applying indexing, query caching, and performance profiling to improve scalability. Also translated site-performance and search findings into actionable client recommendations.</p>
+            </article>
+          </li>
+          <li>
+            <div class="timeline-marker"><img src="assets/northeastern.png" width="52" height="52" alt=""></div>
+            <article>
+              <header>
+                <h3>Teaching Assistant <span>— Northeastern University</span></h3>
+                <p>September 2025 – Present · Boston, MA</p>
+              </header>
+              <p>Support students in CS 3200 and CS 1800 through office hours, debugging, project guidance, grading questions, and clear explanations of database and discrete-mathematics fundamentals.</p>
+            </article>
+          </li>
+          <li>
+            <div class="timeline-marker timeline-marker-text" aria-hidden="true">Y</div>
+            <article>
+              <header>
+                <h3>Computational Biology Research Assistant <span>— O’Hern Lab, Yale</span></h3>
+                <p>June 2023 – September 2023 · New Haven, CT</p>
+              </header>
+              <p>Built Python and MATLAB pipelines on Yale’s HPC clusters to process and visualize more than 10,000 oncogenic protein variants from folding simulations, supporting analysis of structural patterns associated with disease.</p>
+              <img class="timeline-image" src="assets/ohern-header4.gif" width="454" height="150" loading="lazy" alt="O’Hern Lab at Yale School of Engineering and Applied Science">
+            </article>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="content-section section-surface" id="about" data-nav-section="about" aria-labelledby="about-title">
+      <div class="shell">
+        <div class="about-grid">
+          <figure class="about-photo">
+            <img src="assets/me-presenting.jpg" width="900" height="599" loading="lazy" alt="Alex Lopez presenting computational biology research">
+            <figcaption>Presenting research from the O’Hern Lab.</figcaption>
+          </figure>
+          <div class="about-copy">
+            <p class="eyebrow">About</p>
+            <h2 id="about-title">Reliable systems for difficult data.</h2>
+            <p>I’m Alex, a Computer Science and Mathematics student at Northeastern with a concentration in AI. I’m most interested in building reliable systems around difficult data: governed analytics, backend infrastructure, developer tools, and applied machine learning. My work has ranged from optimizing e-commerce data systems with more than 50 million rows to analyzing over 10,000 protein variants on Yale’s HPC clusters.</p>
+
+            <div class="education-block" aria-labelledby="education-title">
+              <div>
+                <p class="block-label">Education</p>
+                <h3 id="education-title">Northeastern University</h3>
+              </div>
+              <ul>
+                <li>BSE in Computer Science and Mathematics</li>
+                <li>Concentration in AI</li>
+                <li>Expected May 2028</li>
+                <li>Cumulative GPA: 3.65</li>
+                <li>Major GPA: 3.84</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="skills" aria-labelledby="skills-title">
+          <div class="skills-heading">
+            <p class="eyebrow">Skills</p>
+            <h2 id="skills-title">A practical toolkit.</h2>
+          </div>
+          <div class="skills-grid">
+            <div><h3>Languages</h3><p>Python, C++, C, Java, JavaScript, OCaml, Kotlin</p></div>
+            <div><h3>Backend and Data</h3><p>SQL, FastAPI, Flask, DataHub, DuckDB, SQLite</p></div>
+            <div><h3>ML and Analysis</h3><p>PyTorch, TensorFlow, Pandas, MATLAB</p></div>
+            <div><h3>Tools and Infrastructure</h3><p>AWS, Docker, Git, Three.js</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section personal-section" id="personal" aria-labelledby="personal-title">
+      <div class="shell">
+        <div class="personal-heading">
+          <div class="section-heading">
+            <p class="eyebrow">Personal Interests</p>
+            <h2 id="personal-title">Outside the terminal.</h2>
+            <p>Running, golf, chess—and one very opinionated rabbit keep life interesting.</p>
+          </div>
+          <figure class="luna-polaroid" title="Luna, chief code reviewer">
+            <img src="assets/luna-small.jpg" width="270" height="360" loading="lazy" alt="Luna the rabbit">
+            <figcaption>Luna 🐰</figcaption>
+          </figure>
+        </div>
+
+        <div class="interests-grid">
+          <article class="interest-card">
+            <img src="assets/running-team.jpg" width="800" height="600" loading="lazy" alt="Alex running with his team">
+            <div>
+              <h3>Running</h3>
+              <p>I’m training for my first marathon and still love the steady work of chasing a finish line one run at a time.</p>
+              <a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">View my running on Strava <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+          <article class="interest-card">
+            <img src="assets/golf-swing.jpg" width="472" height="1024" loading="lazy" alt="Alex taking a golf swing on the course">
+            <div>
+              <h3>Golf</h3>
+              <p>I picked up golf recently. It is reliably humbling, but one clean shot is enough to bring me back.</p>
+            </div>
+          </article>
+          <article class="interest-card">
+            <img src="assets/chess.jpg" width="447" height="447" loading="lazy" alt="A chess knight on a chessboard">
+            <div>
+              <h3>Chess</h3>
+              <p>I’ve played for about seven years and enjoy that the game always leaves another level to reach.</p>
+              <a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener noreferrer">Play me on Chess.com <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-section" id="contact" data-nav-section="contact" aria-labelledby="contact-title">
+      <div class="shell contact-grid">
+        <div>
+          <p class="eyebrow">Contact</p>
+          <h2 id="contact-title">Let’s build something useful.</h2>
+          <p>Open to software engineering opportunities, research collaborations, and difficult data problems.</p>
+        </div>
+        <div class="contact-details">
+          <a class="email-link" href="mailto:lopez.alexan@northeastern.edu">lopez.alexan@northeastern.edu</a>
+          <div class="copy-row">
+            <button id="copy-email" type="button" data-email="lopez.alexan@northeastern.edu">Copy email</button>
+            <span id="copy-status" role="status" aria-live="polite"></span>
+          </div>
+          <div class="contact-actions">
+            <a href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">GitHub profile <span aria-hidden="true">↗</span></a>
+            <a href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener noreferrer">LinkedIn profile <span aria-hidden="true">↗</span></a>
+            <a href="assets/Alex_Lopez_Resume.pdf" data-resume-link target="_blank" rel="noopener noreferrer">Open résumé <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-row">
+      <p>© 2026 Alex Lopez</p>
+      <p>Built with HTML, CSS, JavaScript, and Three.js.</p>
+    </div>
+  </footer>
+
+  <a class="back-to-top" id="back-to-top" href="#top" aria-label="Back to top"><span aria-hidden="true">↑</span> Top</a>
 </body>
 </html>
