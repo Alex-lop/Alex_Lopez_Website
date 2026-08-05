@@ -4,314 +4,164 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f5f0">
-  <meta name="description" content="Alex Lopez is a software engineer building reliable data, AI, and analytics systems, with work spanning governed analytics, backend infrastructure, and applied machine learning.">
+  <meta name="description" content="Alex Lopez is a software engineer building reliable data, AI, and analytics systems across governed analytics, backend infrastructure, and applied machine learning.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Alex Lopez">
   <meta property="og:title" content="Alex Lopez — Software Engineer">
-  <meta property="og:description" content="Software engineer building reliable data, AI, and analytics systems.">
+  <meta property="og:description" content="Software engineering · data systems · applied AI">
   <meta property="og:image" content="assets/me-presenting.jpg">
   <meta property="og:image:alt" content="Alex Lopez presenting computational biology research">
   <title>Alex Lopez — Software Engineer | Data, AI &amp; Analytics</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-family='Arial,sans-serif' font-size='25' font-weight='700' fill='%23f5f5f0'%3EAL%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script type="importmap">
-    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js" } }
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"}}
   </script>
   <script type="module" src="app.js"></script>
   <script type="module" src="scene.js"></script>
 </head>
 <body id="top" data-resume-url="assets/Alex_Lopez_Resume.pdf">
   <a class="skip-link" href="#main-content">Skip to main content</a>
-  <div class="page-progress" aria-hidden="true"><span id="page-progress-bar"></span></div>
-
-  <header class="site-header" id="site-header">
-    <div class="nav-shell">
-      <a class="brand" href="#top" aria-label="Alex Lopez, back to top">AL</a>
-      <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">
-        <span class="sr-only">Toggle navigation</span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </button>
-      <nav class="primary-nav" id="primary-nav" aria-label="Primary navigation">
-        <a class="nav-link" href="#work" data-section-link="work">Work</a>
-        <a class="nav-link" href="#experience" data-section-link="experience">Experience</a>
-        <a class="nav-link" href="#about" data-section-link="about">About</a>
-        <a class="nav-link" href="#contact" data-section-link="contact">Contact</a>
-        <a class="nav-link nav-resume" href="assets/Alex_Lopez_Resume.pdf" data-resume-link target="_blank" rel="noopener noreferrer" aria-label="View Alex Lopez résumé PDF in a new tab">Résumé <span aria-hidden="true">↗</span></a>
-      </nav>
-    </div>
-  </header>
-
+  <a class="site-monogram" href="#intro-panel" data-scroll-link aria-label="Alex Lopez, back to the opening">AL</a>
+  <nav id="site-nav" aria-label="Primary navigation">
+    <a class="nav-link" href="#about-panel" data-scroll-link data-nav="about">About</a>
+    <a class="nav-link" href="#proj-panel-0" data-scroll-link data-nav="projects">Projects</a>
+    <a class="nav-link" href="#experience-panel" data-scroll-link data-nav="experience">Experience</a>
+    <a class="nav-link" href="#contact-panel" data-scroll-link data-nav="contact">Contact</a>
+    <a class="nav-link" href="#education-panel" data-scroll-link data-nav="resume">Résumé</a>
+  </nav>
+  <p id="drag-hint" aria-hidden="true">drag orbit · right-drag pan · middle-drag zoom · scroll explore</p>
   <canvas id="bg-canvas" aria-hidden="true"></canvas>
-  <div class="scene-scrim" aria-hidden="true"></div>
+  <div id="brightness-overlay" aria-hidden="true"></div>
 
   <main id="main-content">
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="shell hero-layout">
-        <div class="hero-copy">
-          <p class="eyebrow">Software Engineer · Northeastern CS + Math</p>
-          <h1 id="hero-title">Alex Lopez</h1>
-          <p class="hero-lede">Software engineer building reliable data, AI, and analytics systems.</p>
-          <p class="hero-intro">Computer Science and Mathematics at Northeastern, focused on backend engineering, governed AI, and turning complex data into useful products.</p>
-          <div class="hero-actions" aria-label="Primary actions">
-            <a class="button button-primary" href="#work">View selected work</a>
-            <a class="button button-secondary" href="assets/Alex_Lopez_Resume.pdf" data-resume-link target="_blank" rel="noopener noreferrer" aria-label="View Alex Lopez résumé PDF in a new tab">View résumé <span aria-hidden="true">↗</span></a>
-          </div>
-          <div class="hero-socials" aria-label="Social profiles">
-            <a href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">GitHub profile <span aria-hidden="true">↗</span></a>
-            <a href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener noreferrer">LinkedIn profile <span aria-hidden="true">↗</span></a>
-          </div>
-        </div>
+    <section id="intro-panel" class="section-panel intro-panel" data-nav-section="top" aria-labelledby="intro-name">
+      <h1 class="intro-name" id="intro-name"><a href="#intro-panel" data-scroll-link>Alex Lopez</a></h1>
+      <p class="intro-tagline">Impact</p>
+      <p class="intro-role">Software engineering · data systems · applied AI</p>
+      <p class="scroll-hint" aria-hidden="true">scroll to explore ↓</p>
+    </section>
 
-        <ul class="impact-strip" aria-label="Selected impact">
-          <li><strong>50M+</strong><span>E-commerce rows optimized</span></li>
-          <li><strong>10K+</strong><span>Protein variants analyzed</span></li>
-          <li><strong>Top 8%</strong><span>IMC Prosperity 3 globally</span></li>
+    <section id="about-panel" class="section-panel about-panel" data-nav-section="about" aria-labelledby="about-title">
+      <h2 class="card-label" id="about-title">About Me</h2>
+      <div class="about-layout">
+        <article class="glass-card about-card">
+          <p>Hi, I’m Alex, a Computer Science and Mathematics student at Northeastern who enjoys turning difficult data and systems problems into tools people can actually use. My work spans backend engineering, governed AI, computational biology, and analytics—but the goal is always the same: understand the problem deeply, build carefully, and leave the system better than I found it.</p>
+          <p class="impact-word">Impact.</p>
+        </article>
+        <figure class="about-photo-wrap image-reveal">
+          <button class="image-button" type="button" data-lightbox-src="assets/me-presenting.jpg" data-lightbox-alt="Alex Lopez presenting computational biology research" aria-label="Enlarge photo of Alex presenting research">
+            <img class="about-photo" src="assets/me-presenting.jpg" width="900" height="599" loading="lazy" alt="Alex Lopez presenting computational biology research">
+          </button>
+          <figcaption>Presenting research from the O’Hern Lab.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="proj-panel-0" class="section-panel project-solo-panel" data-project-panel data-nav-section="projects" aria-labelledby="project-1-title">
+      <h2 class="card-label">Selected Projects · <span class="project-counter">01 / 03</span></h2>
+      <article class="glass-card project-card">
+        <img class="project-accent" src="assets/projects/Horizontal_profile_baby_blue_transparent copy.png" width="5000" height="2500" loading="lazy" alt="RegLineage governed analytics workflow">
+        <div class="project-heading"><h3 id="project-1-title">RegLineage</h3><p class="project-meta">July 2026 – Present</p></div>
+        <p>A governed analytics system that turns business questions into policy-gated aggregate analyses with human approval, deterministic DuckDB execution, DataHub lineage, and fresh read-back verification.</p>
+        <ul class="tags" aria-label="RegLineage technologies"><li>Python</li><li>FastAPI</li><li>DuckDB</li><li>DataHub</li><li>MCP</li></ul>
+        <div class="project-footer">
+          <a class="project-link" href="https://github.com/Alex-lop/RegLineage" target="_blank" rel="noopener noreferrer">Repository <span aria-hidden="true">↗</span></a>
+          <span class="project-note">Uses deterministic synthetic analytical fixtures today.</span>
+        </div>
+      </article>
+    </section>
+
+    <section id="proj-panel-1" class="section-panel project-solo-panel" data-project-panel data-nav-section="projects" aria-labelledby="project-2-title">
+      <h2 class="card-label">Selected Projects · <span class="project-counter">02 / 03</span></h2>
+      <article class="glass-card project-card">
+        <img class="project-accent" src="assets/projects/x-api-analyst.jpg" width="1200" height="1200" loading="lazy" alt="X API Analyst project artwork">
+        <div class="project-heading"><h3 id="project-2-title">X API Analyst</h3><p class="project-subtitle">Repository: X-Scraper</p><p class="project-meta">June 2026 – Present</p></div>
+        <p>A local, bring-your-own-token workbench for collecting public X posts through the official recent-search API, with resumable jobs, immutable SQLite snapshots, exact cache reuse, JSON/CSV exports, and an optional MCP bridge.</p>
+        <ul class="tags" aria-label="X API Analyst technologies"><li>Python</li><li>Flask</li><li>SQLite</li><li>X API</li><li>MCP</li></ul>
+        <div class="project-footer"><a class="project-link" href="https://github.com/Alex-lop/X-Scraper" target="_blank" rel="noopener noreferrer">Repository <span aria-hidden="true">↗</span></a></div>
+      </article>
+    </section>
+
+    <section id="proj-panel-2" class="section-panel project-solo-panel" data-project-panel data-nav-section="projects" aria-labelledby="project-3-title">
+      <h2 class="card-label">Selected Projects · <span class="project-counter">03 / 03</span></h2>
+      <article class="glass-card project-card">
+        <div class="project-heading"><h3 id="project-3-title">IMC Prosperity 3</h3><p class="project-meta">March 2025 – April 2025</p></div>
+        <p>Placed 912th out of roughly 13,000 teams—top 8% globally—in IMC Prosperity 3. Collaborated on market-making, scalping, locational-arbitrage, and mean-reversion strategies while balancing execution quality and risk-adjusted returns.</p>
+        <ul class="tags" aria-label="IMC Prosperity 3 technologies and methods"><li>Python</li><li>Algorithmic Trading</li><li>Market Making</li><li>Quantitative Research</li></ul>
+        <div class="project-footer"><span class="private-label"><span aria-hidden="true">▣</span> Private competition repository</span></div>
+      </article>
+    </section>
+
+    <section id="education-panel" class="section-panel resume-solo-panel" data-nav-section="resume" aria-labelledby="education-title">
+      <h2 class="card-label" id="education-title">Résumé · <span class="project-counter">Education</span></h2>
+      <article class="glass-card resume-card">
+        <h3>Education</h3>
+        <ul class="resume-list">
+          <li><strong>Northeastern University</strong><span>BSE in Computer Science and Mathematics · Concentration in AI</span><span>Expected May 2028 · Cumulative GPA 3.65 · Major GPA 3.84</span></li>
+          <li><strong>Hopkins School</strong><span>Graduated June 2024</span><span>Varsity Wrestling (Captain) · Football · Track</span></li>
         </ul>
-      </div>
-      <a class="scroll-cue" href="#work">Selected work <span aria-hidden="true">↓</span></a>
+      </article>
     </section>
 
-    <section class="content-section section-surface" id="work" data-nav-section="work" aria-labelledby="work-title">
-      <div class="shell">
-        <div class="section-heading">
-          <p class="eyebrow">Selected Work</p>
-          <h2 id="work-title">Systems that make complex data useful—and trustworthy.</h2>
-          <p>Three projects that best represent how I work across governed analytics, data tooling, and quantitative problem-solving.</p>
-        </div>
-
-        <div class="work-grid">
-          <article class="project-card project-featured">
-            <div class="project-copy">
-              <header class="project-header">
-                <div>
-                  <p class="project-kicker">Governed AI Analytics · DataHub</p>
-                  <h3>RegLineage</h3>
-                </div>
-                <p class="project-date">July 2026 – Present</p>
-              </header>
-              <p class="project-description">RegLineage turns a business question into a policy-gated aggregate analysis with human approvals, deterministic execution, DataHub lineage, and a freshly verified trust receipt.</p>
-              <p class="project-detail">It reads governance context, binds approvals to immutable plan hashes, runs fixed DuckDB analysis, publishes approved assets and lineage to DataHub, and verifies fresh state before issuing evidence.</p>
-              <p class="project-boundary"><strong>Current boundary:</strong> Live DataHub metadata, governance, publication, and read-back are implemented. Analytical rows are presently deterministic synthetic fixtures, not a connected production warehouse.</p>
-              <ul class="tag-list" aria-label="RegLineage technologies">
-                <li>Python</li><li>FastAPI</li><li>DuckDB</li><li>DataHub</li><li>MCP</li>
-              </ul>
-              <a class="project-link" href="https://github.com/Alex-lop/RegLineage" target="_blank" rel="noopener noreferrer" aria-label="View the RegLineage repository on GitHub">View repository <span aria-hidden="true">↗</span></a>
-            </div>
-            <figure class="project-visual project-visual-featured">
-              <img src="assets/projects/reglineage-workflow.svg" width="1200" height="900" loading="lazy" alt="RegLineage workflow from governed business question through approvals, deterministic analysis, DataHub publication, and verified evidence">
-              <figcaption>Governed question → verified evidence</figcaption>
-            </figure>
-          </article>
-
-          <div class="supporting-projects">
-            <article class="project-card project-supporting">
-              <figure class="project-visual project-visual-x">
-                <img src="assets/projects/x-api-analyst.jpg" width="562" height="640" loading="lazy" alt="X API Analyst project artwork combining the X mark with search and data nodes">
-              </figure>
-              <div class="project-copy">
-                <header class="project-header">
-                  <div>
-                    <p class="project-kicker">Repository: X-Scraper</p>
-                    <h3>X API Analyst</h3>
-                  </div>
-                  <p class="project-date">June 2026 – Present</p>
-                </header>
-                <p class="project-description">A local, bring-your-own-token workbench for collecting public X posts through the official recent-search API, with immutable SQLite snapshots, resumable jobs, exact cache reuse, JSON/CSV exports, and an optional MCP bridge.</p>
-                <ul class="tag-list" aria-label="X API Analyst technologies">
-                  <li>Python</li><li>Flask</li><li>SQLite</li><li>X API</li><li>MCP</li>
-                </ul>
-                <a class="project-link" href="https://github.com/Alex-lop/X-Scraper" target="_blank" rel="noopener noreferrer" aria-label="View the X-Scraper repository for X API Analyst on GitHub">View repository <span aria-hidden="true">↗</span></a>
-              </div>
-            </article>
-
-            <article class="project-card project-supporting project-imc">
-              <div class="project-stat" aria-label="Placed 912th out of roughly 13,000 teams, top 8 percent globally">
-                <span class="project-rank">912</span>
-                <span class="project-field">of ~13,000 teams</span>
-                <strong>Top 8% globally</strong>
-              </div>
-              <div class="project-copy">
-                <header class="project-header">
-                  <div><h3>IMC Prosperity 3</h3></div>
-                  <p class="project-date">March 2025 – April 2025</p>
-                </header>
-                <p class="project-description">Placed 912th out of roughly 13,000 teams—top 8% globally—in IMC Prosperity 3. Collaborated on market-making, scalping, locational-arbitrage, and mean-reversion strategies while balancing execution quality and risk-adjusted returns.</p>
-                <ul class="tag-list" aria-label="IMC Prosperity 3 technologies and methods">
-                  <li>Python</li><li>Algorithmic Trading</li><li>Market Making</li><li>Quantitative Research</li>
-                </ul>
-                <p class="private-label">
-                  <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3m-9 0h8a2 2 0 0 1 2 2v7H6v-7a2 2 0 0 1 2-2Z"/></svg>
-                  Private competition repository
-                </p>
-              </div>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="content-section" id="experience" data-nav-section="experience" aria-labelledby="experience-title">
-      <div class="shell narrow-shell">
-        <div class="section-heading">
-          <p class="eyebrow">Experience</p>
-          <h2 id="experience-title">Engineering work grounded in scale, clarity, and useful outcomes.</h2>
-        </div>
-
-        <ol class="timeline">
+    <section id="experience-panel" class="section-panel resume-solo-panel" data-nav-section="experience" aria-labelledby="experience-title">
+      <h2 class="card-label" id="experience-title">Résumé · <span class="project-counter">Experience</span></h2>
+      <article class="glass-card resume-card experience-card">
+        <h3>Experience</h3>
+        <ul class="resume-list">
+          <li><strong><img src="assets/expandya.jpg" width="48" height="48" alt="Expandya logo"> Software Engineering Intern — Expandya</strong><span>June 2026 – September 2026 · Westport, CT</span><p>Engineered and profiled Python and C++ data systems for e-commerce workloads exceeding 50 million rows.</p></li>
+          <li><strong><img src="assets/northeastern.png" width="48" height="48" alt="Northeastern University logo"> Teaching Assistant — Northeastern University</strong><span>September 2025 – Present · Boston, MA</span><p>Support students in CS 3200 and CS 1800 through office hours, debugging, project guidance, and clear explanations of database and discrete-mathematics fundamentals.</p></li>
           <li>
-            <div class="timeline-marker"><img src="assets/expandya.jpg" width="52" height="52" alt=""></div>
-            <article>
-              <header>
-                <h3>Software Engineering Intern <span>— Expandya</span></h3>
-                <p>June 2026 – September 2026 · Westport, CT</p>
-              </header>
-              <p>Engineered Python and C++ data systems for e-commerce workloads exceeding 50 million rows, applying indexing, query caching, and performance profiling to improve scalability. Also translated site-performance and search findings into actionable client recommendations.</p>
-            </article>
+            <strong>Computational Biology Research Assistant — O’Hern Lab, Yale</strong><span>June 2023 – September 2023 · New Haven, CT</span><p>Built Python and MATLAB HPC pipelines to process and visualize more than 10,000 oncogenic protein variants.</p>
+            <button class="image-button ohern-button" type="button" data-lightbox-src="assets/ohern-header4.gif" data-lightbox-alt="O’Hern Lab at Yale School of Engineering and Applied Science" aria-label="Enlarge O’Hern Lab banner"><img src="assets/ohern-header4.gif" width="454" height="150" loading="lazy" alt="O’Hern Lab at Yale School of Engineering and Applied Science"></button>
           </li>
-          <li>
-            <div class="timeline-marker"><img src="assets/northeastern.png" width="52" height="52" alt=""></div>
-            <article>
-              <header>
-                <h3>Teaching Assistant <span>— Northeastern University</span></h3>
-                <p>September 2025 – Present · Boston, MA</p>
-              </header>
-              <p>Support students in CS 3200 and CS 1800 through office hours, debugging, project guidance, grading questions, and clear explanations of database and discrete-mathematics fundamentals.</p>
-            </article>
-          </li>
-          <li>
-            <div class="timeline-marker timeline-marker-text" aria-hidden="true">Y</div>
-            <article>
-              <header>
-                <h3>Computational Biology Research Assistant <span>— O’Hern Lab, Yale</span></h3>
-                <p>June 2023 – September 2023 · New Haven, CT</p>
-              </header>
-              <p>Built Python and MATLAB pipelines on Yale’s HPC clusters to process and visualize more than 10,000 oncogenic protein variants from folding simulations, supporting analysis of structural patterns associated with disease.</p>
-              <img class="timeline-image" src="assets/ohern-header4.gif" width="454" height="150" loading="lazy" alt="O’Hern Lab at Yale School of Engineering and Applied Science">
-            </article>
-          </li>
-        </ol>
-      </div>
+        </ul>
+      </article>
     </section>
 
-    <section class="content-section section-surface" id="about" data-nav-section="about" aria-labelledby="about-title">
-      <div class="shell">
-        <div class="about-grid">
-          <figure class="about-photo">
-            <img src="assets/me-presenting.jpg" width="900" height="599" loading="lazy" alt="Alex Lopez presenting computational biology research">
-            <figcaption>Presenting research from the O’Hern Lab.</figcaption>
-          </figure>
-          <div class="about-copy">
-            <p class="eyebrow">About</p>
-            <h2 id="about-title">Reliable systems for difficult data.</h2>
-            <p>I’m Alex, a Computer Science and Mathematics student at Northeastern with a concentration in AI. I’m most interested in building reliable systems around difficult data: governed analytics, backend infrastructure, developer tools, and applied machine learning. My work has ranged from optimizing e-commerce data systems with more than 50 million rows to analyzing over 10,000 protein variants on Yale’s HPC clusters.</p>
-
-            <div class="education-block" aria-labelledby="education-title">
-              <div>
-                <p class="block-label">Education</p>
-                <h3 id="education-title">Northeastern University</h3>
-              </div>
-              <ul>
-                <li>BSE in Computer Science and Mathematics</li>
-                <li>Concentration in AI</li>
-                <li>Expected May 2028</li>
-                <li>Cumulative GPA: 3.65</li>
-                <li>Major GPA: 3.84</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="skills" aria-labelledby="skills-title">
-          <div class="skills-heading">
-            <p class="eyebrow">Skills</p>
-            <h2 id="skills-title">A practical toolkit.</h2>
-          </div>
-          <div class="skills-grid">
-            <div><h3>Languages</h3><p>Python, C++, C, Java, JavaScript, OCaml, Kotlin</p></div>
-            <div><h3>Backend and Data</h3><p>SQL, FastAPI, Flask, DataHub, DuckDB, SQLite</p></div>
-            <div><h3>ML and Analysis</h3><p>PyTorch, TensorFlow, Pandas, MATLAB</p></div>
-            <div><h3>Tools and Infrastructure</h3><p>AWS, Docker, Git, Three.js</p></div>
-          </div>
-        </div>
-      </div>
+    <section id="skills-panel" class="section-panel resume-solo-panel skills-panel" data-nav-section="resume" aria-labelledby="skills-title">
+      <h2 class="card-label" id="skills-title">Résumé · <span class="project-counter">Skills</span></h2>
+      <article class="glass-card resume-card skills-card">
+        <h3>Skills</h3>
+        <dl class="skills-grid">
+          <div><dt>Languages</dt><dd>Python, C++, C, Java, JavaScript, OCaml, Kotlin</dd></div>
+          <div><dt>Backend &amp; Data</dt><dd>SQL, FastAPI, Flask, DataHub, DuckDB, SQLite</dd></div>
+          <div><dt>ML &amp; Analysis</dt><dd>PyTorch, TensorFlow, Pandas, MATLAB</dd></div>
+          <div><dt>Tools &amp; Infrastructure</dt><dd>AWS, Docker, Git, Three.js</dd></div>
+        </dl>
+      </article>
     </section>
 
-    <section class="content-section personal-section" id="personal" aria-labelledby="personal-title">
-      <div class="shell">
-        <div class="personal-heading">
-          <div class="section-heading">
-            <p class="eyebrow">Personal Interests</p>
-            <h2 id="personal-title">Outside the terminal.</h2>
-            <p>Running, golf, chess—and one very opinionated rabbit keep life interesting.</p>
-          </div>
-          <figure class="luna-polaroid" title="Luna, chief code reviewer">
-            <img src="assets/luna-small.jpg" width="270" height="360" loading="lazy" alt="Luna the rabbit">
-            <figcaption>Luna 🐰</figcaption>
-          </figure>
+    <section id="interests-panel" class="section-panel resume-solo-panel interests-panel" data-nav-section="resume" aria-labelledby="interests-title">
+      <h2 class="card-label" id="interests-title">Résumé · <span class="project-counter">Interests</span></h2>
+      <article class="glass-card resume-card interests-card">
+        <h3>Outside the terminal</h3>
+        <div class="hobbies-grid">
+          <article class="hobby-card image-reveal"><button class="image-button" type="button" data-lightbox-src="assets/running-team.jpg" data-lightbox-alt="Alex running with his team" aria-label="Enlarge running photo"><img src="assets/running-team.jpg" width="800" height="600" loading="lazy" alt="Alex running with his team"></button><div><h4>Running</h4><p>I’m training for my first marathon and still love chasing a finish line one run at a time.</p><a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Strava ↗</a></div></article>
+          <article class="hobby-card image-reveal"><button class="image-button" type="button" data-lightbox-src="assets/golf-swing.jpg" data-lightbox-alt="Alex taking a golf swing on the course" aria-label="Enlarge golf photo"><img src="assets/golf-swing.jpg" width="472" height="1024" loading="lazy" alt="Alex taking a golf swing on the course"></button><div><h4>Golf</h4><p>It is reliably humbling, but one clean shot is enough to bring me back.</p></div></article>
+          <article class="hobby-card image-reveal"><button class="image-button" type="button" data-lightbox-src="assets/chess.jpg" data-lightbox-alt="A chess knight on a chessboard" aria-label="Enlarge chess image"><img src="assets/chess.jpg" width="447" height="447" loading="lazy" alt="A chess knight on a chessboard"></button><div><h4>Chess</h4><p>I’ve played for about seven years and love that the game always leaves another level to reach.</p><a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener noreferrer">Chess.com ↗</a></div></article>
         </div>
-
-        <div class="interests-grid">
-          <article class="interest-card">
-            <img src="assets/running-team.jpg" width="800" height="600" loading="lazy" alt="Alex running with his team">
-            <div>
-              <h3>Running</h3>
-              <p>I’m training for my first marathon and still love the steady work of chasing a finish line one run at a time.</p>
-              <a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">View my running on Strava <span aria-hidden="true">↗</span></a>
-            </div>
-          </article>
-          <article class="interest-card">
-            <img src="assets/golf-swing.jpg" width="472" height="1024" loading="lazy" alt="Alex taking a golf swing on the course">
-            <div>
-              <h3>Golf</h3>
-              <p>I picked up golf recently. It is reliably humbling, but one clean shot is enough to bring me back.</p>
-            </div>
-          </article>
-          <article class="interest-card">
-            <img src="assets/chess.jpg" width="447" height="447" loading="lazy" alt="A chess knight on a chessboard">
-            <div>
-              <h3>Chess</h3>
-              <p>I’ve played for about seven years and enjoy that the game always leaves another level to reach.</p>
-              <a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener noreferrer">Play me on Chess.com <span aria-hidden="true">↗</span></a>
-            </div>
-          </article>
-        </div>
-      </div>
+        <figure class="luna-float" title="Luna, chief code reviewer"><span class="luna-note" aria-hidden="true">Luna my bunny! ↘</span><div class="luna-polaroid"><img src="assets/luna-small.jpg" width="270" height="360" loading="lazy" alt="Luna the rabbit"><figcaption>Luna 🐰</figcaption></div></figure>
+      </article>
     </section>
 
-    <section class="contact-section" id="contact" data-nav-section="contact" aria-labelledby="contact-title">
-      <div class="shell contact-grid">
-        <div>
-          <p class="eyebrow">Contact</p>
-          <h2 id="contact-title">Let’s build something useful.</h2>
-          <p>Open to software engineering opportunities, research collaborations, and difficult data problems.</p>
-        </div>
-        <div class="contact-details">
-          <a class="email-link" href="mailto:lopez.alexan@northeastern.edu">lopez.alexan@northeastern.edu</a>
-          <div class="copy-row">
-            <button id="copy-email" type="button" data-email="lopez.alexan@northeastern.edu">Copy email</button>
-            <span id="copy-status" role="status" aria-live="polite"></span>
-          </div>
-          <div class="contact-actions">
-            <a href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">GitHub profile <span aria-hidden="true">↗</span></a>
-            <a href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener noreferrer">LinkedIn profile <span aria-hidden="true">↗</span></a>
-            <a href="assets/Alex_Lopez_Resume.pdf" data-resume-link target="_blank" rel="noopener noreferrer">Open résumé <span aria-hidden="true">↗</span></a>
-          </div>
-        </div>
-      </div>
+    <section id="contact-panel" class="section-panel contact-panel" data-nav-section="contact" aria-labelledby="contact-title">
+      <h2 class="card-label" id="contact-title">Get In Touch</h2>
+      <p class="contact-intro">Open to opportunities, research, and interesting problems.</p>
+      <article class="glass-card contact-card">
+        <a class="email-link" href="mailto:lopez.alexan@northeastern.edu">lopez.alexan@northeastern.edu</a>
+        <div class="copy-row"><button id="copy-email" type="button" data-email="lopez.alexan@northeastern.edu">Copy email</button><span id="copy-status" role="status" aria-live="polite"></span></div>
+        <div class="resume-actions"><button id="resume-toggle" class="primary-button" type="button" aria-expanded="false" aria-controls="resume-preview">View résumé</button></div>
+        <div id="resume-preview" hidden><div class="resume-frame"><iframe src="assets/Alex_Lopez_Resume.pdf" loading="lazy" title="Alex Lopez résumé preview"></iframe></div><a class="download-link" href="assets/Alex_Lopez_Resume.pdf" download="Alex_Lopez_Resume.pdf">Download PDF ↓</a></div>
+        <div class="contact-links"><a href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+      </article>
     </section>
   </main>
 
-  <footer>
-    <div class="shell footer-row">
-      <p>© 2026 Alex Lopez</p>
-      <p>Built with HTML, CSS, JavaScript, and Three.js.</p>
-    </div>
-  </footer>
-
-  <a class="back-to-top" id="back-to-top" href="#top" aria-label="Back to top"><span aria-hidden="true">↑</span> Top</a>
+  <a class="back-to-top" id="back-to-top" href="#intro-panel" data-scroll-link aria-label="Back to the opening">↑ Top</a>
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview" aria-hidden="true"><button id="lightbox-close" type="button" aria-label="Close image preview">×</button><img id="lightbox-image" src="assets/me-presenting.jpg" alt=""></div>
 </body>
 </html>

@@ -1,87 +1,186 @@
-const resumeUrl = document.body.dataset.resumeUrl;
-document.querySelectorAll("[data-resume-link]").forEach((link) => {
-  link.href = resumeUrl;
-});
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const desktopScroll = window.matchMedia("(min-width: 769px) and (pointer: fine)");
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+const maxScroll = () => Math.max(document.documentElement.scrollHeight - window.innerHeight, 0);
 
-const header = document.querySelector("#site-header");
-const menuButton = document.querySelector("#menu-toggle");
-const nav = document.querySelector("#primary-nav");
+const glide = {
+  current: window.scrollY,
+  target: window.scrollY,
+  mode: null,
+  targetId: null,
+  frame: 0,
+};
 
-function setMenu(open) {
-  header.classList.toggle("menu-open", open);
-  menuButton.setAttribute("aria-expanded", String(open));
+function stopGlide() {
+  glide.current = window.scrollY;
+  glide.target = window.scrollY;
+  glide.mode = null;
+  glide.targetId = null;
 }
 
-menuButton.addEventListener("click", () => {
-  setMenu(menuButton.getAttribute("aria-expanded") !== "true");
-});
+function targetTop(id) {
+  const target = document.getElementById(id);
+  return target ? clamp(Math.round(target.getBoundingClientRect().top + window.scrollY), 0, maxScroll()) : null;
+}
 
-nav.addEventListener("click", (event) => {
-  if (event.target.closest("a")) setMenu(false);
-});
+function runGlide() {
+  glide.frame = 0;
+  if (!glide.mode) return;
 
-document.addEventListener("click", (event) => {
-  if (!header.contains(event.target)) setMenu(false);
-});
+  const distance = glide.target - glide.current;
+  const ease = glide.mode === "navigation" ? 0.17 : 0.34;
+  glide.current += distance * ease;
 
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && menuButton.getAttribute("aria-expanded") === "true") {
-    setMenu(false);
-    menuButton.focus();
+  if (Math.abs(distance) < 0.45) {
+    glide.current = glide.target;
+    window.scrollTo(0, glide.current);
+    stopGlide();
+    return;
   }
-});
 
-const navLinks = new Map(
-  [...document.querySelectorAll("[data-section-link]")].map((link) => [link.dataset.sectionLink, link]),
-);
-const visibleSections = new Map();
-
-function setActiveSection(id) {
-  navLinks.forEach((link, sectionId) => {
-    if (sectionId === id) link.setAttribute("aria-current", "location");
-    else link.removeAttribute("aria-current");
-  });
+  window.scrollTo(0, glide.current);
+  glide.frame = requestAnimationFrame(runGlide);
 }
 
-const sectionObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => visibleSections.set(entry.target.dataset.navSection, entry.intersectionRatio));
-    const active = [...visibleSections.entries()]
-      .filter(([, ratio]) => ratio > 0)
-      .sort((a, b) => b[1] - a[1])[0];
-    setActiveSection(active?.[0]);
-  },
-  { rootMargin: "-20% 0px -55%", threshold: [0, 0.01, 0.25, 0.5, 0.75] },
-);
+function requestGlide() {
+  if (!glide.frame) glide.frame = requestAnimationFrame(runGlide);
+}
 
-document.querySelectorAll("[data-nav-section]").forEach((section) => sectionObserver.observe(section));
+function handleWheel(event) {
+  if (!desktopScroll.matches || reducedMotion.matches || document.body.classList.contains("lightbox-open")) return;
 
-const progressBar = document.querySelector("#page-progress-bar");
-const backToTop = document.querySelector("#back-to-top");
-const hero = document.querySelector(".hero");
-let scrollFrame;
+  event.preventDefault();
+  const scale = event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : event.deltaMode === WheelEvent.DOM_DELTA_PAGE ? window.innerHeight : 1;
+  const delta = clamp(event.deltaY * scale, -180, 180);
+
+  if (glide.mode !== "wheel") {
+    glide.current = window.scrollY;
+    glide.target = window.scrollY;
+  }
+
+  glide.mode = "wheel";
+  glide.targetId = null;
+  glide.target = clamp(glide.target + delta * 0.95, 0, maxScroll());
+  requestGlide();
+}
+
+window.portfolioHandleWheel = handleWheel;
+window.addEventListener("wheel", handleWheel, { passive: false });
+
+function navigateTo(id, updateHistory = true, focusTarget = false) {
+  const top = targetTop(id);
+  if (top === null) return;
+
+  if (updateHistory && window.location.hash !== `#${id}`) history.pushState(null, "", `#${id}`);
+
+  if (!desktopScroll.matches || reducedMotion.matches) {
+    stopGlide();
+    window.scrollTo({ top, behavior: reducedMotion.matches ? "auto" : "smooth" });
+  } else {
+    glide.current = window.scrollY;
+    glide.target = top;
+    glide.targetId = id;
+    glide.mode = "navigation";
+    requestGlide();
+  }
+
+  if (focusTarget) {
+    const target = document.getElementById(id);
+    target?.setAttribute("tabindex", "-1");
+    target?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-scroll-link]").forEach((link) => {
+  link.addEventListener("click", (event) => {
+    const id = link.hash.slice(1);
+    if (!id) return;
+    event.preventDefault();
+    navigateTo(id, true);
+  });
+});
+
+document.querySelector(".skip-link").addEventListener("click", (event) => {
+  event.preventDefault();
+  navigateTo("main-content", true, true);
+});
+
+function followLocation() {
+  const id = window.location.hash.slice(1);
+  if (id && document.getElementById(id)) navigateTo(id, false);
+  else stopGlide();
+}
+
+window.addEventListener("popstate", followLocation);
+window.addEventListener("hashchange", followLocation);
+window.addEventListener("pageshow", () => requestAnimationFrame(() => {
+  const id = window.location.hash.slice(1);
+  const top = id && targetTop(id);
+  if (top !== null && top !== "") window.scrollTo(0, top);
+  stopGlide();
+  updateScrollUi();
+}));
+
+window.addEventListener("resize", () => {
+  if (glide.mode === "navigation" && glide.targetId) glide.target = targetTop(glide.targetId) ?? glide.target;
+  else stopGlide();
+  requestScrollUiUpdate();
+});
+
+window.addEventListener("keydown", (event) => {
+  if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) stopGlide();
+});
+window.addEventListener("pointerdown", stopGlide, { passive: true });
+window.addEventListener("touchstart", stopGlide, { passive: true });
+
+const navLinks = new Map([...document.querySelectorAll("[data-nav]")].map((link) => [link.dataset.nav, link]));
+const navSections = [...document.querySelectorAll("[data-nav-section]")];
+const backToTop = document.getElementById("back-to-top");
+const laterPanel = document.getElementById("proj-panel-1");
+let scrollUiFrame = 0;
 
 function updateScrollUi() {
-  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-  const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-  progressBar.style.transform = `scaleX(${Math.min(Math.max(progress, 0), 1)})`;
-  backToTop.classList.toggle("visible", window.scrollY >= hero.offsetHeight - header.offsetHeight - 32);
-  scrollFrame = undefined;
+  const marker = window.scrollY + window.innerHeight * 0.45;
+  let active = "top";
+  for (const section of navSections) {
+    if (section.offsetTop <= marker) active = section.dataset.navSection;
+  }
+
+  navLinks.forEach((link, id) => {
+    if (id === active) link.setAttribute("aria-current", "location");
+    else link.removeAttribute("aria-current");
+  });
+  backToTop.classList.toggle("visible", window.scrollY > laterPanel.offsetTop - window.innerHeight * 0.5);
+  scrollUiFrame = 0;
 }
 
 function requestScrollUiUpdate() {
-  if (scrollFrame === undefined) scrollFrame = requestAnimationFrame(updateScrollUi);
+  if (!scrollUiFrame) scrollUiFrame = requestAnimationFrame(updateScrollUi);
 }
 
-window.addEventListener("scroll", requestScrollUiUpdate, { passive: true });
-window.addEventListener("resize", requestScrollUiUpdate);
+window.addEventListener("scroll", () => {
+  if (!glide.mode) {
+    glide.current = window.scrollY;
+    glide.target = window.scrollY;
+  }
+  requestScrollUiUpdate();
+}, { passive: true });
 updateScrollUi();
 
-const copyButton = document.querySelector("#copy-email");
-const copyStatus = document.querySelector("#copy-status");
+const resumeToggle = document.getElementById("resume-toggle");
+const resumePreview = document.getElementById("resume-preview");
+resumeToggle.addEventListener("click", () => {
+  const opening = resumePreview.hidden;
+  resumePreview.hidden = !opening;
+  resumeToggle.setAttribute("aria-expanded", String(opening));
+  resumeToggle.textContent = opening ? "Close résumé" : "View résumé";
+});
+
+const copyButton = document.getElementById("copy-email");
+const copyStatus = document.getElementById("copy-status");
 let copyTimer;
 
-async function copyEmail() {
+copyButton.addEventListener("click", async () => {
   const email = copyButton.dataset.email;
   try {
     await navigator.clipboard.writeText(email);
@@ -89,8 +188,7 @@ async function copyEmail() {
     const field = document.createElement("textarea");
     field.value = email;
     field.setAttribute("readonly", "");
-    field.style.position = "fixed";
-    field.style.opacity = "0";
+    field.style.cssText = "position:fixed;opacity:0";
     document.body.append(field);
     field.select();
     document.execCommand("copy");
@@ -99,9 +197,51 @@ async function copyEmail() {
 
   clearTimeout(copyTimer);
   copyStatus.textContent = "Email copied";
-  copyTimer = setTimeout(() => {
-    copyStatus.textContent = "";
-  }, 2400);
+  copyTimer = setTimeout(() => { copyStatus.textContent = ""; }, 2200);
+});
+
+const lightbox = document.getElementById("lightbox");
+const lightboxImage = document.getElementById("lightbox-image");
+const lightboxClose = document.getElementById("lightbox-close");
+let lightboxTrigger;
+
+function closeLightbox() {
+  lightbox.classList.remove("open");
+  lightbox.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("lightbox-open");
+  lightboxTrigger?.focus();
 }
 
-copyButton.addEventListener("click", copyEmail);
+document.querySelectorAll("[data-lightbox-src]").forEach((button) => {
+  button.addEventListener("click", () => {
+    stopGlide();
+    lightboxTrigger = button;
+    lightboxImage.src = button.dataset.lightboxSrc;
+    lightboxImage.alt = button.dataset.lightboxAlt;
+    lightbox.classList.add("open");
+    lightbox.setAttribute("aria-hidden", "false");
+    document.body.classList.add("lightbox-open");
+    lightboxClose.focus();
+  });
+});
+
+lightboxClose.addEventListener("click", closeLightbox);
+lightbox.addEventListener("click", (event) => {
+  if (event.target === lightbox) closeLightbox();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && lightbox.classList.contains("open")) closeLightbox();
+});
+
+if (!("IntersectionObserver" in window) || reducedMotion.matches) {
+  document.querySelectorAll(".image-reveal").forEach((element) => element.classList.add("visible"));
+} else {
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => entry.target.classList.toggle("visible", entry.isIntersecting));
+  }, { threshold: 0.12 });
+  document.querySelectorAll(".image-reveal").forEach((element) => revealObserver.observe(element));
+}
+
+const dragHint = document.getElementById("drag-hint");
+setTimeout(() => dragHint.classList.add("hidden"), 5000);
+window.addEventListener("pointermove", () => dragHint.classList.add("hidden"), { once: true, passive: true });
