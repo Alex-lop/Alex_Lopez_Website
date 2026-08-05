@@ -84,5 +84,8 @@ assert "Training for my first marathon is no joke" in HTML
 assert 'class="golf-emphasis"' in HTML and "feeling of incompleteness" in HTML
 assert "gridGroup.add(group)" in SCRIPTS and "const pulseDuration = 1700" in SCRIPTS
 assert "const pulsePurple = 0x7c3aed" in SCRIPTS
+assert 'document.addEventListener("pointerup"' in SCRIPTS
+assert "const pulseBoltPointCount = 15" in SCRIPTS
+assert "const lineColor = below ? 0x1a5fff : pulsePurple" in SCRIPTS
 
 print(f"Site check passed: {len(site.ids)} ids, {len(site.anchors)} links, {len(site.assets)} local assets")
