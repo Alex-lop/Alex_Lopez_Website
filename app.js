@@ -9,6 +9,9 @@ const glide = {
   mode: null,
   targetId: null,
   frame: 0,
+  startY: 0,
+  startTime: 0,
+  duration: 0,
 };
 
 function stopGlide() {
@@ -16,6 +19,8 @@ function stopGlide() {
   glide.target = window.scrollY;
   glide.mode = null;
   glide.targetId = null;
+  glide.startTime = 0;
+  glide.duration = 0;
 }
 
 function targetTop(id) {
@@ -23,12 +28,39 @@ function targetTop(id) {
   return target ? clamp(Math.round(target.getBoundingClientRect().top + window.scrollY), 0, maxScroll()) : null;
 }
 
-function runGlide() {
+// Soft takeoff, long coast, soft landing — like sliding on ice.
+function iceEase(t) {
+  const p = clamp(t, 0, 1);
+  return p * p * p * (p * (p * 6 - 15) + 10);
+}
+
+function navigationDuration(distance) {
+  return clamp(1100 + Math.abs(distance) * 0.55, 1400, 2800);
+}
+
+function runGlide(now = performance.now()) {
   glide.frame = 0;
   if (!glide.mode) return;
 
+  if (glide.mode === "navigation") {
+    const elapsed = now - glide.startTime;
+    const progress = iceEase(elapsed / glide.duration);
+    glide.current = glide.startY + (glide.target - glide.startY) * progress;
+
+    if (elapsed >= glide.duration) {
+      glide.current = glide.target;
+      window.scrollTo(0, glide.current);
+      stopGlide();
+      return;
+    }
+
+    window.scrollTo(0, glide.current);
+    glide.frame = requestAnimationFrame(runGlide);
+    return;
+  }
+
   const distance = glide.target - glide.current;
-  const ease = glide.mode === "navigation" ? 0.17 : 0.34;
+  const ease = 0.28;
   glide.current += distance * ease;
 
   if (Math.abs(distance) < 0.45) {
@@ -73,14 +105,18 @@ function navigateTo(id, updateHistory = true, focusTarget = false) {
 
   if (updateHistory && window.location.hash !== `#${id}`) history.pushState(null, "", `#${id}`);
 
-  if (!desktopScroll.matches || reducedMotion.matches) {
+  if (reducedMotion.matches) {
     stopGlide();
-    window.scrollTo({ top, behavior: reducedMotion.matches ? "auto" : "smooth" });
+    window.scrollTo(0, top);
   } else {
-    glide.current = window.scrollY;
+    const startY = window.scrollY;
+    glide.current = startY;
+    glide.startY = startY;
     glide.target = top;
     glide.targetId = id;
     glide.mode = "navigation";
+    glide.startTime = performance.now();
+    glide.duration = navigationDuration(top - startY);
     requestGlide();
   }
 
@@ -122,8 +158,19 @@ window.addEventListener("pageshow", () => requestAnimationFrame(() => {
 }));
 
 window.addEventListener("resize", () => {
-  if (glide.mode === "navigation" && glide.targetId) glide.target = targetTop(glide.targetId) ?? glide.target;
-  else stopGlide();
+  if (glide.mode === "navigation" && glide.targetId) {
+    const nextTarget = targetTop(glide.targetId);
+    if (nextTarget !== null) {
+      glide.startY = window.scrollY;
+      glide.current = window.scrollY;
+      glide.target = nextTarget;
+      glide.startTime = performance.now();
+      glide.duration = navigationDuration(nextTarget - glide.startY);
+      requestGlide();
+    }
+  } else {
+    stopGlide();
+  }
   requestScrollUiUpdate();
 });
 
