@@ -222,7 +222,7 @@ resumeToggle.addEventListener("click", () => {
   const opening = resumePreview.hidden;
   resumePreview.hidden = !opening;
   resumeToggle.setAttribute("aria-expanded", String(opening));
-  resumeToggle.textContent = opening ? "Close résumé" : "View résumé";
+  resumeToggle.textContent = opening ? "Close resume" : "View resume";
 });
 
 const copyButton = document.getElementById("copy-email");
@@ -252,25 +252,18 @@ copyButton.addEventListener("click", async () => {
 const lightbox = document.getElementById("lightbox");
 const lightboxImage = document.getElementById("lightbox-image");
 const lightboxClose = document.getElementById("lightbox-close");
-let lightboxTrigger;
 
 function closeLightbox() {
-  lightbox.classList.remove("open");
-  lightbox.setAttribute("aria-hidden", "true");
-  document.body.classList.remove("lightbox-open");
-  lightboxTrigger?.focus();
+  if (lightbox.open) lightbox.close();
 }
 
 document.querySelectorAll("[data-lightbox-src]").forEach((button) => {
   button.addEventListener("click", () => {
     stopGlide();
-    lightboxTrigger = button;
     lightboxImage.src = button.dataset.lightboxSrc;
     lightboxImage.alt = button.dataset.lightboxAlt;
-    lightbox.classList.add("open");
-    lightbox.setAttribute("aria-hidden", "false");
+    lightbox.showModal();
     document.body.classList.add("lightbox-open");
-    lightboxClose.focus();
   });
 });
 
@@ -278,9 +271,7 @@ lightboxClose.addEventListener("click", closeLightbox);
 lightbox.addEventListener("click", (event) => {
   if (event.target === lightbox) closeLightbox();
 });
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && lightbox.classList.contains("open")) closeLightbox();
-});
+lightbox.addEventListener("close", () => document.body.classList.remove("lightbox-open"));
 
 if (!("IntersectionObserver" in window) || reducedMotion.matches) {
   document.querySelectorAll(".image-reveal").forEach((element) => element.classList.add("visible"));

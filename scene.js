@@ -236,8 +236,8 @@ if (renderer) {
 
   const pulseRingGeometry = new THREE.RingGeometry(4, 6, 40);
   const pulseBranchPointCount = 9;
-  const pulseBoltPointCount = 15;
-  const pulseDuration = 1700;
+  const pulseBoltPointCount = 27;
+  const pulseDuration = 2600;
   const pulsePurple = 0x7c3aed;
   const pulseDot = makeDotTexture("255,255,255");
   const pulsePool = Array.from({ length: 4 }, () => {
@@ -264,6 +264,7 @@ if (renderer) {
       depthWrite: false,
       blending: THREE.NormalBlending,
     }));
+    strike.frustumCulled = false;
     group.add(strike);
 
     const branches = Array.from({ length: 3 }, () => {
@@ -304,6 +305,8 @@ if (renderer) {
       started: 0,
       duration: pulseDuration,
       branchCount: 0,
+      boltStart: new THREE.Vector3(),
+      nextJitter: 0,
     };
   });
 
@@ -386,7 +389,9 @@ if (renderer) {
       .add(camera.position);
     gridGroup.worldToLocal(pulseTopLocal.copy(pulseTopWorld));
     pulseTopLocal.set(pulseTopLocal.x - landingX, pulseTopLocal.y, pulseTopLocal.z - landingZ);
-    writeLightningBolt(pulse.strike.geometry.attributes.position.array, pulseTopLocal);
+    pulse.boltStart.copy(pulseTopLocal);
+    pulse.nextJitter = milliseconds + 55;
+    writeLightningBolt(pulse.strike.geometry.attributes.position.array, pulse.boltStart);
     pulse.strike.geometry.setDrawRange(0, 0);
     pulse.strike.geometry.attributes.position.needsUpdate = true;
     applyPulseTheme(pulse, pulseThemeBelow);
@@ -433,7 +438,7 @@ if (renderer) {
   }, true);
   document.addEventListener("pointercancel", () => { clickStart = null; }, true);
   document.addEventListener("pointerup", (event) => {
-    if (!clickStart || clickStart.id !== event.pointerId || clickStart.moved || event.button !== 0) {
+    if (reducedMotion || !clickStart || clickStart.id !== event.pointerId || clickStart.moved || event.button !== 0) {
       clickStart = null;
       return;
     }
@@ -489,8 +494,14 @@ if (renderer) {
       const impact = clamp(progress / 0.18, 0, 1);
       const fade = progress < 0.62 ? 1 : 1 - (progress - 0.62) / 0.38;
       pulse.strike.geometry.setDrawRange(0, Math.max(2, Math.ceil(impact * (pulseBoltPointCount - 1)) + 1));
-      const flash = 0.68 + Math.sin(progress * 90) ** 2 * 0.32;
-      pulse.strike.material.opacity = progress < 0.3 ? (1 - progress / 0.3) * flash : 0;
+      const strikeLife = 0.58;
+      if (!reducedMotion && progress < strikeLife && milliseconds >= pulse.nextJitter) {
+        writeLightningBolt(pulse.strike.geometry.attributes.position.array, pulse.boltStart);
+        pulse.strike.geometry.attributes.position.needsUpdate = true;
+        pulse.nextJitter = milliseconds + 55;
+      }
+      const flash = reducedMotion ? 1 : 0.35 + Math.sin(progress * 150) ** 8 * 0.65;
+      pulse.strike.material.opacity = progress < strikeLife ? (1 - progress / strikeLife) * flash : 0;
       pulse.branches.forEach((branch) => {
         branch.material.opacity = impact * fade * (pulseThemeBelow ? 0.9 : 1);
       });

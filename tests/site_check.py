@@ -1,4 +1,5 @@
 from html.parser import HTMLParser
+from hashlib import sha256
 from pathlib import Path
 
 
@@ -91,12 +92,30 @@ assert HTML.index('id="about-panel"') < HTML.index('id="proj-panel-0"')
 assert 'src="assets/me-presenting.jpg"' in HTML
 assert "%236d28d9" in HTML and "%23f5f3ff" in HTML
 assert "Private competition code" in HTML
-assert "Training for my first marathon is no joke" in HTML
-assert 'class="golf-emphasis"' in HTML and "feeling of incompleteness" in HTML
-assert "gridGroup.add(group)" in SCRIPTS and "const pulseDuration = 1700" in SCRIPTS
+assert "What drives me most is building things that can make someone's life better" in HTML
+assert "Training for my first marathon and still enjoying most of the steps" in HTML
+assert 'class="golf-emphasis"' in HTML and "immediately queue another game" in HTML
+assert "r\u00e9sum\u00e9" not in (HTML + SCRIPTS).lower()
+assert "site-monogram" not in HTML + CSS
+assert "assets/projects/graphene-mission-control.webp" in HTML
+assert "assets/projects/reglineage-workflow.svg" in HTML
+assert 'href="assets/projects/reglineage-workflow.svg" target="_blank"' in HTML
+assert "assets/projects/x-api-analyst.jpg" in HTML
+assert "assets/projects/imc-prosperity-3.webp" in HTML
+assert "assets/northeastern_shcool.png" in HTML and "assets/hopkinslll.jpg" in HTML
+assert HTML.count('<use href="#icon-github">') == 4 and '<use href="#icon-linkedin">' in HTML
+assert "View on GitHub" in HTML and "Open full screen" in HTML
+assert "Alex_Lopez_Resume-preview.webp" in HTML and "<iframe" not in HTML
+assert '<dialog id="lightbox"' in HTML
+assert sha256((ROOT / "assets/Alex_Lopez_Resume.pdf").read_bytes()).hexdigest() == "d6db4523871bfff37ef0e5ba962f5d20b27373d4bf33367ec6a0314631bd2338"
+assert "Click for the wrath of Zeus!" in HTML
+assert "gridGroup.add(group)" in SCRIPTS and "const pulseDuration = 2600" in SCRIPTS
 assert "const pulsePurple = 0x7c3aed" in SCRIPTS
 assert 'document.addEventListener("pointerup"' in SCRIPTS
-assert "const pulseBoltPointCount = 15" in SCRIPTS
+assert "const pulseBoltPointCount = 27" in SCRIPTS
+assert "pulse.nextJitter = milliseconds + 55" in SCRIPTS
+assert "const flash = reducedMotion ? 1" in SCRIPTS and "strike.frustumCulled = false" in SCRIPTS
+assert "if (reducedMotion || !clickStart" in SCRIPTS
 assert "const lineColor = below ? 0x1a5fff : pulsePurple" in SCRIPTS
 assert HTML.count("https://skillicons.dev/icons?i=") == 4
 assert "const outroEase" in SCRIPTS and "scene-outro-active" in SCRIPTS
