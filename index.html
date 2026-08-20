@@ -12,7 +12,7 @@
   <meta property="og:image" content="assets/me-presenting.jpg">
   <meta property="og:image:alt" content="Alex Lopez presenting computational biology research">
   <title>Alex Lopez — Software Engineer | Data, AI &amp; Analytics</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-family='Arial,sans-serif' font-size='25' font-weight='700' fill='%23f5f5f0'%3EAL%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%236d28d9'/%3E%3Cg fill='none' stroke='%23f5f3ff' stroke-width='6' stroke-linecap='round'%3E%3Cpath d='M32 13v38M13 32h38M19 19l26 26M45 19L19 45'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='5' fill='%23c4b5fd'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
@@ -59,39 +59,62 @@
       </div>
     </section>
 
-    <section id="proj-panel-0" class="section-panel project-solo-panel" data-project-panel data-nav-section="projects" aria-labelledby="project-1-title">
-      <h2 class="card-label">Selected Projects · <span class="project-counter">01 / 03</span></h2>
-      <article class="glass-card project-card">
-        <img class="project-accent project-accent--wide" src="assets/projects/reglineage-logo.png" width="1316" height="394" loading="lazy" alt="RegLineage logo">
-        <div class="project-heading"><h3 id="project-1-title">RegLineage</h3><p class="project-meta">July 2026 – Present</p></div>
-        <p>A governed analytics system that turns business questions into policy-gated aggregate analyses with human approval, deterministic DuckDB execution, DataHub lineage, and fresh read-back verification.</p>
-        <small class="project-note">Uses deterministic synthetic analytical fixtures today.</small>
-        <ul class="tags" aria-label="RegLineage technologies"><li>Python</li><li>FastAPI</li><li>DuckDB</li><li>DataHub</li><li>MCP</li></ul>
-        <div class="project-footer">
-          <a class="project-link" href="https://github.com/Alex-lop/RegLineage" target="_blank" rel="noopener noreferrer">Repository <span aria-hidden="true">↗</span></a>
-        </div>
-      </article>
-    </section>
+    <section id="proj-panel-0" class="section-panel project-solo-panel project-accordion-panel" data-project-panel data-nav-section="projects" aria-labelledby="projects-title">
+      <h2 class="card-label" id="projects-title">Selected Projects · <span class="project-counter">Open one</span></h2>
+      <div class="project-accordion">
+        <details class="glass-card project-disclosure" name="selected-projects" open>
+          <summary>
+            <span class="project-index">01</span>
+            <span class="project-summary-text"><strong>Graphene</strong><small>July 2026 – Present</small></span>
+            <span class="project-summary-tail"><span class="project-kind">Agent systems</span><span class="project-toggle" aria-hidden="true">+</span></span>
+          </summary>
+          <div class="project-details">
+            <p>Local-first mission control for bounded multi-agent coding: it validates dependency-aware work, schedules policy-allowed tasks in isolation, and assembles evidence for review. An isolated local commit is created only after explicit approval.</p>
+            <ul class="tags" aria-label="Graphene technologies"><li>Python</li><li>SQLite</li><li>FastAPI</li><li>Google ADK</li></ul>
+            <div class="project-footer"><a class="project-link" href="https://github.com/Alex-lop/Graphene" target="_blank" rel="noopener noreferrer">Repository <span aria-hidden="true">↗</span></a></div>
+          </div>
+        </details>
 
-    <section id="proj-panel-1" class="section-panel project-solo-panel" data-project-panel data-nav-section="projects" aria-labelledby="project-2-title">
-      <h2 class="card-label">Selected Projects · <span class="project-counter">02 / 03</span></h2>
-      <article class="glass-card project-card">
-        <img class="project-accent" src="assets/projects/x-api-analyst.jpg" width="500" height="500" loading="lazy" alt="X API Analyst project artwork">
-        <div class="project-heading"><h3 id="project-2-title">X API Analyst</h3><p class="project-meta">June 2026 – Present</p></div>
-        <p>A local, bring-your-own-token workbench for collecting public X posts through the official recent-search API, with resumable jobs, immutable SQLite snapshots, exact cache reuse, JSON/CSV exports, and an optional MCP bridge.</p>
-        <ul class="tags" aria-label="X API Analyst technologies"><li>Python</li><li>Flask</li><li>SQLite</li><li>X API</li><li>MCP</li></ul>
-        <div class="project-footer"><a class="project-link" href="https://github.com/Alex-lop/X-Scraper" target="_blank" rel="noopener noreferrer">Repository <span aria-hidden="true">↗</span></a></div>
-      </article>
-    </section>
+        <details class="glass-card project-disclosure" name="selected-projects">
+          <summary>
+            <span class="project-index">02</span>
+            <span class="project-summary-text"><strong>RegLineage</strong><small>June 2026 – Present</small></span>
+            <span class="project-summary-tail"><img class="project-summary-art project-summary-art--wide" src="assets/projects/reglineage-logo.png" width="1316" height="394" loading="lazy" alt="RegLineage logo"><span class="project-toggle" aria-hidden="true">+</span></span>
+          </summary>
+          <div class="project-details">
+            <p>A governance control loop that makes AI data capabilities revocable when policy or lineage changes. It uses DataHub to suspend only affected work, require approved repair, and verify write-back before restoring access.</p>
+            <small class="project-note">2.96M-row governed demo.</small>
+            <ul class="tags" aria-label="RegLineage technologies"><li>Python</li><li>DataHub</li><li>SQLite</li><li>MCP</li></ul>
+            <div class="project-footer"><a class="project-link" href="https://github.com/Alex-lop/RegLineage" target="_blank" rel="noopener noreferrer">Repository <span aria-hidden="true">↗</span></a></div>
+          </div>
+        </details>
 
-    <section id="proj-panel-2" class="section-panel project-solo-panel" data-project-panel data-nav-section="projects" aria-labelledby="project-3-title">
-      <h2 class="card-label">Selected Projects · <span class="project-counter">03 / 03</span></h2>
-      <article class="glass-card project-card">
-        <div class="project-heading"><h3 id="project-3-title">IMC Prosperity 3</h3><p class="project-meta">March 2025 – April 2025</p></div>
-        <p>Placed 912th out of roughly 13,000 teams—top 8% globally—in IMC Prosperity 3. Collaborated on market-making, scalping, locational-arbitrage, and mean-reversion strategies while balancing execution quality and risk-adjusted returns.</p>
-        <ul class="tags" aria-label="IMC Prosperity 3 technologies and methods"><li>Python</li><li>Algorithmic Trading</li><li>Market Making</li><li>Quantitative Research</li></ul>
-        <div class="project-footer"><span class="private-label"><span aria-hidden="true">▣</span> Private competition repository</span></div>
-      </article>
+        <details class="glass-card project-disclosure" name="selected-projects">
+          <summary>
+            <span class="project-index">03</span>
+            <span class="project-summary-text"><strong>X-Scraper</strong><small>June 2026 – Present</small></span>
+            <span class="project-summary-tail"><img class="project-summary-art" src="assets/projects/x-api-analyst.jpg" width="500" height="500" loading="lazy" alt="X-Scraper project artwork"><span class="project-toggle" aria-hidden="true">+</span></span>
+          </summary>
+          <div class="project-details">
+            <p>A local workbench that turns small, human-approved X/Twitter captures into durable SQLite snapshots for search, export, and bounded read-only MCP access. Its browser-first workflow preserves provenance and partial results without automating around login or rate-limit gates.</p>
+            <ul class="tags" aria-label="X-Scraper technologies"><li>Python</li><li>Playwright</li><li>SQLite</li><li>MCP</li></ul>
+            <div class="project-footer"><a class="project-link" href="https://github.com/Alex-lop/X-Scraper" target="_blank" rel="noopener noreferrer">Repository <span aria-hidden="true">↗</span></a></div>
+          </div>
+        </details>
+
+        <details class="glass-card project-disclosure" name="selected-projects">
+          <summary>
+            <span class="project-index">04</span>
+            <span class="project-summary-text"><strong>IMC Prosperity 3</strong><small>March 2025 – April 2025</small></span>
+            <span class="project-summary-tail"><span class="project-kind">Top 8% globally</span><span class="project-toggle" aria-hidden="true">+</span></span>
+          </summary>
+          <div class="project-details">
+            <p>Placed 912th out of roughly 13,000 teams—top 8% globally—in IMC Prosperity 3. Collaborated on Python strategies spanning market making, scalping, locational arbitrage, and mean reversion while balancing execution and risk.</p>
+            <ul class="tags" aria-label="IMC Prosperity 3 technologies and methods"><li>Python</li><li>Market Making</li><li>Arbitrage</li><li>Mean Reversion</li></ul>
+            <div class="project-footer"><span class="private-label"><span aria-hidden="true">▣</span> Private competition code</span></div>
+          </div>
+        </details>
+      </div>
     </section>
 
     <section id="education-panel" class="section-panel resume-solo-panel" data-nav-section="resume" aria-labelledby="education-title">
