@@ -183,7 +183,7 @@ window.addEventListener("touchstart", stopGlide, { passive: true });
 const navLinks = new Map([...document.querySelectorAll("[data-nav]")].map((link) => [link.dataset.nav, link]));
 const navSections = [...document.querySelectorAll("[data-nav-section]")];
 const backToTop = document.getElementById("back-to-top");
-const laterPanel = document.getElementById("proj-panel-1");
+const laterPanel = document.getElementById("experience-panel");
 const sceneOutro = document.getElementById("scene-outro");
 let scrollUiFrame = 0;
 
