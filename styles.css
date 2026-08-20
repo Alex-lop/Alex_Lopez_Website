@@ -301,6 +301,39 @@ main { position: relative; z-index: 2; pointer-events: none; }
 .project-note, .private-label { color: var(--text-dim); font-size: 0.68rem; opacity: 0.78; }
 .project-note { display: block; margin: -0.65rem 0 1.25rem; }
 
+.project-accordion-panel { min-height: 140vh; }
+.project-accordion { display: grid; width: min(760px, 100%); gap: 0.85rem; }
+.project-disclosure { overflow: hidden; transition: border-color 220ms ease, box-shadow 220ms ease; }
+.project-disclosure:hover, .project-disclosure[open] { border-color: rgba(26, 95, 255, 0.5); box-shadow: 0 0 44px rgba(26, 95, 255, 0.1); }
+.project-disclosure summary {
+  display: grid;
+  min-height: 84px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.1rem 1.35rem;
+  list-style: none;
+  cursor: pointer;
+}
+.project-disclosure summary::-webkit-details-marker { display: none; }
+.project-disclosure summary:focus-visible { outline-offset: -4px; }
+.project-disclosure[open] summary { border-bottom: 1px solid var(--neon-dim); }
+.project-index { color: var(--red); font-family: "Space Grotesk", sans-serif; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.12em; }
+.project-summary-text { display: grid; min-width: 0; transition: transform 180ms ease; }
+.project-disclosure summary:hover .project-summary-text { transform: translateX(3px); }
+.project-summary-text strong { overflow: hidden; font-family: "Space Grotesk", sans-serif; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
+.project-summary-text small { margin-top: 0.15rem; color: var(--text-dim); font-size: 0.66rem; letter-spacing: 0.07em; text-transform: uppercase; }
+.project-summary-tail { display: flex; align-items: center; gap: 0.9rem; }
+.project-kind { color: var(--neon); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.project-summary-art { width: 42px; height: 42px; padding: 5px; object-fit: contain; background: rgba(255, 255, 255, 0.92); border: 1px solid var(--neon-dim); border-radius: 10px; }
+.project-summary-art--wide { width: 112px; height: 36px; padding: 4px 7px; background: #0a0a0a; }
+.project-toggle { display: grid; width: 28px; height: 28px; place-items: center; color: var(--neon); border: 1px solid var(--neon-dim); border-radius: 50%; font-size: 1.15rem; line-height: 1; transition: transform 220ms ease, color 220ms ease; }
+.project-disclosure[open] .project-toggle { color: var(--red); transform: rotate(45deg); }
+.project-details { padding: 1.5rem 1.35rem 1.7rem 3.75rem; animation: project-reveal 240ms ease both; }
+.project-details > p { margin: 0 0 1.4rem; color: var(--text-dim); font-size: 0.88rem; font-weight: 300; line-height: 1.8; }
+.project-details .project-footer { padding-top: 1.25rem; }
+@keyframes project-reveal { from { opacity: 0; transform: translateY(-7px); } to { opacity: 1; transform: none; } }
+
 .resume-card { max-width: 660px; padding: clamp(2rem, 5vw, 3rem) clamp(1.6rem, 6vw, 3.5rem); }
 .resume-card > h3 { padding-bottom: 0.85rem; margin: 0 0 1.5rem; color: var(--neon); border-bottom: 1px solid var(--neon-dim); font-family: "Space Grotesk", sans-serif; font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; }
 .resume-list { padding: 0; margin: 0; list-style: none; }
@@ -448,7 +481,7 @@ body.scene-outro-active .back-to-top { opacity: 0; pointer-events: none; }
 body.dark-mode { --text: #e8e8e8; --text-dim: #aaa; --card-bg: rgba(18, 18, 18, 0.85); --label-bg: rgba(10, 10, 14, 0.88); background: #050505; }
 body.dark-mode .intro-name { text-shadow: 0 0 28px rgba(229, 160, 0, 0.55); }
 body.dark-mode .glass-card { border-color: rgba(229, 160, 0, 0.22); box-shadow: 0 0 24px rgba(229, 160, 0, 0.08); }
-body.dark-mode .nav-link, body.dark-mode .site-monogram, body.dark-mode .project-link, body.dark-mode .contact-links a, body.dark-mode .hobby-card a, body.dark-mode .download-link { color: var(--amber); }
+body.dark-mode .nav-link, body.dark-mode .site-monogram, body.dark-mode .project-link, body.dark-mode .project-kind, body.dark-mode .project-toggle, body.dark-mode .contact-links a, body.dark-mode .hobby-card a, body.dark-mode .download-link { color: var(--amber); }
 body.dark-mode .tags li, body.dark-mode #copy-email { color: var(--amber); background: rgba(229, 160, 0, 0.1); border-color: rgba(229, 160, 0, 0.25); }
 body.dark-mode #drag-hint { color: rgba(255, 255, 255, 0.5); background: rgba(0, 0, 0, 0.55); border-color: rgba(255, 255, 255, 0.1); }
 body.dark-mode .scroll-hint { color: rgba(255, 255, 255, 0.38); }
@@ -467,6 +500,8 @@ body.dark-mode .hobby-card { background: rgba(255, 255, 255, 0.035); border-colo
   .about-card { max-width: 650px; width: 100%; }
   .about-photo-wrap { width: min(420px, 88vw); }
   .project-card { min-height: 0; }
+  .project-accordion-panel { min-height: 145vh; }
+  .project-details { padding-left: 1.35rem; }
   .project-accent--wide { width: 128px; height: 46px; }
   .project-card:has(.project-accent--wide) .project-heading { padding-right: 148px; }
   .hobbies-grid { grid-template-columns: 1fr; gap: 1rem; }
@@ -493,6 +528,10 @@ body.dark-mode .hobby-card { background: rgba(255, 255, 255, 0.035); border-colo
   .project-heading { min-height: 72px; padding-right: 72px; }
   .project-card:has(.project-accent--wide) .project-heading { padding-right: 128px; }
   .project-footer { align-items: flex-start; flex-direction: column; }
+  .project-disclosure summary { min-height: 76px; gap: 0.7rem; padding: 0.95rem 1rem; }
+  .project-kind { display: none; }
+  .project-summary-art--wide { width: 88px; }
+  .project-details { padding: 1.25rem 1rem 1.45rem; }
   .resume-card { padding: 1.7rem 1.35rem; }
   .skills-grid { grid-template-columns: 1fr; gap: 1rem; }
   .experience-card strong { align-items: flex-start; }
