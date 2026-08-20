@@ -120,11 +120,17 @@ assert 'src="assets/me-presenting.jpg"' in HTML
 assert "%236d28d9" in HTML and "%23f5f3ff" in HTML
 assert "Private competition code" in HTML
 assert "What drives me most is building things that can make someone's life better" in HTML
-assert "genes linked to cancer" in HTML and '<p class="impact-word">IMPACT</p>' in HTML
+assert '<p class="about-greeting">Hey I\'m Alex!</p>' in HTML
+assert "genes linked to cancer" in HTML and '<p class="impact-word">Impact</p>' in HTML
 assert "Training for my first marathon and still enjoying most of the steps" in HTML
 assert 'class="golf-emphasis"' in HTML and "immediately queue another game" in HTML
 assert not [value for value in visible.text if value.endswith(".")], "Visible copy should not end in periods"
-assert "—" not in HTML + CSS + SCRIPTS
+assert all(title in HTML for title in (
+    "Software Engineering Intern — Expandya",
+    "Teaching Assistant — Northeastern University",
+    "Undergraduate Ambassador — SHPE",
+    "Computational Biology Research Assistant — O’Hern Lab, Yale",
+))
 assert "r\u00e9sum\u00e9" not in (HTML + SCRIPTS).lower()
 assert "site-monogram" not in HTML + CSS
 assert "assets/projects/graphene-mission-control.webp" in HTML
@@ -134,15 +140,16 @@ assert "assets/projects/imc-prosperity-3.webp" in HTML
 assert all(f"project-summary-art--{name}" in HTML for name in ("graphene", "reglineage", "x", "imc"))
 assert "project-media" not in HTML + CSS and "project-image" not in HTML + CSS
 assert "assets/northeastern_shcool.png" in HTML and "assets/hopkinslll.jpg" in HTML
-assert "assets/shpe.jpg" in HTML and "Undergraduate Ambassador, SHPE" in HTML
+assert "assets/shpe.jpg" in HTML and "Undergraduate Ambassador — SHPE" in HTML
 assert "Improved organic and AI assisted search visibility" in HTML
-assert "Built Python and C++ ecommerce data systems" in HTML and "50M rows" in HTML
+assert "Python and C++ ecommerce data systems" in HTML and "50M rows" in HTML
+assert "experience-points" not in HTML + CSS
 assert HTML.count('<use href="#icon-github">') == 4 and '<use href="#icon-linkedin">' in HTML
 assert "View on GitHub" in HTML and "Open full screen" in HTML
 assert "Alex_Lopez_Resume-preview.webp" in HTML and "<iframe" not in HTML
 assert '<dialog id="lightbox"' in HTML
 assert sha256((ROOT / "assets/Alex_Lopez_Resume.pdf").read_bytes()).hexdigest() == "d6db4523871bfff37ef0e5ba962f5d20b27373d4bf33367ec6a0314631bd2338"
-assert "Click twice for the wrath of Zeus!" in HTML and 'id="zeus-hint" class="zeus-hint" aria-hidden="true" hidden' in HTML
+assert "Click to see Zeus' fury!" in HTML and 'id="zeus-hint" class="zeus-hint" aria-hidden="true" hidden' in HTML
 assert "if (!reducedMotion && zeusHint) zeusHint.hidden = false" in SCRIPTS
 assert "gridGroup.add(group)" in SCRIPTS and "const pulseDuration = 2600" in SCRIPTS
 assert "const pulsePurple = 0x7c3aed" in SCRIPTS
@@ -151,8 +158,8 @@ assert "const pulseBoltPointCount = 27" in SCRIPTS
 assert "pulse.nextJitter = milliseconds + 55" in SCRIPTS
 assert "const flash = reducedMotion ? 1" in SCRIPTS and "strike.frustumCulled = false" in SCRIPTS
 assert "if (reducedMotion || !clickStart" in SCRIPTS
-assert "const strikeOffsets" in SCRIPTS and "zeusClickCount += 1" in SCRIPTS
-assert 'zeusHint.textContent = "One more strike!"' in SCRIPTS and "zeusHint.hidden = true" in SCRIPTS
+assert "const strikeOffsets" in SCRIPTS and "zeusClickCount" not in SCRIPTS
+assert "triggerGridPulse(intersection, clickNdc, performance.now());\n    if (zeusHint) zeusHint.hidden = true;" in SCRIPTS
 assert "const lineColor = below ? 0x1a5fff : pulsePurple" in SCRIPTS
 assert HTML.count("https://skillicons.dev/icons?i=") == 4
 assert "const outroEase" in SCRIPTS and "scene-outro-active" in SCRIPTS

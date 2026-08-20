@@ -153,20 +153,20 @@ main { position: relative; z-index: 2; pointer-events: none; }
 .intro-role { margin: 0; color: var(--text-dim); font-size: clamp(0.76rem, 1.4vw, 0.9rem); letter-spacing: 0.12em; }
 .zeus-hint {
   position: fixed;
-  bottom: 4.2rem;
+  bottom: 4.5rem;
   left: 50%;
-  z-index: 24;
+  z-index: 45;
   width: max-content;
   max-width: calc(100vw - 2rem);
-  padding: 0.45rem 1rem;
+  padding: 0.6rem 1.2rem;
   margin: 0;
-  color: #4c1d95;
-  background: rgba(255, 255, 255, 0.86);
-  border: 1px solid rgba(109, 40, 217, 0.28);
+  color: white;
+  background: rgba(109, 40, 217, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.48);
   border-radius: 999px;
-  box-shadow: 0 6px 24px rgba(76, 29, 149, 0.12);
-  font-size: 0.7rem;
-  font-weight: 600;
+  box-shadow: 0 0 0 5px rgba(109, 40, 217, 0.12), 0 8px 32px rgba(76, 29, 149, 0.38);
+  font-size: 0.76rem;
+  font-weight: 700;
   letter-spacing: 0.2em;
   pointer-events: none;
   text-align: center;
@@ -176,7 +176,7 @@ main { position: relative; z-index: 2; pointer-events: none; }
   backdrop-filter: blur(10px);
 }
 .zeus-hint[hidden], .no-webgl .zeus-hint { display: none; }
-@keyframes hint-pulse { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
+@keyframes hint-pulse { 0%, 100% { opacity: 0.82; } 50% { opacity: 1; } }
 
 .card-label {
   padding: 0.42rem 1.1rem;
@@ -215,8 +215,9 @@ main { position: relative; z-index: 2; pointer-events: none; }
   max-width: 520px;
   padding: clamp(1.8rem, 4vw, 2.8rem) clamp(1.5rem, 4vw, 2.8rem);
 }
-.about-card > p:first-child { margin: 0; font-size: 0.98rem; line-height: 1.8; }
-.impact-word { margin: 1.25rem 0 0; color: var(--neon); font-family: "Space Grotesk", sans-serif; font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 700; letter-spacing: -0.03em; text-align: center; }
+.about-greeting { margin: 0; font-family: "Space Grotesk", sans-serif; font-size: 1.08rem; font-weight: 600; }
+.about-copy { margin: 1rem 0 0; font-size: 0.98rem; line-height: 1.8; text-indent: 1.5rem; }
+.impact-word { margin: 1rem 0 0; color: var(--text); font-size: 0.98rem; font-weight: 500; }
 .about-photo-wrap {
   flex: 0 0 auto;
   width: min(440px, 42vw);
@@ -348,8 +349,6 @@ main { position: relative; z-index: 2; pointer-events: none; }
 .resume-list strong { color: var(--text); font-family: "Space Grotesk", sans-serif; font-size: 0.94rem; }
 .resume-list span { margin-top: 0.28rem; color: var(--text-dim); font-size: 0.77rem; opacity: 0.82; }
 .resume-list p { margin: 0.6rem 0 0; color: var(--text-dim); font-size: 0.83rem; font-weight: 300; }
-.experience-points { padding-left: 1.1rem; margin: 0.65rem 0 0; color: var(--text-dim); font-size: 0.8rem; font-weight: 300; }
-.experience-points > li + li { margin-top: 0.35rem; }
 .education-card { max-width: 720px; }
 .education-entry { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; gap: 1.5rem; }
 .school-logo { width: 96px; height: 96px; padding: 4px; object-fit: contain; background: white; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 50%; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); }
@@ -499,7 +498,7 @@ body.dark-mode .nav-link, body.dark-mode .project-toggle, body.dark-mode .contac
 body.dark-mode .project-link { color: #111; background: var(--amber); box-shadow: 0 8px 24px rgba(229, 160, 0, 0.24); }
 body.dark-mode .tags li, body.dark-mode #copy-email { color: var(--amber); background: rgba(229, 160, 0, 0.1); border-color: rgba(229, 160, 0, 0.25); }
 body.dark-mode #drag-hint { color: rgba(255, 255, 255, 0.5); background: rgba(0, 0, 0, 0.55); border-color: rgba(255, 255, 255, 0.1); }
-body.dark-mode .zeus-hint { color: #ddd6fe; background: rgba(5, 5, 5, 0.82); border-color: rgba(196, 181, 253, 0.35); }
+body.dark-mode .zeus-hint { color: white; background: rgba(109, 40, 217, 0.94); border-color: rgba(221, 214, 254, 0.65); }
 body.dark-mode .hobby-card { background: rgba(255, 255, 255, 0.035); border-color: rgba(255, 255, 255, 0.08); }
 
 @media (max-width: 1370px) { .luna-float { display: none; } }
@@ -538,9 +537,9 @@ body.dark-mode .hobby-card { background: rgba(255, 255, 255, 0.035); border-colo
   .intro-name { font-size: clamp(4rem, 22vw, 6rem); }
   .intro-tagline { letter-spacing: 0.38em; text-indent: 0.38em; }
   .intro-role { width: 82%; line-height: 1.8; }
-  .zeus-hint { bottom: 3.7rem; font-size: 0.62rem; letter-spacing: 0.14em; }
+  .zeus-hint { bottom: 3.7rem; font-size: 0.68rem; letter-spacing: 0.14em; }
   .card-label { font-size: 0.7rem; }
-  .about-card > p:first-child { font-size: 0.94rem; }
+  .about-copy { font-size: 0.94rem; }
   .project-accent { top: 1.25rem; right: 1.25rem; width: 54px; height: 54px; padding: 6px; }
   .project-accent--wide { width: 112px; height: 40px; padding: 5px 8px; }
   .project-heading { min-height: 72px; padding-right: 72px; }

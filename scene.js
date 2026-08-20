@@ -437,7 +437,6 @@ if (renderer) {
   const intersection = new THREE.Vector3();
   const clickNdc = new THREE.Vector2();
   let clickStart;
-  let zeusClickCount = 0;
 
   document.addEventListener("pointerdown", (event) => {
     if (event.button === 0 && event.isPrimary !== false) clickStart = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
@@ -462,9 +461,7 @@ if (renderer) {
       intersection.set(controls.target.x, gridGroup.position.y, controls.target.z);
     }
     triggerGridPulse(intersection, clickNdc, performance.now());
-    zeusClickCount += 1;
-    if (zeusClickCount === 1 && zeusHint) zeusHint.textContent = "One more strike!";
-    else if (zeusHint) zeusHint.hidden = true;
+    if (zeusHint) zeusHint.hidden = true;
     clickStart = null;
   }, true);
 
