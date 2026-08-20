@@ -217,7 +217,7 @@ main { position: relative; z-index: 2; pointer-events: none; }
 }
 .about-greeting { margin: 0; font-family: "Space Grotesk", sans-serif; font-size: 1.08rem; font-weight: 600; }
 .about-copy { margin: 1rem 0 0; font-size: 0.98rem; line-height: 1.8; text-indent: 1.5rem; }
-.impact-word { margin: 1rem 0 0; color: var(--text); font-size: 0.98rem; font-weight: 500; }
+.impact-word { margin: 1.25rem 0 0; color: var(--neon); font-family: "Space Grotesk", sans-serif; font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 700; letter-spacing: -0.03em; text-align: center; }
 .about-photo-wrap {
   flex: 0 0 auto;
   width: min(440px, 42vw);

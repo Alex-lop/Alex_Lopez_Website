@@ -142,13 +142,13 @@ assert "project-media" not in HTML + CSS and "project-image" not in HTML + CSS
 assert "assets/northeastern_shcool.png" in HTML and "assets/hopkinslll.jpg" in HTML
 assert "assets/shpe.jpg" in HTML and "Undergraduate Ambassador — SHPE" in HTML
 assert "Improved organic and AI assisted search visibility" in HTML
-assert "Python and C++ ecommerce data systems" in HTML and "50M rows" in HTML
+assert "Python and C++ ecommerce data systems" in HTML and "3M rows" in HTML and "50M rows" not in HTML
 assert "experience-points" not in HTML + CSS
 assert HTML.count('<use href="#icon-github">') == 4 and '<use href="#icon-linkedin">' in HTML
 assert "View on GitHub" in HTML and "Open full screen" in HTML
 assert "Alex_Lopez_Resume-preview.webp" in HTML and "<iframe" not in HTML
 assert '<dialog id="lightbox"' in HTML
-assert sha256((ROOT / "assets/Alex_Lopez_Resume.pdf").read_bytes()).hexdigest() == "d6db4523871bfff37ef0e5ba962f5d20b27373d4bf33367ec6a0314631bd2338"
+assert sha256((ROOT / "assets/Alex_Lopez_Resume.pdf").read_bytes()).hexdigest() == "14e02edb07ab81dcb3899e03b59daed59c7fab3aadba808a17d99915ad681321"
 assert "Click to see Zeus' fury!" in HTML and 'id="zeus-hint" class="zeus-hint" aria-hidden="true" hidden' in HTML
 assert "if (!reducedMotion && zeusHint) zeusHint.hidden = false" in SCRIPTS
 assert "gridGroup.add(group)" in SCRIPTS and "const pulseDuration = 2600" in SCRIPTS
