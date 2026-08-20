@@ -15,6 +15,7 @@ class SiteParser(HTMLParser):
         self.anchors = []
         self.assets = []
         self.images = []
+        self.details = []
         self.project_panels = 0
         self.h1_count = 0
 
@@ -26,6 +27,8 @@ class SiteParser(HTMLParser):
             self.anchors.append(values)
         if tag == "img":
             self.images.append(values)
+        if tag == "details":
+            self.details.append(values)
         if tag == "h1":
             self.h1_count += 1
         if "project-solo-panel" in values.get("class", "").split():
@@ -45,8 +48,6 @@ restored_panels = {
     "intro-panel",
     "about-panel",
     "proj-panel-0",
-    "proj-panel-1",
-    "proj-panel-2",
     "education-panel",
     "experience-panel",
     "skills-panel",
@@ -55,7 +56,10 @@ restored_panels = {
     "scene-outro",
 }
 assert restored_panels <= site.ids, f"Missing restored anchors: {sorted(restored_panels - site.ids)}"
-assert site.project_panels == 3, f"Expected three project panels, found {site.project_panels}"
+assert site.project_panels == 1, f"Expected one project panel, found {site.project_panels}"
+assert len(site.details) == 4, f"Expected four expandable projects, found {len(site.details)}"
+assert all(item.get("name") == "selected-projects" for item in site.details)
+assert "open" in site.details[0] and all("open" not in item for item in site.details[1:])
 assert site.h1_count == 1, f"Expected one h1, found {site.h1_count}"
 assert all("alt" in image for image in site.images), "Every image needs an alt attribute"
 
@@ -71,6 +75,7 @@ for anchor in site.anchors:
 for asset in site.assets:
     assert (ROOT / asset).is_file(), f"Missing local asset: {asset}"
 
+assert "https://github.com/Alex-lop/Graphene" in HTML
 assert "https://github.com/Alex-lop/RegLineage" in HTML
 assert "https://github.com/Alex-lop/X-Scraper" in HTML
 assert "Coin Shroud" not in HTML
@@ -81,6 +86,11 @@ assert "prefers-reduced-motion: reduce" in SCRIPTS
 assert "OrbitControls" in SCRIPTS
 assert "addEventListener(\"wheel\"" in SCRIPTS
 assert "window.scrollTo" in SCRIPTS
+assert "window.portfolioHandleWheel" in SCRIPTS and "Soft takeoff, long coast, soft landing" in SCRIPTS
+assert HTML.index('id="about-panel"') < HTML.index('id="proj-panel-0"')
+assert 'src="assets/me-presenting.jpg"' in HTML
+assert "%236d28d9" in HTML and "%23f5f3ff" in HTML
+assert "Private competition code" in HTML
 assert "Training for my first marathon is no joke" in HTML
 assert 'class="golf-emphasis"' in HTML and "feeling of incompleteness" in HTML
 assert "gridGroup.add(group)" in SCRIPTS and "const pulseDuration = 1700" in SCRIPTS
