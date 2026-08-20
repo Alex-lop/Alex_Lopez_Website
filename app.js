@@ -28,7 +28,7 @@ function targetTop(id) {
   return target ? clamp(Math.round(target.getBoundingClientRect().top + window.scrollY), 0, maxScroll()) : null;
 }
 
-// Soft takeoff, long coast, soft landing — like sliding on ice.
+// Soft takeoff, long coast, soft landing, like sliding on ice
 function iceEase(t) {
   const p = clamp(t, 0, 1);
   return p * p * p * (p * (p * 6 - 15) + 10);

@@ -151,20 +151,32 @@ main { position: relative; z-index: 2; pointer-events: none; }
   text-transform: uppercase;
 }
 .intro-role { margin: 0; color: var(--text-dim); font-size: clamp(0.76rem, 1.4vw, 0.9rem); letter-spacing: 0.12em; }
-.scroll-hint {
-  position: absolute;
-  bottom: 4rem;
+.zeus-hint {
+  position: fixed;
+  bottom: 4.2rem;
   left: 50%;
-  width: min(90vw, 640px);
+  z-index: 24;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  padding: 0.45rem 1rem;
   margin: 0;
-  color: rgba(0, 0, 0, 0.55);
+  color: #4c1d95;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(109, 40, 217, 0.28);
+  border-radius: 999px;
+  box-shadow: 0 6px 24px rgba(76, 29, 149, 0.12);
   font-size: 0.7rem;
+  font-weight: 600;
   letter-spacing: 0.2em;
+  pointer-events: none;
+  text-align: center;
   text-transform: uppercase;
   transform: translateX(-50%);
   animation: hint-pulse 2.6s ease-in-out infinite;
+  backdrop-filter: blur(10px);
 }
-@keyframes hint-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 0.95; } }
+.zeus-hint[hidden], .no-webgl .zeus-hint { display: none; }
+@keyframes hint-pulse { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
 
 .card-label {
   padding: 0.42rem 1.1rem;
@@ -204,6 +216,7 @@ main { position: relative; z-index: 2; pointer-events: none; }
   padding: clamp(1.8rem, 4vw, 2.8rem) clamp(1.5rem, 4vw, 2.8rem);
 }
 .about-card > p:first-child { margin: 0; font-size: 0.98rem; line-height: 1.8; }
+.impact-word { margin: 1.25rem 0 0; color: var(--neon); font-family: "Space Grotesk", sans-serif; font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 700; letter-spacing: -0.03em; text-align: center; }
 .about-photo-wrap {
   flex: 0 0 auto;
   width: min(440px, 42vw);
@@ -297,7 +310,7 @@ main { position: relative; z-index: 2; pointer-events: none; }
 .project-disclosure:hover, .project-disclosure[open] { border-color: rgba(26, 95, 255, 0.5); box-shadow: 0 0 44px rgba(26, 95, 255, 0.1); }
 .project-disclosure summary {
   display: grid;
-  min-height: 84px;
+  min-height: 108px;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 1rem;
@@ -307,38 +320,36 @@ main { position: relative; z-index: 2; pointer-events: none; }
 }
 .project-disclosure summary::-webkit-details-marker { display: none; }
 .project-disclosure summary:focus-visible { outline-offset: -4px; }
-.project-image-button:focus-visible, .hobby-card .image-button:focus-visible, .resume-frame a:focus-visible { outline-offset: -4px; }
+.hobby-card .image-button:focus-visible, .resume-frame a:focus-visible { outline-offset: -4px; }
 .project-disclosure[open] summary { border-bottom: 1px solid var(--neon-dim); }
 .project-index { color: var(--red); font-family: "Space Grotesk", sans-serif; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.12em; }
 .project-summary-text { display: grid; min-width: 0; transition: transform 180ms ease; }
 .project-disclosure summary:hover .project-summary-text { transform: translateX(3px); }
 .project-summary-text strong { overflow: hidden; font-family: "Space Grotesk", sans-serif; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
 .project-summary-text small { margin-top: 0.15rem; color: var(--text-dim); font-size: 0.66rem; letter-spacing: 0.07em; text-transform: uppercase; }
-.project-summary-tail { display: flex; align-items: center; gap: 0.9rem; }
-.project-kind { color: var(--neon); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
-.project-summary-art { width: 42px; height: 42px; padding: 5px; object-fit: contain; background: rgba(255, 255, 255, 0.92); border: 1px solid var(--neon-dim); border-radius: 10px; }
-.project-summary-art--wide { width: 112px; height: 36px; padding: 4px 7px; background: #0a0a0a; }
+.project-summary-tail { display: flex; align-items: center; justify-self: end; gap: 0.9rem; }
+.project-summary-art { flex: 0 0 auto; object-fit: cover; background: white; border: 1px solid var(--neon-dim); border-radius: 10px; }
+.project-summary-art--graphene { width: 180px; height: 68px; padding: 6px 9px; object-fit: contain; background: #080b0f; }
+.project-summary-art--reglineage { width: 180px; height: 54px; padding: 5px 9px; object-fit: contain; background: #0a0a0a; }
+.project-summary-art--x { width: 72px; height: 72px; }
+.project-summary-art--imc { width: 128px; height: 72px; }
 .project-toggle { display: grid; width: 28px; height: 28px; place-items: center; color: var(--neon); border: 1px solid var(--neon-dim); border-radius: 50%; font-size: 1.15rem; line-height: 1; transition: transform 220ms ease, color 220ms ease; }
 .project-disclosure[open] .project-toggle { color: var(--red); transform: rotate(45deg); }
 .project-details { padding: 1.5rem 1.35rem 1.7rem 3.75rem; animation: project-reveal 240ms ease both; }
 .project-details > p { margin: 0 0 1.4rem; color: var(--text-dim); font-size: 0.88rem; font-weight: 300; line-height: 1.8; }
 .project-details .project-footer { padding-top: 1.25rem; }
-.project-media { margin: 0 0 1.35rem; background: #080b0f; border: 1px solid var(--neon-dim); border-radius: 14px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16); }
-.project-image-button { border-radius: 14px; }
-.project-image { width: 100%; max-height: 470px; object-fit: contain; }
-.project-media--workflow { background: rgba(255, 255, 255, 0.96); }
-.project-media--workflow .project-image { max-height: 520px; }
-.project-media--square .project-image { max-height: 430px; }
 @keyframes project-reveal { from { opacity: 0; transform: translateY(-7px); } to { opacity: 1; transform: none; } }
 
 .resume-card { max-width: 660px; padding: clamp(2rem, 5vw, 3rem) clamp(1.6rem, 6vw, 3.5rem); }
 .resume-card > h3 { padding-bottom: 0.85rem; margin: 0 0 1.5rem; color: var(--neon); border-bottom: 1px solid var(--neon-dim); font-family: "Space Grotesk", sans-serif; font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; }
 .resume-list { padding: 0; margin: 0; list-style: none; }
-.resume-list li + li { padding-top: 1.55rem; margin-top: 1.55rem; border-top: 1px solid rgba(26, 95, 255, 0.12); }
+.resume-list > li + li { padding-top: 1.55rem; margin-top: 1.55rem; border-top: 1px solid rgba(26, 95, 255, 0.12); }
 .resume-list strong, .resume-list span { display: block; }
 .resume-list strong { color: var(--text); font-family: "Space Grotesk", sans-serif; font-size: 0.94rem; }
 .resume-list span { margin-top: 0.28rem; color: var(--text-dim); font-size: 0.77rem; opacity: 0.82; }
 .resume-list p { margin: 0.6rem 0 0; color: var(--text-dim); font-size: 0.83rem; font-weight: 300; }
+.experience-points { padding-left: 1.1rem; margin: 0.65rem 0 0; color: var(--text-dim); font-size: 0.8rem; font-weight: 300; }
+.experience-points > li + li { margin-top: 0.35rem; }
 .education-card { max-width: 720px; }
 .education-entry { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; gap: 1.5rem; }
 .school-logo { width: 96px; height: 96px; padding: 4px; object-fit: contain; background: white; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 50%; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); }
@@ -484,11 +495,11 @@ body.scene-outro-active .back-to-top { opacity: 0; pointer-events: none; }
 body.dark-mode { --text: #e8e8e8; --text-dim: #aaa; --card-bg: rgba(18, 18, 18, 0.85); --label-bg: rgba(10, 10, 14, 0.88); background: #050505; }
 body.dark-mode .intro-name { text-shadow: 0 0 28px rgba(229, 160, 0, 0.55); }
 body.dark-mode .glass-card { border-color: rgba(229, 160, 0, 0.22); box-shadow: 0 0 24px rgba(229, 160, 0, 0.08); }
-body.dark-mode .nav-link, body.dark-mode .project-kind, body.dark-mode .project-toggle, body.dark-mode .contact-links a, body.dark-mode .hobby-card a, body.dark-mode .download-link, body.dark-mode .resume-open-link { color: var(--amber); }
+body.dark-mode .nav-link, body.dark-mode .project-toggle, body.dark-mode .contact-links a, body.dark-mode .hobby-card a, body.dark-mode .download-link, body.dark-mode .resume-open-link { color: var(--amber); }
 body.dark-mode .project-link { color: #111; background: var(--amber); box-shadow: 0 8px 24px rgba(229, 160, 0, 0.24); }
 body.dark-mode .tags li, body.dark-mode #copy-email { color: var(--amber); background: rgba(229, 160, 0, 0.1); border-color: rgba(229, 160, 0, 0.25); }
 body.dark-mode #drag-hint { color: rgba(255, 255, 255, 0.5); background: rgba(0, 0, 0, 0.55); border-color: rgba(255, 255, 255, 0.1); }
-body.dark-mode .scroll-hint { color: rgba(255, 255, 255, 0.38); }
+body.dark-mode .zeus-hint { color: #ddd6fe; background: rgba(5, 5, 5, 0.82); border-color: rgba(196, 181, 253, 0.35); }
 body.dark-mode .hobby-card { background: rgba(255, 255, 255, 0.035); border-color: rgba(255, 255, 255, 0.08); }
 
 @media (max-width: 1370px) { .luna-float { display: none; } }
@@ -504,8 +515,12 @@ body.dark-mode .hobby-card { background: rgba(255, 255, 255, 0.035); border-colo
   .about-photo-wrap { width: min(420px, 88vw); }
   .project-card { min-height: 0; }
   .project-accordion-panel { min-height: 145vh; }
+  .project-disclosure summary { min-height: 100px; }
+  .project-summary-art--graphene { width: 160px; height: 60px; }
+  .project-summary-art--reglineage { width: 160px; height: 48px; }
+  .project-summary-art--x { width: 64px; height: 64px; }
+  .project-summary-art--imc { width: 112px; height: 63px; }
   .project-details { padding-left: 1.35rem; }
-  .project-image, .project-media--workflow .project-image, .project-media--square .project-image { max-height: 420px; }
   .project-accent--wide { width: 128px; height: 46px; }
   .project-card:has(.project-accent--wide) .project-heading { padding-right: 148px; }
   .hobbies-grid { grid-template-columns: 1fr; gap: 1rem; }
@@ -523,7 +538,7 @@ body.dark-mode .hobby-card { background: rgba(255, 255, 255, 0.035); border-colo
   .intro-name { font-size: clamp(4rem, 22vw, 6rem); }
   .intro-tagline { letter-spacing: 0.38em; text-indent: 0.38em; }
   .intro-role { width: 82%; line-height: 1.8; }
-  .scroll-hint { bottom: 5rem; }
+  .zeus-hint { bottom: 3.7rem; font-size: 0.62rem; letter-spacing: 0.14em; }
   .card-label { font-size: 0.7rem; }
   .about-card > p:first-child { font-size: 0.94rem; }
   .project-accent { top: 1.25rem; right: 1.25rem; width: 54px; height: 54px; padding: 6px; }
@@ -531,11 +546,13 @@ body.dark-mode .hobby-card { background: rgba(255, 255, 255, 0.035); border-colo
   .project-heading { min-height: 72px; padding-right: 72px; }
   .project-card:has(.project-accent--wide) .project-heading { padding-right: 128px; }
   .project-footer { align-items: flex-start; flex-direction: column; }
-  .project-disclosure summary { min-height: 76px; gap: 0.7rem; padding: 0.95rem 1rem; }
-  .project-kind { display: none; }
-  .project-summary-art--wide { width: 88px; }
+  .project-disclosure summary { min-height: 82px; gap: 0.7rem; padding: 0.95rem 1rem; }
+  .project-summary-tail { gap: 0.55rem; }
+  .project-summary-art--graphene { width: 104px; height: 40px; padding: 4px 6px; }
+  .project-summary-art--reglineage { width: 104px; height: 36px; padding: 3px 6px; }
+  .project-summary-art--x { width: 52px; height: 52px; }
+  .project-summary-art--imc { width: 80px; height: 45px; }
   .project-details { padding: 1.25rem 1rem 1.45rem; }
-  .project-image, .project-media--workflow .project-image, .project-media--square .project-image { max-height: 340px; }
   .resume-card { padding: 1.7rem 1.35rem; }
   .education-entry { grid-template-columns: 74px minmax(0, 1fr); gap: 1rem; }
   .school-logo { width: 74px; height: 74px; }
@@ -553,6 +570,7 @@ body.dark-mode .hobby-card { background: rgba(255, 255, 255, 0.035); border-colo
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+  .zeus-hint { display: none; }
   .image-reveal { opacity: 1; transform: none; }
   .project-card:hover { transform: none; }
 }

@@ -4,6 +4,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 const canvas = document.getElementById("bg-canvas");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const compactScene = window.matchMedia("(max-width: 768px)").matches;
+const zeusHint = document.getElementById("zeus-hint");
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
 let renderer;
@@ -19,6 +20,7 @@ try {
 }
 
 if (renderer) {
+  if (!reducedMotion && zeusHint) zeusHint.hidden = false;
   renderer.setSize(window.innerWidth, window.innerHeight, false);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, compactScene ? 1.25 : 1.75));
   renderer.setClearColor(0xf5f5f0, 1);
@@ -240,6 +242,7 @@ if (renderer) {
   const pulseDuration = 2600;
   const pulsePurple = 0x7c3aed;
   const pulseDot = makeDotTexture("255,255,255");
+  const strikeOffsets = [[-1.5, 0], [1.5, 0], [0, -1.5], [0, 1.5]];
   const pulsePool = Array.from({ length: 4 }, () => {
     const group = new THREE.Group();
     const ringMaterial = new THREE.MeshBasicMaterial({
@@ -266,6 +269,12 @@ if (renderer) {
     }));
     strike.frustumCulled = false;
     group.add(strike);
+    strikeOffsets.forEach(([x, z]) => {
+      const stroke = new THREE.Line(strikeGeometry, strike.material);
+      stroke.position.set(x, 0, z);
+      stroke.frustumCulled = false;
+      group.add(stroke);
+    });
 
     const branches = Array.from({ length: 3 }, () => {
       const geometry = new THREE.BufferGeometry();
@@ -428,6 +437,7 @@ if (renderer) {
   const intersection = new THREE.Vector3();
   const clickNdc = new THREE.Vector2();
   let clickStart;
+  let zeusClickCount = 0;
 
   document.addEventListener("pointerdown", (event) => {
     if (event.button === 0 && event.isPrimary !== false) clickStart = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
@@ -452,6 +462,9 @@ if (renderer) {
       intersection.set(controls.target.x, gridGroup.position.y, controls.target.z);
     }
     triggerGridPulse(intersection, clickNdc, performance.now());
+    zeusClickCount += 1;
+    if (zeusClickCount === 1 && zeusHint) zeusHint.textContent = "One more strike!";
+    else if (zeusHint) zeusHint.hidden = true;
     clickStart = null;
   }, true);
 

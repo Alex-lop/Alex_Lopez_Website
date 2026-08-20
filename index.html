@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f5f0">
-  <meta name="description" content="Alex Lopez is a software engineer building reliable data, AI, and analytics systems across governed analytics, backend infrastructure, and applied machine learning.">
+  <meta name="description" content="Alex Lopez is a software engineer building reliable data, AI, and analytics systems across governed analytics, backend infrastructure, and applied machine learning">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Alex Lopez">
-  <meta property="og:title" content="Alex Lopez — Software Engineer">
-  <meta property="og:description" content="Alex Lopez is a software engineer building reliable data, AI, and analytics systems.">
+  <meta property="og:title" content="Alex Lopez | Software Engineer">
+  <meta property="og:description" content="Alex Lopez is a software engineer building reliable data, AI, and analytics systems">
   <meta property="og:image" content="assets/me-presenting.jpg">
   <meta property="og:image:alt" content="Alex Lopez presenting computational biology research">
-  <title>Alex Lopez — Software Engineer | Data, AI &amp; Analytics</title>
+  <title>Alex Lopez | Software Engineer | Data, AI &amp; Analytics</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%236d28d9'/%3E%3Cg fill='none' stroke='%23f5f3ff' stroke-width='6' stroke-linecap='round'%3E%3Cpath d='M32 13v38M13 32h38M19 19l26 26M45 19L19 45'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='5' fill='%23c4b5fd'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,6 +32,7 @@
     <a class="nav-link" href="#contact-panel" data-scroll-link data-nav="contact">Contact</a>
   </nav>
   <p id="drag-hint" aria-hidden="true">drag orbit · right-drag pan · middle-drag zoom · scroll explore</p>
+  <p id="zeus-hint" class="zeus-hint" aria-hidden="true" hidden>Click twice for the wrath of Zeus!</p>
   <canvas id="bg-canvas" aria-hidden="true"></canvas>
   <div id="brightness-overlay" aria-hidden="true"></div>
 
@@ -39,20 +40,20 @@
     <section id="intro-panel" class="section-panel intro-panel" data-nav-section="top" aria-labelledby="intro-name">
       <h1 class="intro-name" id="intro-name"><a href="#intro-panel" data-scroll-link>Alex Lopez</a></h1>
       <p class="intro-tagline">Impact</p>
-      <p class="scroll-hint" aria-hidden="true">Click for the wrath of Zeus! · scroll to explore ↓</p>
     </section>
 
     <section id="about-panel" class="section-panel about-panel" data-nav-section="about" aria-labelledby="about-title">
       <h2 class="card-label" id="about-title">About Me</h2>
       <div class="about-layout">
         <article class="glass-card about-card">
-          <p>What drives me most is building things that can make someone's life better, whether that means improving a business's SEO or using neural networks to understand cancer-causing genes.</p>
+          <p>What drives me most is building things that can make someone's life better, whether that means improving a business's SEO or using neural networks to understand genes linked to cancer</p>
+          <p class="impact-word">IMPACT</p>
         </article>
         <figure class="about-photo-wrap image-reveal">
           <button class="image-button" type="button" data-lightbox-src="assets/me-presenting.jpg" data-lightbox-alt="Alex Lopez presenting computational biology research at the O’Hern Lab" aria-label="Enlarge photo of Alex presenting research">
             <img class="about-photo" src="assets/me-presenting.jpg" width="900" height="599" loading="lazy" alt="Alex Lopez presenting computational biology research">
           </button>
-          <figcaption>Presenting research from the O’Hern Lab.</figcaption>
+          <figcaption>Presenting research from the O’Hern Lab</figcaption>
         </figure>
       </div>
     </section>
@@ -64,15 +65,10 @@
           <summary>
             <span class="project-index">01</span>
             <span class="project-summary-text"><strong>Graphene</strong><small>July 2026 – Present</small></span>
-            <span class="project-summary-tail"><span class="project-kind">Agent systems</span><span class="project-toggle" aria-hidden="true">+</span></span>
+            <span class="project-summary-tail"><img class="project-summary-art project-summary-art--graphene" src="assets/projects/graphene-mission-control.webp" width="1280" height="480" loading="lazy" alt=""><span class="project-toggle" aria-hidden="true">+</span></span>
           </summary>
           <div class="project-details">
-            <p>Local-first mission control for bounded multi-agent coding: it validates dependency-aware work, schedules policy-allowed tasks in isolation, and assembles evidence for review. An isolated local commit is created only after explicit approval.</p>
-            <figure class="project-media">
-              <button class="image-button project-image-button" type="button" data-lightbox-src="assets/projects/graphene-mission-control.webp" data-lightbox-alt="Graphene mission control banner" aria-label="Enlarge the Graphene project image">
-                <img class="project-image" src="assets/projects/graphene-mission-control.webp" width="1280" height="480" loading="lazy" alt="Graphene mission control banner">
-              </button>
-            </figure>
+            <p>Local first mission control for bounded multi agent coding: it validates dependency aware work, schedules policy allowed tasks in isolation, and assembles evidence for review; an isolated local commit is created only after explicit approval</p>
             <ul class="tags" aria-label="Graphene technologies"><li>Python</li><li>SQLite</li><li>FastAPI</li><li>Google ADK</li></ul>
             <div class="project-footer"><a class="project-link" href="https://github.com/Alex-lop/Graphene" target="_blank" rel="noopener noreferrer"><svg class="link-icon" aria-hidden="true"><use href="#icon-github"></use></svg><span>View on GitHub</span><span aria-hidden="true">↗</span></a></div>
           </div>
@@ -82,16 +78,11 @@
           <summary>
             <span class="project-index">02</span>
             <span class="project-summary-text"><strong>RegLineage</strong><small>June 2026 – Present</small></span>
-            <span class="project-summary-tail"><img class="project-summary-art project-summary-art--wide" src="assets/projects/reglineage-logo.png" width="1316" height="394" loading="lazy" alt="RegLineage logo"><span class="project-toggle" aria-hidden="true">+</span></span>
+            <span class="project-summary-tail"><img class="project-summary-art project-summary-art--reglineage" src="assets/projects/reglineage-logo.png" width="1316" height="394" loading="lazy" alt=""><span class="project-toggle" aria-hidden="true">+</span></span>
           </summary>
           <div class="project-details">
-            <p>A governance control loop that makes AI data capabilities revocable when policy or lineage changes. It uses DataHub to suspend only affected work, require approved repair, and verify write-back before restoring access.</p>
-            <figure class="project-media project-media--workflow">
-              <a class="image-button project-image-button" href="assets/projects/reglineage-workflow.svg" target="_blank" rel="noopener noreferrer" aria-label="Open the full-size RegLineage workflow in a new tab">
-                <img class="project-image" src="assets/projects/reglineage-workflow.svg" width="1200" height="900" loading="lazy" alt="RegLineage governance workflow">
-              </a>
-            </figure>
-            <small class="project-note">2.96M-row governed demo.</small>
+            <p>A governance control loop that makes AI data capabilities revocable when policy or lineage changes; DataHub suspends only affected work, requires approved repair, and verifies writeback before restoring access</p>
+            <small class="project-note">2.96M row governed demo</small>
             <ul class="tags" aria-label="RegLineage technologies"><li>Python</li><li>DataHub</li><li>SQLite</li><li>MCP</li></ul>
             <div class="project-footer"><a class="project-link" href="https://github.com/Alex-lop/RegLineage" target="_blank" rel="noopener noreferrer"><svg class="link-icon" aria-hidden="true"><use href="#icon-github"></use></svg><span>View on GitHub</span><span aria-hidden="true">↗</span></a></div>
           </div>
@@ -101,15 +92,10 @@
           <summary>
             <span class="project-index">03</span>
             <span class="project-summary-text"><strong>X-Scraper</strong><small>June 2026 – Present</small></span>
-            <span class="project-summary-tail"><img class="project-summary-art" src="assets/projects/x-api-analyst.jpg" width="500" height="500" loading="lazy" alt="X-Scraper project artwork"><span class="project-toggle" aria-hidden="true">+</span></span>
+            <span class="project-summary-tail"><img class="project-summary-art project-summary-art--x" src="assets/projects/x-api-analyst.jpg" width="500" height="500" loading="lazy" alt=""><span class="project-toggle" aria-hidden="true">+</span></span>
           </summary>
           <div class="project-details">
-            <p>A local workbench that turns small, human-approved X/Twitter captures into durable SQLite snapshots for search, export, and bounded read-only MCP access. Its browser-first workflow preserves provenance and partial results without automating around login or rate-limit gates.</p>
-            <figure class="project-media project-media--square">
-              <button class="image-button project-image-button" type="button" data-lightbox-src="assets/projects/x-api-analyst.jpg" data-lightbox-alt="X-Scraper project artwork" aria-label="Enlarge the X-Scraper project image">
-                <img class="project-image" src="assets/projects/x-api-analyst.jpg" width="500" height="500" loading="lazy" alt="X-Scraper project artwork">
-              </button>
-            </figure>
+            <p>A local workbench that turns small, human approved X/Twitter captures into durable SQLite snapshots for search, export, and bounded read only MCP access; its browser first workflow preserves provenance and partial results without automating around login or rate limit gates</p>
             <ul class="tags" aria-label="X-Scraper technologies"><li>Python</li><li>Playwright</li><li>SQLite</li><li>MCP</li></ul>
             <div class="project-footer"><a class="project-link" href="https://github.com/Alex-lop/X-Scraper" target="_blank" rel="noopener noreferrer"><svg class="link-icon" aria-hidden="true"><use href="#icon-github"></use></svg><span>View on GitHub</span><span aria-hidden="true">↗</span></a></div>
           </div>
@@ -119,15 +105,10 @@
           <summary>
             <span class="project-index">04</span>
             <span class="project-summary-text"><strong>IMC Prosperity 3</strong><small>March 2025 – April 2025</small></span>
-            <span class="project-summary-tail"><span class="project-kind">Top 8% globally</span><span class="project-toggle" aria-hidden="true">+</span></span>
+            <span class="project-summary-tail"><img class="project-summary-art project-summary-art--imc" src="assets/projects/imc-prosperity-3.webp" width="1280" height="720" loading="lazy" alt=""><span class="project-toggle" aria-hidden="true">+</span></span>
           </summary>
           <div class="project-details">
-            <p>Placed 912th out of roughly 13,000 teams—top 8% globally—in IMC Prosperity 3. Collaborated on Python strategies spanning market making, scalping, locational arbitrage, and mean reversion while balancing execution and risk.</p>
-            <figure class="project-media">
-              <button class="image-button project-image-button" type="button" data-lightbox-src="assets/projects/imc-prosperity-3.webp" data-lightbox-alt="IMC Prosperity 3 global trading challenge artwork" aria-label="Enlarge the IMC Prosperity 3 project image">
-                <img class="project-image" src="assets/projects/imc-prosperity-3.webp" width="1280" height="720" loading="lazy" alt="IMC Prosperity 3 global trading challenge artwork">
-              </button>
-            </figure>
+            <p>Placed 912th out of roughly 13,000 teams, ranking in the top 8% globally; collaborated on Python strategies spanning market making, scalping, locational arbitrage, and mean reversion while balancing execution and risk</p>
             <ul class="tags" aria-label="IMC Prosperity 3 technologies and methods"><li>Python</li><li>Market Making</li><li>Arbitrage</li><li>Mean Reversion</li></ul>
             <div class="project-footer"><span class="private-label"><span aria-hidden="true">▣</span> Private competition code</span></div>
           </div>
@@ -151,10 +132,11 @@
       <article class="glass-card resume-card experience-card">
         <h3>Experience</h3>
         <ul class="resume-list">
-          <li><strong><img class="employer-logo employer-logo--expandya" src="assets/expandya.jpg" width="46" height="46" alt="Expandya logo"> Software Engineering Intern — Expandya</strong><span>June 2026 – September 2026 · Westport, CT</span><p>Engineered and profiled Python and C++ data systems for e-commerce workloads exceeding 50 million rows.</p></li>
-          <li><strong><img class="employer-logo employer-logo--northeastern" src="assets/northeastern.png" width="112" height="38" alt="Northeastern University logo"> Teaching Assistant — Northeastern University</strong><span>September 2025 – Present · Boston, MA</span><p>Support students in CS 3200 and CS 1800 through office hours, debugging, project guidance, and clear explanations of database and discrete-mathematics fundamentals.</p></li>
+          <li><strong><img class="employer-logo employer-logo--expandya" src="assets/expandya.jpg" width="46" height="46" alt="Expandya logo"> Software Engineering Intern, Expandya</strong><span>June 2026 – September 2026 · Westport, CT</span><ul class="experience-points"><li>Improved organic and AI assisted search visibility through crawlability, indexing, site architecture, content intent, metadata, and performance</li><li>Built Python and C++ ecommerce data systems with indexing, query caching, and profiling across more than 50M rows</li></ul></li>
+          <li><strong><img class="employer-logo employer-logo--northeastern" src="assets/northeastern.png" width="112" height="38" alt="Northeastern University logo"> Teaching Assistant, Northeastern University</strong><span>September 2025 – Present · Boston, MA</span><p>Support students in CS 3200 and CS 1800 through office hours, debugging, project guidance, and clear explanations of database and discrete mathematics fundamentals</p></li>
+          <li><strong><img class="employer-logo employer-logo--shpe" src="assets/shpe.jpg" width="447" height="447" loading="lazy" alt=""> Undergraduate Ambassador, SHPE</strong><span>September 2025 – Present · Boston, MA</span><p>Served on the board, planning and promoting first year events that connected students with an inclusive engineering community</p></li>
           <li>
-            <strong>Computational Biology Research Assistant — O’Hern Lab, Yale</strong><span>June 2023 – September 2023 · New Haven, CT</span><p>Built Python and MATLAB HPC pipelines to process and visualize more than 10,000 oncogenic protein variants.</p>
+            <strong>Computational Biology Research Assistant, O’Hern Lab, Yale</strong><span>June 2023 – September 2023 · New Haven, CT</span><p>Built Python and MATLAB HPC pipelines to process and visualize more than 10,000 oncogenic protein variants</p>
             <button class="image-button ohern-button" type="button" data-lightbox-src="assets/ohern-header4.gif" data-lightbox-alt="O’Hern Lab at Yale School of Engineering and Applied Science" aria-label="Enlarge O’Hern Lab banner"><img src="assets/ohern-header4.gif" width="908" height="300" loading="lazy" alt="O’Hern Lab at Yale School of Engineering and Applied Science"></button>
           </li>
         </ul>
@@ -179,9 +161,9 @@
       <article class="glass-card resume-card interests-card">
         <h3>Outside the terminal</h3>
         <div class="hobbies-grid">
-          <article class="hobby-card image-reveal"><button class="image-button" type="button" data-lightbox-src="assets/running-team.jpg" data-lightbox-alt="Alex running with his team" aria-label="Enlarge running photo"><img src="assets/running-team.jpg" width="800" height="600" loading="lazy" alt="Alex running with his team"></button><div><h4>Running</h4><p>Training for my first marathon and still enjoying most of the steps.</p><a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Check out my Strava! ↗</a></div></article>
-          <article class="hobby-card image-reveal"><button class="image-button" type="button" data-lightbox-src="assets/golf-swing.jpg" data-lightbox-alt="Alex taking a golf swing on the course" aria-label="Enlarge golf photo"><img src="assets/golf-swing.jpg" width="434" height="325" loading="lazy" alt="Alex taking a golf swing on the course"></button><div><h4>Golf</h4><p>I picked up golf recently and I've really been loving it. It's one of those sports that really <u><em class="golf-emphasis">really</em></u> humbles you every single time you step on the course, but that one perfect shot keeps pulling you right back out there.</p></div></article>
-          <article class="hobby-card image-reveal"><button class="image-button" type="button" data-lightbox-src="assets/chess.jpg" data-lightbox-alt="A chess knight on a chessboard" aria-label="Enlarge chess image"><img src="assets/chess.jpg" width="447" height="447" loading="lazy" alt="A chess knight on a chessboard"></button><div><h4>Chess</h4><p>Seven years in, I still hang pieces, miss obvious tactics, and immediately queue another game.</p><a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener noreferrer">Add me on Chess.com! ↗</a></div></article>
+          <article class="hobby-card image-reveal"><button class="image-button" type="button" data-lightbox-src="assets/running-team.jpg" data-lightbox-alt="Alex running with his team" aria-label="Enlarge running photo"><img src="assets/running-team.jpg" width="800" height="600" loading="lazy" alt="Alex running with his team"></button><div><h4>Running</h4><p>Training for my first marathon and still enjoying most of the steps</p><a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Check out my Strava! ↗</a></div></article>
+          <article class="hobby-card image-reveal"><button class="image-button" type="button" data-lightbox-src="assets/golf-swing.jpg" data-lightbox-alt="Alex taking a golf swing on the course" aria-label="Enlarge golf photo"><img src="assets/golf-swing.jpg" width="434" height="325" loading="lazy" alt="Alex taking a golf swing on the course"></button><div><h4>Golf</h4><p>I picked up golf recently and I've really been loving it; it's one of those sports that really <u><em class="golf-emphasis">really</em></u> humbles you every single time you step on the course, but that one perfect shot keeps pulling you right back out there</p></div></article>
+          <article class="hobby-card image-reveal"><button class="image-button" type="button" data-lightbox-src="assets/chess.jpg" data-lightbox-alt="A chess knight on a chessboard" aria-label="Enlarge chess image"><img src="assets/chess.jpg" width="447" height="447" loading="lazy" alt="A chess knight on a chessboard"></button><div><h4>Chess</h4><p>Seven years in, I still hang pieces, miss obvious tactics, and immediately queue another game</p><a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener noreferrer">Add me on Chess.com! ↗</a></div></article>
         </div>
         <figure class="luna-float" title="Luna, chief code reviewer">
           <span class="luna-note" aria-hidden="true">Luna my bunny! ↘</span>
@@ -195,7 +177,7 @@
 
     <section id="contact-panel" class="section-panel contact-panel" data-nav-section="contact" aria-labelledby="contact-title">
       <h2 class="card-label" id="contact-title">Get In Touch</h2>
-      <p class="contact-intro">Open to opportunities, research, and interesting problems.</p>
+      <p class="contact-intro">Open to opportunities, research, and interesting problems</p>
       <article class="glass-card contact-card">
         <a class="email-link" href="mailto:lopez.alexan@northeastern.edu"><svg class="link-icon" aria-hidden="true"><use href="#icon-mail"></use></svg><span>lopez.alexan@northeastern.edu</span></a>
         <div class="copy-row"><button id="copy-email" type="button" data-email="lopez.alexan@northeastern.edu">Copy email</button><span id="copy-status" role="status" aria-live="polite"></span></div>
