@@ -116,7 +116,8 @@ assert "window.scrollTo" in SCRIPTS
 assert "window.portfolioHandleWheel" in SCRIPTS and "Soft takeoff, long coast, soft landing" in SCRIPTS
 assert HTML.index('id="about-panel"') < HTML.index('id="proj-panel-0"')
 assert 'src="assets/me-presenting.jpg"' in HTML
-assert "%236d28d9" in HTML and "%23f5f3ff" in HTML
+assert 'rel="icon"' not in HTML and "%236d28d9" not in HTML
+assert "Luna: Chief Code Reviewer" in HTML
 assert "Private competition code" in HTML
 assert '<p class="about-greeting">Helloooo world</p>' in HTML
 assert "I'm Alex, a rising junior studying Math + CS at Northeastern" in HTML
