@@ -165,10 +165,10 @@ assert "const strikeOffsets" in SCRIPTS and "zeusClickCount" not in SCRIPTS
 assert "triggerGridPulse(intersection, clickNdc, performance.now());\n    if (zeusHint) zeusHint.hidden = true;" in SCRIPTS
 assert "const lineColor = below ? 0x1a5fff : pulsePurple" in SCRIPTS
 assert "mailto:" not in HTML
-assert "Email:" in HTML
-assert 'data-email="lopez.alexan@northeastern.edu"' in HTML
+assert "Email: lopez.alexan [at] northeastern [dot] edu" in HTML
+assert "data-email" not in HTML
+assert "clipboard" not in SCRIPTS
 assert 'id="copy-email"' not in HTML
-assert "lopez.alexan [at] northeastern [dot] edu" not in HTML
 assert "const outroEase" in SCRIPTS and "scene-outro-active" in SCRIPTS
 
 print(f"Site check passed: {len(site.ids)} ids, {len(site.anchors)} links, {len(site.assets)} local assets")

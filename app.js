@@ -225,32 +225,6 @@ resumeToggle.addEventListener("click", () => {
   resumeToggle.textContent = opening ? "Close resume" : "View resume";
 });
 
-const copyStatus = document.getElementById("copy-status");
-let copyTimer;
-
-async function copyEmail(email) {
-  try {
-    await navigator.clipboard.writeText(email);
-  } catch {
-    const field = document.createElement("textarea");
-    field.value = email;
-    field.setAttribute("readonly", "");
-    field.style.cssText = "position:fixed;opacity:0";
-    document.body.append(field);
-    field.select();
-    document.execCommand("copy");
-    field.remove();
-  }
-
-  clearTimeout(copyTimer);
-  copyStatus.textContent = "Email copied";
-  copyTimer = setTimeout(() => { copyStatus.textContent = ""; }, 2200);
-}
-
-document.querySelectorAll("[data-email]").forEach((button) => {
-  button.addEventListener("click", () => copyEmail(button.dataset.email));
-});
-
 const lightbox = document.getElementById("lightbox");
 const lightboxImage = document.getElementById("lightbox-image");
 const lightboxClose = document.getElementById("lightbox-close");
