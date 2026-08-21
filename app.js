@@ -225,12 +225,10 @@ resumeToggle.addEventListener("click", () => {
   resumeToggle.textContent = opening ? "Close resume" : "View resume";
 });
 
-const copyButton = document.getElementById("copy-email");
 const copyStatus = document.getElementById("copy-status");
 let copyTimer;
 
-copyButton.addEventListener("click", async () => {
-  const email = copyButton.dataset.email;
+async function copyEmail(email) {
   try {
     await navigator.clipboard.writeText(email);
   } catch {
@@ -247,6 +245,10 @@ copyButton.addEventListener("click", async () => {
   clearTimeout(copyTimer);
   copyStatus.textContent = "Email copied";
   copyTimer = setTimeout(() => { copyStatus.textContent = ""; }, 2200);
+}
+
+document.querySelectorAll("[data-email]").forEach((button) => {
+  button.addEventListener("click", () => copyEmail(button.dataset.email));
 });
 
 const lightbox = document.getElementById("lightbox");

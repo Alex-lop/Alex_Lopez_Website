@@ -20,7 +20,10 @@ try {
 }
 
 if (renderer) {
-  if (!reducedMotion && zeusHint) zeusHint.hidden = false;
+  if (!reducedMotion && zeusHint) {
+    zeusHint.hidden = false;
+    setTimeout(() => { zeusHint.hidden = true; }, 4000);
+  }
   renderer.setSize(window.innerWidth, window.innerHeight, false);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, compactScene ? 1.25 : 1.75));
   renderer.setClearColor(0xf5f5f0, 1);

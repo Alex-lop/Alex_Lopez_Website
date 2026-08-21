@@ -78,7 +78,6 @@ restored_panels = {
     "proj-panel-0",
     "education-panel",
     "experience-panel",
-    "skills-panel",
     "interests-panel",
     "contact-panel",
     "scene-outro",
@@ -119,9 +118,11 @@ assert HTML.index('id="about-panel"') < HTML.index('id="proj-panel-0"')
 assert 'src="assets/me-presenting.jpg"' in HTML
 assert "%236d28d9" in HTML and "%23f5f3ff" in HTML
 assert "Private competition code" in HTML
-assert "What drives me most is building things that can make someone's life better" in HTML
-assert '<p class="about-greeting">Hey I\'m Alex!</p>' in HTML
-assert "genes linked to cancer" in HTML and '<p class="impact-word">Impact</p>' in HTML
+assert '<p class="about-greeting">Helloooo world</p>' in HTML
+assert "I'm Alex, a rising junior studying Math + CS at Northeastern" in HTML
+assert "really trying to make an" in HTML and '<p class="impact-word">Impact</p>' in HTML
+assert "genes linked to cancer" not in HTML and "Hey I'm Alex" not in HTML
+assert "skills-panel" not in HTML and "skillicons.dev" not in HTML
 assert "Training for my first marathon and still enjoying most of the steps" in HTML
 assert 'class="golf-emphasis"' in HTML and "immediately queue another game" in HTML
 assert not [value for value in visible.text if value.endswith(".")], "Visible copy should not end in periods"
@@ -150,7 +151,8 @@ assert "Alex_Lopez_Resume-preview.webp" in HTML and "<iframe" not in HTML
 assert '<dialog id="lightbox"' in HTML
 assert sha256((ROOT / "assets/Alex_Lopez_Resume.pdf").read_bytes()).hexdigest() == "14e02edb07ab81dcb3899e03b59daed59c7fab3aadba808a17d99915ad681321"
 assert "Click to see Zeus' fury!" in HTML and 'id="zeus-hint" class="zeus-hint" aria-hidden="true" hidden' in HTML
-assert "if (!reducedMotion && zeusHint) zeusHint.hidden = false" in SCRIPTS
+assert "if (!reducedMotion && zeusHint)" in SCRIPTS and "zeusHint.hidden = false" in SCRIPTS
+assert "setTimeout(() => { zeusHint.hidden = true; }, 4000)" in SCRIPTS
 assert "gridGroup.add(group)" in SCRIPTS and "const pulseDuration = 2600" in SCRIPTS
 assert "const pulsePurple = 0x7c3aed" in SCRIPTS
 assert 'document.addEventListener("pointerup"' in SCRIPTS
@@ -161,7 +163,11 @@ assert "if (reducedMotion || !clickStart" in SCRIPTS
 assert "const strikeOffsets" in SCRIPTS and "zeusClickCount" not in SCRIPTS
 assert "triggerGridPulse(intersection, clickNdc, performance.now());\n    if (zeusHint) zeusHint.hidden = true;" in SCRIPTS
 assert "const lineColor = below ? 0x1a5fff : pulsePurple" in SCRIPTS
-assert HTML.count("https://skillicons.dev/icons?i=") == 4
+assert "mailto:" not in HTML
+assert "Email:" in HTML
+assert 'data-email="lopez.alexan@northeastern.edu"' in HTML
+assert 'id="copy-email"' not in HTML
+assert "lopez.alexan [at] northeastern [dot] edu" not in HTML
 assert "const outroEase" in SCRIPTS and "scene-outro-active" in SCRIPTS
 
 print(f"Site check passed: {len(site.ids)} ids, {len(site.anchors)} links, {len(site.assets)} local assets")
