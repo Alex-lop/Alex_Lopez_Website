@@ -4,7 +4,6 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 const canvas = document.getElementById("bg-canvas");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const compactScene = window.matchMedia("(max-width: 768px)").matches;
-const zeusHint = document.getElementById("zeus-hint");
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
 let renderer;
@@ -20,10 +19,6 @@ try {
 }
 
 if (renderer) {
-  if (!reducedMotion && zeusHint) {
-    zeusHint.hidden = false;
-    setTimeout(() => { zeusHint.hidden = true; }, 4000);
-  }
   renderer.setSize(window.innerWidth, window.innerHeight, false);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, compactScene ? 1.25 : 1.75));
   renderer.setClearColor(0xf5f5f0, 1);
@@ -239,235 +234,6 @@ if (renderer) {
       + Math.sin(x * 7.1 + y * 4.3 - time * 2.1) * 0.125;
   }
 
-  const pulseRingGeometry = new THREE.RingGeometry(4, 6, 40);
-  const pulseBranchPointCount = 9;
-  const pulseBoltPointCount = 27;
-  const pulseDuration = 2600;
-  const pulsePurple = 0x7c3aed;
-  const pulseDot = makeDotTexture("255,255,255");
-  const strikeOffsets = [[-1.5, 0], [1.5, 0], [0, -1.5], [0, 1.5]];
-  const pulsePool = Array.from({ length: 4 }, () => {
-    const group = new THREE.Group();
-    const ringMaterial = new THREE.MeshBasicMaterial({
-      color: pulsePurple,
-      transparent: true,
-      opacity: 0,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-    });
-    const ring = new THREE.Mesh(pulseRingGeometry, ringMaterial);
-    ring.rotation.x = -Math.PI / 2;
-    ring.position.y = 0.35;
-    group.add(ring);
-
-    const strikeGeometry = new THREE.BufferGeometry();
-    strikeGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(pulseBoltPointCount * 3), 3));
-    const strike = new THREE.Line(strikeGeometry, new THREE.LineBasicMaterial({
-      color: pulsePurple,
-      transparent: true,
-      opacity: 0,
-      depthWrite: false,
-      blending: THREE.NormalBlending,
-    }));
-    strike.frustumCulled = false;
-    group.add(strike);
-    strikeOffsets.forEach(([x, z]) => {
-      const stroke = new THREE.Line(strikeGeometry, strike.material);
-      stroke.position.set(x, 0, z);
-      stroke.frustumCulled = false;
-      group.add(stroke);
-    });
-
-    const branches = Array.from({ length: 3 }, () => {
-      const geometry = new THREE.BufferGeometry();
-      geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(pulseBranchPointCount * 3), 3));
-      const material = new THREE.LineBasicMaterial({
-        color: pulsePurple,
-        transparent: true,
-        opacity: 0,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-      });
-      const line = new THREE.Line(geometry, material);
-      group.add(line);
-      return line;
-    });
-
-    const sparkGeometry = new THREE.BufferGeometry();
-    sparkGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(3 * 3), 3));
-    const sparks = new THREE.Points(sparkGeometry, new THREE.PointsMaterial({
-      map: pulseDot,
-      color: 0xa855f7,
-      size: 16,
-      transparent: true,
-      opacity: 0,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-    }));
-    group.add(sparks);
-    group.visible = false;
-    gridGroup.add(group);
-    return {
-      group,
-      ring,
-      strike,
-      branches,
-      sparks,
-      started: 0,
-      duration: pulseDuration,
-      branchCount: 0,
-      boltStart: new THREE.Vector3(),
-      nextJitter: 0,
-    };
-  });
-
-  // Floor plane is XZ in Three.js; user-facing "Z up" is the world Y axis.
-  const pulseFloorDirections = [
-    [1, 0, 0],
-    [0, 0, 1],
-    [-1, 0, 0],
-    [0, 0, -1],
-  ];
-  let pulseCursor = 0;
-  let pulseThemeBelow = false;
-  const pulseLocalPoint = new THREE.Vector3();
-  const pulseTopWorld = new THREE.Vector3();
-  const pulseTopLocal = new THREE.Vector3();
-
-  function applyPulseTheme(pulse, below) {
-    const lineColor = below ? 0x1a5fff : pulsePurple;
-    const sparkColor = below ? 0x7da6ff : 0xa855f7;
-    const blending = below ? THREE.AdditiveBlending : THREE.NormalBlending;
-    pulse.ring.material.color.setHex(lineColor);
-    pulse.ring.material.blending = blending;
-    pulse.strike.material.color.setHex(lineColor);
-    pulse.strike.material.blending = blending;
-    pulse.branches.forEach((branch) => {
-      branch.material.color.setHex(lineColor);
-      branch.material.blending = blending;
-    });
-    pulse.sparks.material.color.setHex(sparkColor);
-    pulse.sparks.material.blending = blending;
-    pulse.sparks.material.map = pulseDot;
-  }
-
-  function writePulseBranch(target, direction, steps, seed) {
-    const [directionX, , directionZ] = direction;
-    const length = steps * gridStep;
-    for (let pointIndex = 0; pointIndex < pulseBranchPointCount; pointIndex += 1) {
-      const progress = pointIndex / (pulseBranchPointCount - 1);
-      const flicker = Math.sin(pointIndex * 4.1 + seed) * 0.55;
-      target[pointIndex * 3] = directionX * length * progress;
-      target[pointIndex * 3 + 1] = 0.8 + flicker;
-      target[pointIndex * 3 + 2] = directionZ * length * progress;
-    }
-  }
-
-  function writeLightningBolt(target, start) {
-    const jag = 18 + Math.random() * 18;
-    for (let pointIndex = 0; pointIndex < pulseBoltPointCount; pointIndex += 1) {
-      const progress = pointIndex / (pulseBoltPointCount - 1);
-      const envelope = Math.sin(progress * Math.PI);
-      target[pointIndex * 3] = start.x * (1 - progress) + (Math.random() - 0.5) * jag * envelope;
-      target[pointIndex * 3 + 1] = start.y * (1 - progress) + (Math.random() - 0.5) * jag * 0.45 * envelope;
-      target[pointIndex * 3 + 2] = start.z * (1 - progress) + (Math.random() - 0.5) * jag * envelope;
-    }
-  }
-
-  function triggerGridPulse(point, pointerNdc, milliseconds) {
-    const pulse = pulsePool[pulseCursor];
-    pulseCursor = (pulseCursor + 1) % pulsePool.length;
-    gridGroup.worldToLocal(pulseLocalPoint.copy(point));
-    const landingX = clamp(Math.round(pulseLocalPoint.x / gridStep) * gridStep, -gridSize / 2, gridSize / 2);
-    const landingZ = clamp(Math.round(pulseLocalPoint.z / gridStep) * gridStep, -gridSize / 2, gridSize / 2);
-    pulse.group.position.set(
-      landingX,
-      0,
-      landingZ,
-    );
-    pulse.group.visible = true;
-    pulse.started = milliseconds;
-    pulse.duration = reducedMotion ? 360 : pulseDuration;
-    pulse.ring.scale.setScalar(0.45);
-
-    const distance = camera.position.distanceTo(point);
-    pulseTopWorld
-      .set(clamp(pointerNdc.x + (Math.random() - 0.5) * 0.75, -0.95, 0.95), 1.08, 0)
-      .unproject(camera)
-      .sub(camera.position)
-      .normalize()
-      .multiplyScalar(distance)
-      .add(camera.position);
-    gridGroup.worldToLocal(pulseTopLocal.copy(pulseTopWorld));
-    pulseTopLocal.set(pulseTopLocal.x - landingX, pulseTopLocal.y, pulseTopLocal.z - landingZ);
-    pulse.boltStart.copy(pulseTopLocal);
-    pulse.nextJitter = milliseconds + 55;
-    writeLightningBolt(pulse.strike.geometry.attributes.position.array, pulse.boltStart);
-    pulse.strike.geometry.setDrawRange(0, 0);
-    pulse.strike.geometry.attributes.position.needsUpdate = true;
-    applyPulseTheme(pulse, pulseThemeBelow);
-
-    const directionOffset = pulseCursor % 4;
-    const branchCount = 3;
-    pulse.branchCount = branchCount;
-    const sparkPositions = pulse.sparks.geometry.attributes.position.array;
-
-    pulse.branches.forEach((branch, branchIndex) => {
-      if (branchIndex >= branchCount) {
-        branch.geometry.setDrawRange(0, 0);
-        return;
-      }
-
-      const direction = pulseFloorDirections[(branchIndex + directionOffset) % pulseFloorDirections.length];
-      const steps = 2 + (branchIndex + pulseCursor) % 3;
-      const positions = branch.geometry.attributes.position.array;
-      writePulseBranch(positions, direction, steps, branchIndex * 11 + pulseCursor * 3);
-      branch.geometry.setDrawRange(0, pulseBranchPointCount);
-      branch.geometry.attributes.position.needsUpdate = true;
-
-      const tip = (pulseBranchPointCount - 1) * 3;
-      sparkPositions[branchIndex * 3] = positions[tip];
-      sparkPositions[branchIndex * 3 + 1] = positions[tip + 1];
-      sparkPositions[branchIndex * 3 + 2] = positions[tip + 2];
-    });
-    pulse.sparks.geometry.setDrawRange(0, branchCount);
-    pulse.sparks.geometry.attributes.position.needsUpdate = true;
-  }
-
-  const raycaster = new THREE.Raycaster();
-  const gridPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 55);
-  const intersection = new THREE.Vector3();
-  const clickNdc = new THREE.Vector2();
-  let clickStart;
-
-  document.addEventListener("pointerdown", (event) => {
-    if (event.button === 0 && event.isPrimary !== false) clickStart = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
-  }, true);
-  document.addEventListener("pointermove", (event) => {
-    if (!clickStart || clickStart.id !== event.pointerId) return;
-    if (Math.hypot(event.clientX - clickStart.x, event.clientY - clickStart.y) > 5) clickStart.moved = true;
-  }, true);
-  document.addEventListener("pointercancel", () => { clickStart = null; }, true);
-  document.addEventListener("pointerup", (event) => {
-    if (reducedMotion || !clickStart || clickStart.id !== event.pointerId || clickStart.moved || event.button !== 0) {
-      clickStart = null;
-      return;
-    }
-    clickNdc.set(
-      event.clientX / window.innerWidth * 2 - 1,
-      -(event.clientY / window.innerHeight) * 2 + 1,
-    );
-    raycaster.setFromCamera(clickNdc, camera);
-    gridPlane.constant = -gridGroup.position.y;
-    if (!raycaster.ray.intersectPlane(gridPlane, intersection)) {
-      intersection.set(controls.target.x, gridGroup.position.y, controls.target.z);
-    }
-    triggerGridPulse(intersection, clickNdc, performance.now());
-    if (zeusHint) zeusHint.hidden = true;
-    clickStart = null;
-  }, true);
-
   const backgroundLight = new THREE.Color(0xf5f5f0);
   const backgroundDark = new THREE.Color(0x050505);
   const lineBlack = new THREE.Color(0x000000);
@@ -494,35 +260,6 @@ if (renderer) {
   updateScrollProgress();
   sceneProgress = rawScrollProgress;
   window.addEventListener("scroll", updateScrollProgress, { passive: true });
-
-  function updatePulses(milliseconds) {
-    pulsePool.forEach((pulse) => {
-      if (!pulse.group.visible) return;
-      const progress = (milliseconds - pulse.started) / pulse.duration;
-      if (progress >= 1) {
-        pulse.group.visible = false;
-        return;
-      }
-
-      const impact = clamp(progress / 0.18, 0, 1);
-      const fade = progress < 0.62 ? 1 : 1 - (progress - 0.62) / 0.38;
-      pulse.strike.geometry.setDrawRange(0, Math.max(2, Math.ceil(impact * (pulseBoltPointCount - 1)) + 1));
-      const strikeLife = 0.58;
-      if (!reducedMotion && progress < strikeLife && milliseconds >= pulse.nextJitter) {
-        writeLightningBolt(pulse.strike.geometry.attributes.position.array, pulse.boltStart);
-        pulse.strike.geometry.attributes.position.needsUpdate = true;
-        pulse.nextJitter = milliseconds + 55;
-      }
-      const flash = reducedMotion ? 1 : 0.35 + Math.sin(progress * 150) ** 8 * 0.65;
-      pulse.strike.material.opacity = progress < strikeLife ? (1 - progress / strikeLife) * flash : 0;
-      pulse.branches.forEach((branch) => {
-        branch.material.opacity = impact * fade * (pulseThemeBelow ? 0.9 : 1);
-      });
-      pulse.ring.scale.setScalar(reducedMotion ? 1.8 : 0.45 + Math.min(progress / 0.7, 1) * 3.6);
-      pulse.ring.material.opacity = impact * fade * (pulseThemeBelow ? 0.7 : 0.85);
-      pulse.sparks.material.opacity = impact * fade * (0.72 + Math.sin(progress * 12) * 0.16);
-    });
-  }
 
   function updateScene(milliseconds) {
     const elapsed = reducedMotion ? 0 : milliseconds / 1000;
@@ -605,15 +342,6 @@ if (renderer) {
     const approach = Math.pow(1 - clamp(aboveGrid / 130, 0, 1), 2.2) * 0.88;
     const darkBlend = Math.max(approach * (1 - inversion), inversion);
     const lineBlend = Math.max(approach * 0.75 * (1 - inversion), inversion);
-    const nextPulseThemeBelow = inversion > 0.35;
-    if (nextPulseThemeBelow !== pulseThemeBelow) {
-      pulseThemeBelow = nextPulseThemeBelow;
-      pulsePool.forEach((pulse) => {
-        if (pulse.group.visible) applyPulseTheme(pulse, pulseThemeBelow);
-      });
-    } else {
-      pulseThemeBelow = nextPulseThemeBelow;
-    }
 
     colorBuffer.copy(backgroundLight).lerp(backgroundDark, darkBlend);
     renderer.setClearColor(colorBuffer, 1);
@@ -632,7 +360,6 @@ if (renderer) {
     document.body.classList.toggle("dark-mode", darkBlend > 0.45);
 
     controls.update();
-    updatePulses(milliseconds);
     renderer.render(scene, camera);
   }
 
