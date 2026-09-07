@@ -139,16 +139,6 @@ main { position: relative; z-index: 2; pointer-events: none; }
   text-shadow: none;
 }
 .intro-name a { text-decoration: none; }
-.intro-tagline {
-  margin: 0.8rem 0 0;
-  color: var(--text-dim);
-  font-family: "Space Grotesk", sans-serif;
-  font-size: clamp(1.1rem, 3.8vw, 2rem);
-  font-weight: 300;
-  letter-spacing: 0.55em;
-  text-indent: 0.55em;
-  text-transform: uppercase;
-}
 .card-label {
   padding: 0.42rem 1.1rem;
   margin: 0;
@@ -427,7 +417,6 @@ body.dark-mode .hobby-card { background: rgba(255, 255, 255, 0.035); border-colo
   .nav-link { font-size: 0.56rem; letter-spacing: 0.035em; }
   .section-panel { min-height: 112vh; gap: 1.7rem; padding: 5rem 1rem; }
   .intro-name { font-size: clamp(4rem, 22vw, 6rem); }
-  .intro-tagline { letter-spacing: 0.38em; text-indent: 0.38em; }
   .card-label { font-size: 0.7rem; }
   .about-copy { font-size: 0.94rem; }
   .project-footer { align-items: flex-start; flex-direction: column; }

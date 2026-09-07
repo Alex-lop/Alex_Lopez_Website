@@ -155,7 +155,7 @@ assert '<dialog id="lightbox"' in HTML
 assert sha256((ROOT / "assets/Alex_Lopez_Resume.pdf").read_bytes()).hexdigest() == "14e02edb07ab81dcb3899e03b59daed59c7fab3aadba808a17d99915ad681321"
 assert "zeus" not in (HTML + CSS + SCRIPTS).lower() and "triggerGridPulse" not in SCRIPTS
 assert "https://www.youtube.com/@alex17-OX" in HTML and '<use href="#icon-youtube">' in HTML and 'id="icon-youtube"' in HTML
-assert "intro-role" not in HTML + CSS
+assert "intro-role" not in HTML + CSS and "intro-tagline" not in HTML + CSS
 assert "mailto:" not in HTML
 assert "Email: lopez.alexan@northeastern.edu" in HTML
 assert "data-email" not in HTML
