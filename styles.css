@@ -139,17 +139,6 @@ main { position: relative; z-index: 2; pointer-events: none; }
   text-shadow: none;
 }
 .intro-name a { text-decoration: none; }
-.intro-tagline {
-  margin: 0.8rem 0 0;
-  color: var(--text-dim);
-  font-family: "Space Grotesk", sans-serif;
-  font-size: clamp(1.1rem, 3.8vw, 2rem);
-  font-weight: 300;
-  letter-spacing: 0.55em;
-  text-indent: 0.55em;
-  text-transform: uppercase;
-}
-.intro-role { margin: 0; color: var(--text-dim); font-size: clamp(0.76rem, 1.4vw, 0.9rem); letter-spacing: 0.12em; }
 .card-label {
   padding: 0.42rem 1.1rem;
   margin: 0;
@@ -283,7 +272,7 @@ main { position: relative; z-index: 2; pointer-events: none; }
 .resume-list strong { color: var(--text); font-family: "Space Grotesk", sans-serif; font-size: 0.94rem; }
 .resume-list span { margin-top: 0.28rem; color: var(--text-dim); font-size: 0.77rem; opacity: 0.82; }
 .resume-list p { margin: 0.6rem 0 0; color: var(--text-dim); font-size: 0.83rem; font-weight: 300; }
-.role-points { padding: 0 0 0 1.1rem; margin: 0.6rem 0 0; color: var(--text-dim); font-size: 0.83rem; font-weight: 300; }
+.role-points { padding: 0 0 0 1rem; margin: 0.6rem 0 0; color: var(--text-dim); font-size: 0.83rem; font-weight: 300; list-style-type: "- "; }
 .role-points li + li { margin-top: 0.25rem; }
 .education-card { max-width: 720px; }
 .education-entry { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; gap: 1.5rem; }
@@ -428,8 +417,6 @@ body.dark-mode .hobby-card { background: rgba(255, 255, 255, 0.035); border-colo
   .nav-link { font-size: 0.56rem; letter-spacing: 0.035em; }
   .section-panel { min-height: 112vh; gap: 1.7rem; padding: 5rem 1rem; }
   .intro-name { font-size: clamp(4rem, 22vw, 6rem); }
-  .intro-tagline { letter-spacing: 0.38em; text-indent: 0.38em; }
-  .intro-role { width: 82%; line-height: 1.8; }
   .card-label { font-size: 0.7rem; }
   .about-copy { font-size: 0.94rem; }
   .project-footer { align-items: flex-start; flex-direction: column; }
