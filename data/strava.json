@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-09-16T21:30:00Z",
+  "week_start": "2026-09-14",
+  "week": {
+    "runs": 3,
+    "miles": 14.2,
+    "pace_sec_per_mi": 445,
+    "elev_ft": 266,
+    "moving_time_s": 6306,
+    "days": [
+      3.82,
+      4.34,
+      6.03,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "latest": {
+    "date": "2026-09-16",
+    "name": "Afternoon Run",
+    "place": "Boston, MA",
+    "miles": 6.03,
+    "pace_sec_per_mi": 465,
+    "elev_ft": 115,
+    "polyline": "gklaGpm}pLQt@Q^QLi@RYP_@d@c@|@KNSHGCKSEc@Ca@AyAKeA_@{AS]aCyCWk@i@oCe@}C[_Aq@iAi@g@y@_@W_@EOKg@Q_B?eEKcEKW_Ay@[_@UMWGI?a@OU?c@HQC[@cAUq@Kq@?[Fk@Na@l@c@`@QR[r@Md@KfACh@Fd@?^T`AP\\d@f@X^h@d@Z`@VVdAr@dAZTDd@Bf@LP?NC^F|@E|@Of@ETQNYBa@O{@Cg@?y@DuACaBMyBAMBEFCh@@`BI\\BPBp@T|@j@j@j@b@v@z@xDFh@h@~BVxARr@f@xAJj@JVv@zAPTbAbANLNDfAfAR`@N~@E~AG^Wj@Ol@uA|C_@t@YZOHYDeACOMKo@EmBC_@Gg@[sAIUS[cAyAq@y@]o@Kc@QwAYuAQmAU{@a@{@i@o@OQSOe@QSQQYKa@Ga@KqA@kBBu@CkCEe@S_@K]EWKOMOOIa@e@KGu@Ui@Ei@FOAQBi@EqAWk@Cu@J_@Pc@l@c@`@c@v@Mb@M|@C\\@|@Fv@Hd@FTRZh@n@bA|@Z`@nAbA^LjAXn@Jr@H|@Aj@G`@I^Ed@OPS@GBg@Eg@G}@FcCA_AQiDBMDC`A@t@EVBj@Hp@Rn@Xf@`@^b@^r@Nn@l@lCXrBRn@\\dB`@hAPt@Fb@L`@f@|@p@~@RNNPVRVJf@^p@dANdA?PMb@]~@e@|@Op@Sl@ILQJa@Ri@b@w@nAOPODE?GCKUE]C}BC[a@iBSg@QYkAwAy@iAKa@Q{@K}@Om@QyAWaA[s@i@y@a@a@s@_@QMUe@UeBQm@AsABqACgBIuAIWEa@EKk@a@[a@QMUKq@IY?q@Fo@CwA[o@?c@Fm@NY^o@l@W^Qd@GTObAEt@@d@H|@FVN^LRJFX^j@j@bAlAf@`@zAj@xAVl@Dn@@r@Cv@Or@EPGJGHU@OAQKm@C_@AaC@Y@eBEaAMgADMJEf@Br@Cj@@p@F^LTLr@b@j@f@Zb@Vh@V`Af@dDDR"
+  },
+  "feeling": "Legs were flat Monday, then the six on Wednesday clicked. Relative effort 103 and I still wanted another mile.",
+  "pr": {
+    "half_marathon": "1:32"
+  }
+}

@@ -1,185 +1,282 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f5f0">
-  <meta name="description" content="Alex Lopez is a software engineer building reliable data, AI, and analytics systems across governed analytics, backend infrastructure, and applied machine learning">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Alex Lopez">
-  <meta property="og:title" content="Alex Lopez | Software Engineer">
-  <meta property="og:description" content="Alex Lopez is a software engineer building reliable data, AI, and analytics systems">
-  <meta property="og:image" content="assets/me-presenting.jpg">
-  <meta property="og:image:alt" content="Alex Lopez presenting computational biology research">
-  <title>Alex Lopez | Software Engineer | Data, AI &amp; Analytics</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script type="importmap">
-    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"}}
-  </script>
-  <script type="module" src="app.js"></script>
-  <script type="module" src="scene.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alex Lopez — Northeastern CS + Math</title>
+<meta name="description" content="Northeastern CS and Math '28. Nemisis kills a worker mid-write to check whether a fix holds. Graphene controls what parallel coding agents publish.">
+<meta name="theme-color" content="#0d1117">
+<link rel="canonical" href="https://alex-lop.github.io/Alex_Lopez_Website/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://alex-lop.github.io/Alex_Lopez_Website/">
+<meta property="og:title" content="Alex Lopez — Northeastern CS + Math">
+<meta property="og:description" content="Agents write fast. Someone still has to prove it. Nemisis, Graphene, RegLineage, and a running log.">
+<meta property="og:image" content="https://alex-lop.github.io/Alex_Lopez_Website/assets/me-presenting.jpg">
+<meta property="og:image:alt" content="Alex Lopez beside his research poster at Yale">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+<script>document.documentElement.classList.add('js');</script>
 </head>
-<body id="top">
-  <a class="skip-link" href="#main-content">Skip to main content</a>
-  <nav id="site-nav" aria-label="Primary navigation">
-    <a class="nav-link" href="#about-panel" data-scroll-link data-nav="about">About</a>
-    <a class="nav-link" href="#proj-panel-0" data-scroll-link data-nav="projects">Projects</a>
-    <a class="nav-link" href="#education-panel" data-scroll-link data-nav="resume">Resume</a>
-    <a class="nav-link" href="#contact-panel" data-scroll-link data-nav="contact">Contact</a>
-  </nav>
-  <p id="drag-hint" aria-hidden="true">drag orbit · right-drag pan · middle-drag zoom · scroll explore</p>
-  <canvas id="bg-canvas" aria-hidden="true"></canvas>
-  <div id="brightness-overlay" aria-hidden="true"></div>
+<body>
+<a class="skip" href="#main">Skip to content</a>
 
-  <main id="main-content">
-    <section id="intro-panel" class="section-panel intro-panel" data-nav-section="top" aria-labelledby="intro-name">
-      <h1 class="intro-name" id="intro-name"><a href="#intro-panel" data-scroll-link>Alex Lopez</a></h1>
-    </section>
+<nav class="nav" aria-label="Primary">
+  <div class="wrap">
+    <a class="wordmark" href="#top" aria-label="Alex Lopez, home">Alex Lopez</a>
+    <ul>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#running">Running</a></li>
+      <li><a href="assets/Alex_Lopez_Resume.pdf" target="_blank" rel="noopener noreferrer">Resume</a></li>
+      <li><a href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
 
-    <section id="about-panel" class="section-panel about-panel" data-nav-section="about" aria-labelledby="about-title">
-      <h2 class="card-label" id="about-title">About Me</h2>
-      <div class="about-layout">
-        <article class="glass-card about-card">
-          <p class="about-greeting">Helloooo world</p>
-          <p class="about-copy">I'm Alex, a junior studying Math + CS at Northeastern and really trying to make an : </p>
-          <p class="impact-word">Impact</p>
-        </article>
-        <figure class="about-photo-wrap image-reveal">
-          <button class="image-button" type="button" data-lightbox-src="assets/me-presenting.jpg" data-lightbox-alt="Alex Lopez presenting computational biology research at the O’Hern Lab" aria-label="Enlarge photo of Alex presenting research">
-            <img class="about-photo" src="assets/me-presenting.jpg" width="900" height="599" loading="lazy" alt="Alex Lopez presenting computational biology research">
-          </button>
-          <figcaption>Presenting research from the O’Hern Lab</figcaption>
-        </figure>
+<main id="main">
+  <header class="hero" id="top">
+    <canvas class="run-field" data-run-field aria-hidden="true"
+      data-route="gklaGpm}pLQt@Q^QLi@RYP_@d@c@|@KNSHGCKSEc@Ca@AyAKeA_@{AS]aCyCWk@i@oCe@}C[_Aq@iAi@g@y@_@W_@EOKg@Q_B?eEKcEKW_Ay@[_@UMWGI?a@OU?c@HQC[@cAUq@Kq@?[Fk@Na@l@c@`@QR[r@Md@KfACh@Fd@?^T`AP\d@f@X^h@d@Z`@VVdAr@dAZTDd@Bf@LP?NC^F|@E|@Of@ETQNYBa@O{@Cg@?y@DuACaBMyBAMBEFCh@@`BI\BPBp@T|@j@j@j@b@v@z@xDFh@h@~BVxARr@f@xAJj@JVv@zAPTbAbANLNDfAfAR`@N~@E~AG^Wj@Ol@uA|C_@t@YZOHYDeACOMKo@EmBC_@Gg@[sAIUS[cAyAq@y@]o@Kc@QwAYuAQmAU{@a@{@i@o@OQSOe@QSQQYKa@Ga@KqA@kBBu@CkCEe@S_@K]EWKOMOOIa@e@KGu@Ui@Ei@FOAQBi@EqAWk@Cu@J_@Pc@l@c@`@c@v@Mb@M|@C\@|@Fv@Hd@FTRZh@n@bA|@Z`@nAbA^LjAXn@Jr@H|@Aj@G`@I^Ed@OPS@GBg@Eg@G}@FcCA_AQiDBMDC`A@t@EVBj@Hp@Rn@Xf@`@^b@^r@Nn@l@lCXrBRn@\dB`@hAPt@Fb@L`@f@|@p@~@RNNPVRVJf@^p@dANdA?PMb@]~@e@|@Op@Sl@ILQJa@Ri@b@w@nAOPODE?GCKUE]C}BC[a@iBSg@QYkAwAy@iAKa@Q{@K}@Om@QyAWaA[s@i@y@a@a@s@_@QMUe@UeBQm@AsABqACgBIuAIWEa@EKk@a@[a@QMUKq@IY?q@Fo@CwA[o@?c@Fm@NY^o@l@W^Qd@GTObAEt@@d@H|@FVN^LRJFX^j@j@bAlAf@`@zAj@xAVl@Dn@@r@Cv@Or@EPGJGHU@OAQKm@C_@AaC@Y@eBEaAMgADMJEf@Br@Cj@@p@F^LTLr@b@j@f@Zb@Vh@V`Af@dDDR" data-miles="6.03" data-pace="465" data-elev="115" data-date="2026-09-16" data-place="Boston, MA"></canvas>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Northeastern CS + Math · AI concentration · Boston</p>
+        <h1>Agents write fast.<br class="brk"> Someone still has to prove it.</h1>
+        <p class="lede">Tools that check what AI-written code actually does. Crash it mid-write, read what survived, refuse to answer when the evidence is thin. Third year at Northeastern, CS and Math.</p>
+        <p class="actions">
+          <a class="btn btn-go" href="#projects">See the projects</a>
+          <a class="btn" href="assets/Alex_Lopez_Resume.pdf" target="_blank" rel="noopener noreferrer">Resume</a>
+        </p>
       </div>
-    </section>
+      <figure class="hero-legend">
+        <figcaption class="mono">this week · <span data-run="week.runs">3</span> runs · <span data-run="week.miles">14.2</span> mi · <span data-run="week.pace">7:25</span> /mi · <span data-run="week.elev">266</span> ft · via strava</figcaption>
+        <p class="sr-only">Latest run, drawn as a route on the canvas: <span data-run="latest.line">Sep 16 · 6.03 mi · 7:45 /mi · 115 ft · Boston, MA</span></p>
+      </figure>
+    </div>
+  </header>
 
-    <section id="proj-panel-0" class="section-panel project-solo-panel project-accordion-panel" data-project-panel data-nav-section="projects" aria-labelledby="projects-title">
-      <h2 class="card-label" id="projects-title">Selected Projects · <span class="project-counter">Open one</span></h2>
-      <div class="project-accordion">
-        <details class="glass-card project-disclosure" name="selected-projects" open>
-          <summary>
-            <span class="project-index">01</span>
-            <span class="project-summary-text"><strong>Graphene</strong><small>July 2026 – Present</small></span>
-            <span class="project-summary-tail"><img class="project-summary-art project-summary-art--graphene" src="assets/projects/graphene-mission-control.webp" width="1280" height="480" loading="lazy" alt=""><span class="project-toggle" aria-hidden="true">+</span></span>
-          </summary>
-          <div class="project-details">
-            <p>Local first mission control for bounded multi agent coding: it validates dependency aware work, schedules policy allowed tasks in isolation, and assembles evidence for review; an isolated local commit is created only after explicit approval</p>
-            <ul class="tags" aria-label="Graphene technologies"><li>Python</li><li>SQLite</li><li>FastAPI</li><li>Google ADK</li></ul>
-            <div class="project-footer"><a class="project-link" href="https://github.com/Alex-lop/Graphene" target="_blank" rel="noopener noreferrer"><svg class="link-icon" aria-hidden="true"><use href="#icon-github"></use></svg><span>View on GitHub</span><span aria-hidden="true">↗</span></a></div>
-          </div>
-        </details>
+  <section id="projects">
+    <div class="wrap">
+      <p class="eyebrow">Selected projects</p>
+      <h2>Ship the tool. Then try to break it.</h2>
 
-        <details class="glass-card project-disclosure" name="selected-projects">
-          <summary>
-            <span class="project-index">02</span>
-            <span class="project-summary-text"><strong>RegLineage</strong><small>June 2026 – Present</small></span>
-            <span class="project-summary-tail"><img class="project-summary-art project-summary-art--reglineage" src="assets/projects/reglineage-logo.png" width="1316" height="394" loading="lazy" alt=""><span class="project-toggle" aria-hidden="true">+</span></span>
-          </summary>
-          <div class="project-details">
-            <p>A governance control loop that makes AI data capabilities revocable when policy or lineage changes; DataHub suspends only affected work, requires approved repair, and verifies writeback before restoring access</p>
-            <small class="project-note">2.96M row governed demo</small>
-            <ul class="tags" aria-label="RegLineage technologies"><li>Python</li><li>DataHub</li><li>SQLite</li><li>MCP</li></ul>
-            <div class="project-footer"><a class="project-link" href="https://github.com/Alex-lop/RegLineage" target="_blank" rel="noopener noreferrer"><svg class="link-icon" aria-hidden="true"><use href="#icon-github"></use></svg><span>View on GitHub</span><span aria-hidden="true">↗</span></a></div>
-          </div>
-        </details>
+      <article class="project" aria-labelledby="p-nemisis">
+        <div class="meta">
+          <b aria-hidden="true">01</b>
+          <h3 id="p-nemisis">Nemisis</h3>
+          <p class="tag">Crash-safety verification for AI-written retry patches</p>
+          <p class="stack">Aug – Sep 2026<br>Python 3.12+ · uv · pydantic · MCP SDK · pytest<br>v0.2.0 on PyPI · Docker 77 MB · Apache-2.0</p>
+          <ul class="stats">
+            <li><b>634</b> tests on CPython 3.12 – 3.14</li>
+            <li><b>600 / 600</b> nightly red-team agreement</li>
+            <li><b>14</b> turns for a fresh agent to prove its own fix</li>
+          </ul>
+          <ul class="links">
+            <li><a href="https://github.com/Alex-lop/Nemisis" target="_blank" rel="noopener noreferrer">GitHub ↗</a></li>
+            <li><a href="https://alex-lop.github.io/Nemisis/" target="_blank" rel="noopener noreferrer">Live page ↗</a></li>
+          </ul>
+        </div>
+        <div class="body">
+          <img class="banner" src="assets/nemisis-banner-dark.png" width="2400" height="1000" loading="lazy" alt="Nemisis banner: two rails split by a red axis; the open red square is the write that never happened">
+          <p>A payment webhook credits an order twice when the worker dies mid-handler. An ordinary test cannot catch that: it calls the handler once, in one process, with nothing going wrong. The agent's patch ships green and still double-charges. One fixture in the repo has the same crash window, a different tree, green tests, and ends at $50 instead of $25.</p>
+          <p>CrashCheck runs the patched handler in a real worker process and SIGKILLs it the moment the effect is durably on disk. A fresh worker starts, the byte-identical event is redelivered, and an independent read-only connection reads what survived. The hunt runs on the base before the patch is read at all, so the test cannot be tuned to the fix. Five fresh worlds per tree must agree, then a sweep kills once after every store commit the patch makes. A no-crash control delivers twice with no kill, to prove the duplicate needs the crash.</p>
+          <p>The model never judges. Deterministic code owns the kill points and the decision, and refusing to answer is a first-class outcome: any write the injected store did not make exits 2, never pass, never fail. It ships as a CLI, an MCP server, a GitHub Action, and a skill an agent can use to prove its own fix.</p>
+<pre class="terminal" role="region" aria-label="Real output of nemisis check" tabindex="0"><code><span class="prompt">$</span> uv run nemisis check --base fixture:sqlite-credit-v1/buggy \
+    --candidate fixture:sqlite-credit-v1/misleading-green --mode local
+verdict: <span class="red">PATCH_FAILED_STILL_REPRODUCES</span>
+timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="red">$50.00</span>
+<span class="dim">exit code 1</span></code></pre>
+          <dl class="proof-strip">
+            <div><dt>Red-teamed nightly</dt><dd>600 of 600 generated handlers agreed with an independent oracle, 300 per scenario</dd></div>
+            <div><dt>Caught by its own red team</dt><dd>The engine issued a false FIX_PROVEN on tail-bytes writes for five nights because SQLite's close-time checkpoint truncated the file before the engine read it. Fixed, and the shape is pinned as a refusal</dd></div>
+            <div><dt>Refused by design</dt><dd>28 shapes pinned as refusals: raw SQL, shadow tables, bytes past the last page. A correct fix the engine cannot instrument exits 2 and names the remedy</dd></div>
+            <div><dt>Not proven</dt><dd>Anything outside two scenarios, one handler shape, SQLite and POSIX SIGKILL. The narrowness is what makes the verdict trustworthy</dd></div>
+          </dl>
+        </div>
+      </article>
 
-        <details class="glass-card project-disclosure" name="selected-projects">
-          <summary>
-            <span class="project-index">03</span>
-            <span class="project-summary-text"><strong>X-Scraper</strong><small>June 2026 – Present</small></span>
-            <span class="project-summary-tail"><img class="project-summary-art project-summary-art--x" src="assets/projects/x-api-analyst.jpg" width="500" height="500" loading="lazy" alt=""><span class="project-toggle" aria-hidden="true">+</span></span>
-          </summary>
-          <div class="project-details">
-            <p>A local workbench that turns small, human approved X/Twitter captures into durable SQLite snapshots for search, export, and bounded read only MCP access; its browser first workflow preserves provenance and partial results without automating around login or rate limit gates</p>
-            <ul class="tags" aria-label="X-Scraper technologies"><li>Python</li><li>Playwright</li><li>SQLite</li><li>MCP</li></ul>
-            <div class="project-footer"><a class="project-link" href="https://github.com/Alex-lop/X-Scraper" target="_blank" rel="noopener noreferrer"><svg class="link-icon" aria-hidden="true"><use href="#icon-github"></use></svg><span>View on GitHub</span><span aria-hidden="true">↗</span></a></div>
-          </div>
-        </details>
+      <article class="project" aria-labelledby="p-graphene">
+        <div class="meta">
+          <b aria-hidden="true">02</b>
+          <h3 id="p-graphene">Graphene</h3>
+          <p class="tag">Publication control for parallel coding agents</p>
+          <p class="stack">Aug 2026<br>Python 3.13 · FastAPI · Google ADK · MCP SDK<br>Textual · SQLite · Cytoscape.js · Apache-2.0</p>
+          <ul class="stats">
+            <li><b>939</b> test functions across 129 files</li>
+            <li><b>209</b> commits in 19 days</li>
+            <li><b>25</b> known limitations, each naming its fix</li>
+          </ul>
+          <ul class="links">
+            <li><a href="https://github.com/Alex-lop/Graphene" target="_blank" rel="noopener noreferrer">GitHub ↗</a></li>
+          </ul>
+        </div>
+        <div class="body">
+          <span class="plate"><img src="assets/projects/graphene-mission-control.webp" width="1280" height="480" loading="lazy" alt=""></span>
+          <p>Two to five bounded coding agents, one repository, one operator who decides what gets published. Without bounded writes, exact candidates, and traceable history you get commits nobody approved and no way to ask where a file came from.</p>
+          <p>The operator supplies the goal, success criteria, repo identity, and a deny-by-default policy. A credential-gated Google ADK planner proposes a decomposition; deterministic validation, not the model, decides admissibility. Approval binds mission, base commit SHA, revision number, and plan SHA-256. Change any one and the approval is void. A SQLite-backed scheduler dispatches only ready, non-conflicting nodes under leases and fencing tokens; overlapping write paths are refused even when dependency order would make the transfer safe.</p>
+          <p>Each mission registers an exact-candidate bundle and pauses for an ID-bound decision. Rejection creates no commit. Approval may create only an isolated Graphene-owned ref. It never pushes, merges, deploys, or mutates the checkout, and one command reconstructs any file's lineage. MCP-compatible, with committed config examples for Claude Code and Codex. The README opens with a proven/waiting ledger: four rows verified locally, two marked NOT PROVEN.</p>
+          <aside class="note" aria-label="Margin note">
+            <p class="eyebrow">Margin note · The book was wrong</p>
+            <p>The last time I wrote CSS was junior year of high school. A model writes it now, and somewhere in there I stopped checking anything a model could do faster than me.</p>
+            <p>Then classes started and I was reading the Group Theory textbook, following an example, and the result looked wrong. It was a FOIL problem, the kind a middle schooler does in a minute. I spent fifteen minutes on it anyway. My answer kept disagreeing with the book's. I finally asked a model to find my mistake, and there wasn't one. The book had a typo.</p>
+            <p>I sat there stunned. For about two years I had not contradicted an authority about anything. Finding that typo felt like the treasure I used to dig for at the beach, the thing I half believed was actually down there.</p>
+            <p>I still don't know what is worth learning when the agent does it better. Graphene, built the month before, runs on the same reflex. Let the agents write. Keep a human at the decision, holding evidence, allowed to say no.</p>
+            <p class="sig">— group theory, fall 2026</p>
+          </aside>
+        </div>
+      </article>
 
-        <details class="glass-card project-disclosure" name="selected-projects">
-          <summary>
-            <span class="project-index">04</span>
-            <span class="project-summary-text"><strong>IMC Prosperity 3</strong><small>March 2025 – April 2025</small></span>
-            <span class="project-summary-tail"><img class="project-summary-art project-summary-art--imc" src="assets/projects/imc-prosperity-3.webp" width="1280" height="720" loading="lazy" alt=""><span class="project-toggle" aria-hidden="true">+</span></span>
-          </summary>
-          <div class="project-details">
-            <p>Placed 912th out of roughly 13,000 teams, ranking in the top 8% globally; collaborated on Python strategies spanning market making, scalping, locational arbitrage, and mean reversion while balancing execution and risk</p>
-            <ul class="tags" aria-label="IMC Prosperity 3 technologies and methods"><li>Python</li><li>Market Making</li><li>Arbitrage</li><li>Mean Reversion</li></ul>
-            <div class="project-footer"><span class="private-label"><span aria-hidden="true">▣</span> Private competition code</span></div>
-          </div>
-        </details>
+      <h3 class="eyebrow">Also built</h3>
+      <dl class="ledger roles">
+        <div>
+          <dt><b>03 · RegLineage</b><small>Jul – Aug 2026<br>Python 3.11 · DataHub · DuckDB<br>FastAPI · MCP SDK · Docker</small></dt>
+          <dd>
+            <img class="mark" src="assets/projects/reglineage-logo.png" width="1316" height="394" loading="lazy" alt="">
+            <p>Revocable data access for AI agents. Analyses register in advance and run under an immutable lease bound to datasets, fields, purpose, and policy. When DataHub governance changes, snapshot polling computes exact lineage impact and suspends only the intersecting lease while unrelated work keeps serving. Repair stays quarantined through DuckDB validation and needs separate approval plus verified writeback. Twenty-one MCP tools can request approval; none can grant it. It grew out of a pipeline that matched CPPA obligations to DataHub assets and published only findings a human approved.</p>
+            <p class="mono">2,964,606 governed rows · 24 of 24 adversarial cases · 30 of 30 event-to-enforcement runs · 0 violations · 420 tests</p>
+            <p><a href="https://github.com/Alex-lop/RegLineage" target="_blank" rel="noopener noreferrer">GitHub ↗</a></p>
+          </dd>
+        </div>
+        <div>
+          <dt><b>04 · IMC Prosperity 3</b><small>Mar – Apr 2025<br>Python · NumPy · Pandas</small></dt>
+          <dd>
+            <p>A global algorithmic trading competition. With teammates I built Python strategies for market making, scalping, locational arbitrage, and mean reversion, and balanced execution against risk-adjusted return. The competition code is private, so the placing is the artifact.</p>
+            <div class="rail" role="img" aria-label="Finished 912 of about 13,000 teams"><b>912</b><i></i><span>~13,000 TEAMS</span></div>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="wrap">
+      <p class="eyebrow">Experience</p>
+      <h2>Build it. Teach it.</h2>
+      <dl class="ledger roles">
+        <div>
+          <dt><b>Expandya</b><span>Software Engineering Intern</span><small>Westport, CT · Jun – Sep 2026</small></dt>
+          <dd><ul class="points">
+            <li>Tuned Python and C++ data systems for e-commerce clients: indexing, query caching, profiling on datasets over 3M rows</li>
+            <li>Built and improved client sites for organic and AI-assisted search: crawlability, indexing, site architecture, metadata, performance</li>
+          </ul></dd>
+        </div>
+        <div>
+          <dt><b>Northeastern University</b><span>Teaching Assistant</span><small>Boston, MA · Sep 2025 – present</small></dt>
+          <dd><ul class="points">
+            <li>CS 3200 Introduction to Databases and CS 1800 Discrete Structures: weekly office hours, grading, project debugging</li>
+            <li>Most of it is helping students new to CS build confidence</li>
+          </ul></dd>
+        </div>
+        <div>
+          <dt><b>O'Hern Lab, Yale University</b><span>Computational Biology Research Assistant</span><small>New Haven, CT · Jun – Sep 2023</small></dt>
+          <dd>
+            <ul class="points">
+              <li>Built a pipeline turning raw AlphaFold and NetSurfP folding simulations into structured datasets</li>
+              <li>Optimized Python on Yale HPC clusters to classify 10,000+ oncogenic variants, flagging mutations that alter folding in ways plausibly linked to cancer</li>
+            </ul>
+            <figure class="photo">
+              <img src="assets/me-presenting.jpg" width="900" height="599" loading="lazy" alt="Alex Lopez beside his research poster at Yale's computational biology poster session">
+              <figcaption>Closing poster, O'Hern Lab, Yale Computational Biology, summer 2023</figcaption>
+            </figure>
+          </dd>
+        </div>
+        <div>
+          <dt><b>Society of Hispanic Professional Engineers</b><span>Undergraduate Ambassador</span><small>Boston, MA · Sep 2025 – present</small></dt>
+          <dd><ul class="points">
+            <li>On the board, planning and promoting first-year events</li>
+          </ul></dd>
+        </div>
+      </dl>
+
+      <h3 class="eyebrow">Record</h3>
+      <dl class="ledger">
+        <div><dt>Degree</dt><dd>Northeastern University, Khoury College · Combined BSE, Computer Science and Mathematics, AI concentration · GPA 3.71, major 3.84 · Expected May 2028</dd></div>
+        <div><dt>Coursework</dt><dd>Group Theory · Number Theory · Differential Geometry · Numerical Methods for Differential Equations · Advanced Probability and Statistics · Data Structures and Algorithms</dd></div>
+        <div><dt>Stack</dt><dd>Python · Java · JavaScript · OCaml · Kotlin · C — PyTorch · React · SQL · AWS · Pandas · MATLAB · GraphQL</dd></div>
+        <div><dt>Before</dt><dd>Hopkins School, New Haven, CT · 2024 · wrestling captain · Editor at Large, The Razor · Science Olympiad</dd></div>
+        <div><dt>Now</dt><dd>TA for CS 3200 and CS 1800, on the SHPE board, building toward a first marathon</dd></div>
+        <div><dt>Outside</dt><dd>Running, golf, powerlifting, chess, a dog, and Luna the bunny</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="running">
+    <div class="wrap">
+      <p class="eyebrow">Running</p>
+      <h2>Log the miles. Note how they felt.</h2>
+      <p class="section-note">Half marathon in 1:32, a first marathon in training. The numbers come from Strava; the note is written by hand.</p>
+      <div class="quad" role="group" aria-label="This week's running totals">
+        <div><b data-run="week.miles">14.2</b><span>Miles</span></div>
+        <div><b data-run="week.pace">7:25</b><span>Avg pace /mi</span></div>
+        <div><b data-run="week.elev">266</b><span>Elevation ft</span></div>
+        <div><b data-run="week.runs">3</b><span>Runs</span></div>
       </div>
-    </section>
+      <p class="quad-note" data-run="week.range">week of Sep 14 · 1h 45m moving</p>
+      <figure class="weekbars">
+        <svg data-week-bars viewBox="0 0 280 72" width="280" height="72" role="img" aria-label="Miles per day this week: Monday 3.82, Tuesday 4.34, Wednesday 6.03, rest of the week to come">
+          <line x1="0" y1="56" x2="280" y2="56" stroke="var(--hair-strong)" stroke-width="1"/>
+          <rect x="12" y="23" width="16" height="33" fill="currentColor"/>
+          <rect x="52" y="19" width="16" height="37" fill="currentColor"/>
+          <rect x="92" y="4" width="16" height="52" fill="var(--red)"/>
+          <rect x="132" y="55" width="16" height="1" fill="currentColor" opacity=".35"/>
+          <rect x="172" y="55" width="16" height="1" fill="currentColor" opacity=".35"/>
+          <rect x="212" y="55" width="16" height="1" fill="currentColor" opacity=".35"/>
+          <rect x="252" y="55" width="16" height="1" fill="currentColor" opacity=".35"/>
+          <text x="12" y="69" class="daylabel">MON</text>
+          <text x="268" y="69" class="daylabel" text-anchor="end">SUN</text>
+        </svg>
+      </figure>
+      <p class="feeling"><span class="mono">Note —</span> <em data-run="feeling">Legs were flat Monday, then the six on Wednesday clicked. Relative effort 103 and I still wanted another mile.</em></p>
+      <dl class="ledger">
+        <div><dt>Latest</dt><dd data-run="latest.line">Sep 16 · 6.03 mi · 7:45 /mi · 115 ft · Boston, MA</dd></div>
+        <div><dt>Goal</dt><dd>Half at 1:32; the first marathon is the next one</dd></div>
+      </dl>
+      <p class="source"><a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">strava athlete 141554769 ↗</a> · <span data-run="synced">synced Sep 16, 2026</span></p>
+      <p class="source" data-run-stale hidden></p>
+    </div>
+  </section>
 
-    <section id="education-panel" class="section-panel resume-solo-panel" data-nav-section="resume" aria-labelledby="education-title">
-      <h2 class="card-label" id="education-title">Resume · <span class="project-counter">Education</span></h2>
-      <article class="glass-card resume-card education-card">
-        <h3>Education</h3>
-        <ul class="resume-list">
-          <li class="education-entry"><img class="school-logo" src="assets/northeastern_shcool.png" width="447" height="447" loading="lazy" alt=""><div><strong>Northeastern University</strong><span>BSE in Computer Science and Mathematics · Concentration in AI</span><span>Expected May 2028 · Cumulative GPA 3.65 · Major GPA 3.84</span></div></li>
-          <li class="education-entry"><img class="school-logo" src="assets/hopkinslll.jpg" width="316" height="316" loading="lazy" alt=""><div><strong>Hopkins School</strong><span>Graduated June 2024</span><span>Varsity Wrestling (Captain) · Football · Track</span></div></li>
-        </ul>
-      </article>
-    </section>
+  <section class="closing">
+    <div class="wrap">
+      <svg class="plate-svg" viewBox="0 0 880 300" role="img" aria-label="Alex Lopez wordmark on two rails split by a red axis">
+        <g stroke="var(--hair-strong)" stroke-width="1">
+          <path d="M34 40.5h12M40.5 34v12M834 40.5h12M840.5 34v12M34 259.5h12M40.5 253v12M834 259.5h12M840.5 253v12"/>
+        </g>
+        <g stroke="var(--muted)" stroke-width="1" opacity=".7">
+          <path d="M40 120.5h382M458 120.5h382M40 180.5h382M458 180.5h382"/>
+        </g>
+        <g stroke="var(--red)" stroke-width="1">
+          <path d="M440.5 0v300M434 40.5h12M434 100.5h12M434 200.5h12M434 260.5h12"/>
+        </g>
+        <rect x="515.5" y="116" width="9" height="9" fill="var(--ink)"/>
+        <rect x="585.5" y="116" width="9" height="9" fill="var(--ink)"/>
+        <rect x="515.5" y="176" width="9" height="9" fill="var(--ink)"/>
+        <rect x="585.5" y="176" width="9" height="9" fill="none" stroke="var(--red)" stroke-width="1.5"/>
+        <text x="80" y="164" fill="var(--ink)" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="44" font-weight="650" letter-spacing="2">Alex Lopez</text>
+      </svg>
+      <p class="closing-line">Every number here is one you can check. The repos are public.</p>
+      <p class="actions">
+        <a class="btn btn-go" href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="btn" href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </p>
+      <p class="email">lopez.alexan@northeastern.edu</p>
+    </div>
+  </section>
+</main>
 
-    <section id="experience-panel" class="section-panel resume-solo-panel" data-nav-section="resume" aria-labelledby="experience-title">
-      <h2 class="card-label" id="experience-title">Resume · <span class="project-counter">Experience</span></h2>
-      <article class="glass-card resume-card experience-card">
-        <h3>Experience</h3>
-        <ul class="resume-list">
-          <li><strong><img class="employer-logo employer-logo--expandya" src="assets/expandya.jpg" width="46" height="46" alt="Expandya logo"> Software Engineering Intern — Expandya</strong><span>June 2026 – September 2026 · Westport, CT</span><ul class="role-points"><li>Made client sites as search and AI friendly as possible</li><li>Built Python and C++ data systems handling 3M+ rows</li></ul></li>
-          <li><strong><img class="employer-logo employer-logo--northeastern" src="assets/northeastern.png" width="112" height="38" alt="Northeastern University logo"> Teaching Assistant — Northeastern University</strong><span>September 2025 – Present · Boston, MA</span><ul class="role-points"><li>Run weekly office hours for databases and discrete math</li><li>Debug code and build confidence with students new to CS</li></ul></li>
-          <li><strong><img class="employer-logo employer-logo--shpe" src="assets/shpe.jpg" width="447" height="447" loading="lazy" alt=""> Undergraduate Ambassador — SHPE</strong><span>September 2025 – Present · Boston, MA</span><ul class="role-points"><li>Serve on the board planning first year events</li><li>Help new engineers find their people early</li></ul></li>
-          <li>
-            <strong>Computational Biology Research Assistant — O’Hern Lab, Yale</strong><span>June 2023 – September 2023 · New Haven, CT</span><ul class="role-points"><li>Turned raw protein folding simulations into usable datasets</li><li>Classified 10,000+ oncogenic protein variants on Yale HPC clusters</li></ul>
-            <button class="image-button ohern-button" type="button" data-lightbox-src="assets/ohern-header4.gif" data-lightbox-alt="O’Hern Lab at Yale School of Engineering and Applied Science" aria-label="Enlarge O’Hern Lab banner"><img src="assets/ohern-header4.gif" width="908" height="300" loading="lazy" alt="O’Hern Lab at Yale School of Engineering and Applied Science"></button>
-          </li>
-        </ul>
-      </article>
-    </section>
+<footer>
+  <div class="wrap">
+    <p>Alex Lopez · New Haven, CT / Boston, MA</p>
+    <ul>
+      <li><a href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      <li><a href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+      <li><a href="https://www.youtube.com/@alex17-OX" target="_blank" rel="noopener noreferrer">YouTube</a></li>
+      <li><a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Strava</a></li>
+      <li><a href="assets/Alex_Lopez_Resume.pdf" target="_blank" rel="noopener noreferrer">Resume</a></li>
+    </ul>
+  </div>
+</footer>
 
-    <section id="interests-panel" class="section-panel resume-solo-panel interests-panel" data-nav-section="resume" aria-labelledby="interests-title">
-      <h2 class="card-label" id="interests-title">Resume · <span class="project-counter">Interests</span></h2>
-      <article class="glass-card resume-card interests-card">
-        <h3>Outside the terminal</h3>
-        <div class="hobbies-grid">
-          <article class="hobby-card image-reveal"><button class="image-button" type="button" data-lightbox-src="assets/running-team.jpg" data-lightbox-alt="Alex running with his team" aria-label="Enlarge running photo"><img src="assets/running-team.jpg" width="800" height="600" loading="lazy" alt="Alex running with his team"></button><div><h4>Running</h4><p>Training for my first marathon and still enjoying most of the steps</p><a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Check out my Strava! ↗</a></div></article>
-          <article class="hobby-card image-reveal"><button class="image-button" type="button" data-lightbox-src="assets/golf-swing.jpg" data-lightbox-alt="Alex taking a golf swing on the course" aria-label="Enlarge golf photo"><img src="assets/golf-swing.jpg" width="434" height="325" loading="lazy" alt="Alex taking a golf swing on the course"></button><div><h4>Golf</h4><p>I picked up golf recently and I've really been loving it; it's one of those sports that really <u><em class="golf-emphasis">really</em></u> humbles you every single time you step on the course, but that one perfect shot keeps pulling you right back out there</p></div></article>
-          <article class="hobby-card image-reveal"><button class="image-button" type="button" data-lightbox-src="assets/chess.jpg" data-lightbox-alt="A chess knight on a chessboard" aria-label="Enlarge chess image"><img src="assets/chess.jpg" width="447" height="447" loading="lazy" alt="A chess knight on a chessboard"></button><div><h4>Chess</h4><p>Seven years in, I still hang pieces, miss obvious tactics, and immediately queue another game</p><a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener noreferrer">Add me on Chess.com! ↗</a></div></article>
-        </div>
-        <figure class="luna-float">
-          <img src="assets/luna-small.jpg" width="270" height="360" loading="lazy" alt="Luna the rabbit">
-          <figcaption>Luna: Chief Code Reviewer</figcaption>
-        </figure>
-      </article>
-    </section>
-
-    <section id="contact-panel" class="section-panel contact-panel" data-nav-section="contact" aria-labelledby="contact-title">
-      <h2 class="card-label" id="contact-title">Get In Touch</h2>
-      <p class="contact-intro">Open to opportunities, research, and interesting problems</p>
-      <article class="glass-card contact-card">
-        <p class="email-line">Email: lopez.alexan@northeastern.edu</p>
-        <div class="resume-actions"><button id="resume-toggle" class="primary-button" type="button" aria-expanded="false" aria-controls="resume-preview">View resume</button></div>
-        <div id="resume-preview" hidden>
-          <div class="resume-frame"><a href="assets/Alex_Lopez_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="Open Alex Lopez's resume PDF in a new tab"><img src="assets/Alex_Lopez_Resume-preview.webp" width="1275" height="1650" loading="lazy" alt="Preview of Alex Lopez's resume"></a></div>
-          <div class="resume-preview-actions"><a class="resume-open-link" href="assets/Alex_Lopez_Resume.pdf" target="_blank" rel="noopener noreferrer">Open full screen ↗</a><a class="download-link" href="assets/Alex_Lopez_Resume.pdf" download="Alex_Lopez_Resume.pdf">Download PDF ↓</a></div>
-        </div>
-        <div class="contact-links"><a href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer"><svg class="link-icon" aria-hidden="true"><use href="#icon-github"></use></svg><span>GitHub</span><span aria-hidden="true">↗</span></a><a href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener noreferrer"><svg class="link-icon" aria-hidden="true"><use href="#icon-linkedin"></use></svg><span>LinkedIn</span><span aria-hidden="true">↗</span></a><a href="https://www.youtube.com/@alex17-OX" target="_blank" rel="noopener noreferrer"><svg class="link-icon" aria-hidden="true"><use href="#icon-youtube"></use></svg><span>YouTube</span><span aria-hidden="true">↗</span></a></div>
-        <p class="contact-note">Videos from past hackathons and other things I find interesting</p>
-      </article>
-    </section>
-    <div id="scene-outro" aria-hidden="true"></div>
-  </main>
-
-  <a class="back-to-top" id="back-to-top" href="#intro-panel" data-scroll-link aria-label="Back to the opening">↑ Top</a>
-  <svg class="icon-sprite" aria-hidden="true">
-    <symbol id="icon-github" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.64 0 8.13c0 3.59 2.29 6.63 5.47 7.71.4.08.55-.18.55-.39 0-.19-.01-.84-.01-1.52-2.01.38-2.53-.5-2.69-.96-.09-.23-.48-.96-.82-1.15-.28-.15-.68-.53-.01-.54.63-.01 1.08.59 1.23.83.72 1.23 1.87.88 2.33.67.07-.53.28-.88.51-1.08-1.78-.21-3.64-.91-3.64-4.02 0-.89.31-1.62.82-2.19-.08-.2-.36-1.04.08-2.16 0 0 .67-.22 2.2.84A7.4 7.4 0 0 1 8 3.9c.68 0 1.36.09 2 .27 1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.96.08 2.16.51.57.82 1.3.82 2.19 0 3.12-1.87 3.81-3.65 4.02.29.25.54.74.54 1.5 0 1.08-.01 1.95-.01 2.22 0 .21.15.47.55.39A8.14 8.14 0 0 0 16 8.13C16 3.64 12.42 0 8 0Z"/></symbol>
-    <symbol id="icon-linkedin" viewBox="0 0 16 16"><path d="M0 1.15C0 .51.53 0 1.18 0h13.64C15.47 0 16 .51 16 1.15v13.7c0 .64-.53 1.15-1.18 1.15H1.18C.53 16 0 15.49 0 14.85V1.15Zm4.94 12.24V6.17H2.54v7.22h2.4ZM3.74 5.18c.84 0 1.36-.56 1.36-1.26-.02-.72-.52-1.27-1.34-1.27-.82 0-1.36.55-1.36 1.27 0 .7.52 1.26 1.31 1.26h.03Zm4.91 8.21V9.36c0-.22.02-.43.08-.59.17-.43.56-.88 1.22-.88.86 0 1.2.65 1.2 1.61v3.89h2.4V9.22c0-2.23-1.19-3.27-2.78-3.27-1.28 0-1.86.71-2.18 1.2v.02h-.01l.01-.02V6.17h-2.4c.03.65 0 7.22 0 7.22h2.4Z"/></symbol>
-    <symbol id="icon-youtube" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></symbol>
-  </svg>
-  <dialog id="lightbox" aria-label="Image preview"><button id="lightbox-close" type="button" aria-label="Close image preview">×</button><img id="lightbox-image" src="assets/me-presenting.jpg" alt=""></dialog>
+<script src="js/run-field.js" defer></script>
+<script src="js/site.js" defer></script>
 </body>
 </html>

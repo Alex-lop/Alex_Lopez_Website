@@ -1,166 +1,76 @@
+"""Structural checks for the site. Run: python3 tests/site_check.py"""
+import json
 from html.parser import HTMLParser
-from hashlib import sha256
 from pathlib import Path
-
 
 ROOT = Path(__file__).resolve().parents[1]
 HTML = (ROOT / "index.html").read_text()
 CSS = (ROOT / "styles.css").read_text()
-SCRIPTS = "\n".join((ROOT / name).read_text() for name in ("app.js", "scene.js"))
+JS = "\n".join((ROOT / "js" / name).read_text() for name in ("run-field.js", "site.js"))
 
 
 class SiteParser(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.ids = set()
-        self.anchors = []
-        self.assets = []
-        self.images = []
-        self.details = []
-        self.project_panels = 0
-        self.h1_count = 0
+        self.ids, self.anchors, self.images, self.assets, self.h1 = set(), [], [], [], 0
+        self.canvas = {}
 
     def handle_starttag(self, tag, attrs):
-        values = dict(attrs)
-        if values.get("id"):
-            self.ids.add(values["id"])
+        a = dict(attrs)
+        if a.get("id"):
+            self.ids.add(a["id"])
         if tag == "a":
-            self.anchors.append(values)
+            self.anchors.append(a)
         if tag == "img":
-            self.images.append(values)
-        if tag == "details":
-            self.details.append(values)
+            self.images.append(a)
         if tag == "h1":
-            self.h1_count += 1
-        if "project-solo-panel" in values.get("class", "").split():
-            self.project_panels += 1
+            self.h1 += 1
+        if tag == "canvas":
+            self.canvas = a
         for name in ("href", "src"):
-            value = values.get(name, "")
-            if value and not value.startswith(("#", "http", "mailto:", "data:")):
-                self.assets.append(value)
-
-
-class VisibleTextParser(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.in_body = False
-        self.skipped = 0
-        self.text = []
-
-    def handle_starttag(self, tag, attrs):
-        if tag == "body":
-            self.in_body = True
-        elif self.in_body and tag in {"script", "style", "svg"}:
-            self.skipped += 1
-
-    def handle_endtag(self, tag):
-        if self.in_body and tag in {"script", "style", "svg"}:
-            self.skipped -= 1
-        elif tag == "body":
-            self.in_body = False
-
-    def handle_data(self, data):
-        value = data.strip()
-        if self.in_body and not self.skipped and value:
-            self.text.append(value)
+            v = a.get(name, "")
+            if v and not v.startswith(("#", "http", "data:")):
+                self.assets.append(v)
 
 
 site = SiteParser()
 site.feed(HTML)
-visible = VisibleTextParser()
-visible.feed(HTML)
 
-restored_panels = {
-    "top",
-    "main-content",
-    "intro-panel",
-    "about-panel",
-    "proj-panel-0",
-    "education-panel",
-    "experience-panel",
-    "interests-panel",
-    "contact-panel",
-    "scene-outro",
-}
-assert restored_panels <= site.ids, f"Missing restored anchors: {sorted(restored_panels - site.ids)}"
-assert site.project_panels == 1, f"Expected one project panel, found {site.project_panels}"
-assert len(site.details) == 4, f"Expected four expandable projects, found {len(site.details)}"
-assert all(item.get("name") == "selected-projects" for item in site.details)
-assert "open" in site.details[0] and all("open" not in item for item in site.details[1:])
-assert site.h1_count == 1, f"Expected one h1, found {site.h1_count}"
-assert all("alt" in image for image in site.images), "Every image needs an alt attribute"
-
-for anchor in site.anchors:
-    href = anchor.get("href", "")
+assert {"top", "projects", "work", "running", "main"} <= site.ids, sorted(site.ids)
+assert site.h1 == 1, f"Expected one h1, found {site.h1}"
+for img in site.images:
+    assert "alt" in img and img.get("width") and img.get("height"), f"img needs alt, width, height: {img}"
+for a in site.anchors:
+    href = a.get("href", "")
     if href.startswith("#"):
         assert href[1:] in site.ids, f"Broken hash link: {href}"
     if href.startswith("http"):
-        rel = set(anchor.get("rel", "").split())
-        assert anchor.get("target") == "_blank", f"External link must open in a new tab: {href}"
-        assert {"noopener", "noreferrer"} <= rel, f"External link missing rel safety: {href}"
-
+        assert a.get("target") == "_blank", f"External link must open in a new tab: {href}"
+        assert {"noopener", "noreferrer"} <= set(a.get("rel", "").split()), f"External link missing rel: {href}"
 for asset in site.assets:
     assert (ROOT / asset).is_file(), f"Missing local asset: {asset}"
+for url in (
+    "https://github.com/Alex-lop/Nemisis", "https://alex-lop.github.io/Nemisis/",
+    "https://github.com/Alex-lop/Graphene", "https://github.com/Alex-lop/RegLineage",
+    "https://linkedin.com/in/lopezalexan/", "https://www.youtube.com/@alex17-OX",
+    "https://www.strava.com/athletes/141554769", "assets/Alex_Lopez_Resume.pdf",
+):
+    assert url in HTML, f"Missing link: {url}"
+assert "mailto:" not in HTML and "203-954" not in HTML
+assert "three" not in HTML.lower().replace("three.js", "") or "importmap" not in HTML
+assert 'src="js/run-field.js"' in HTML and 'src="js/site.js"' in HTML
+assert site.canvas.get("data-route"), "canvas needs a seeded data-route"
+assert "prefers-reduced-motion" in CSS and "prefers-reduced-motion" in JS
+assert 'list-style-type: "- "' in CSS and 'content: "- "' in CSS
 
-assert "https://github.com/Alex-lop/Graphene" in HTML
-assert "https://github.com/Alex-lop/RegLineage" in HTML
-assert "https://github.com/Alex-lop/X-Scraper" in HTML
-assert "Coin Shroud" not in HTML
-assert "*boop*" not in HTML + CSS + SCRIPTS
-assert ".boop-label" not in HTML + CSS + SCRIPTS
-assert "prefers-reduced-motion: reduce" in CSS
-assert "prefers-reduced-motion: reduce" in SCRIPTS
-assert "OrbitControls" in SCRIPTS
-assert "addEventListener(\"wheel\"" in SCRIPTS
-assert "window.scrollTo" in SCRIPTS
-assert "window.portfolioHandleWheel" in SCRIPTS and "Soft takeoff, long coast, soft landing" in SCRIPTS
-assert HTML.index('id="about-panel"') < HTML.index('id="proj-panel-0"')
-assert 'src="assets/me-presenting.jpg"' in HTML
-assert 'rel="icon"' not in HTML and "%236d28d9" not in HTML
-assert "Luna: Chief Code Reviewer" in HTML
-assert "Private competition code" in HTML
-assert '<p class="about-greeting">Helloooo world</p>' in HTML
-assert "I'm Alex, a junior studying Math + CS at Northeastern" in HTML
-assert "really trying to make an" in HTML and '<p class="impact-word">Impact</p>' in HTML
-assert "genes linked to cancer" not in HTML and "Hey I'm Alex" not in HTML
-assert "skills-panel" not in HTML and "skillicons.dev" not in HTML
-assert "Training for my first marathon and still enjoying most of the steps" in HTML
-assert 'class="golf-emphasis"' in HTML and "immediately queue another game" in HTML
-assert not [value for value in visible.text if value.endswith(".")], "Visible copy should not end in periods"
-assert all(title in HTML for title in (
-    "Software Engineering Intern — Expandya",
-    "Teaching Assistant — Northeastern University",
-    "Undergraduate Ambassador — SHPE",
-    "Computational Biology Research Assistant — O’Hern Lab, Yale",
-))
-assert "r\u00e9sum\u00e9" not in (HTML + SCRIPTS).lower()
-assert "site-monogram" not in HTML + CSS
-assert "assets/projects/graphene-mission-control.webp" in HTML
-assert "assets/projects/reglineage-logo.png" in HTML
-assert "assets/projects/x-api-analyst.jpg" in HTML
-assert "assets/projects/imc-prosperity-3.webp" in HTML
-assert all(f"project-summary-art--{name}" in HTML for name in ("graphene", "reglineage", "x", "imc"))
-assert "project-media" not in HTML + CSS and "project-image" not in HTML + CSS
-assert "assets/northeastern_shcool.png" in HTML and "assets/hopkinslll.jpg" in HTML
-assert "assets/shpe.jpg" in HTML and "Undergraduate Ambassador — SHPE" in HTML
-assert "Made client sites as search and AI friendly as possible" in HTML
-assert "3M+ rows" in HTML and "50M rows" not in HTML
-assert HTML.count('class="role-points"') == 4
-assert "Served on the board" not in HTML
-assert "experience-points" not in HTML + CSS
-assert HTML.count('<use href="#icon-github">') == 4 and '<use href="#icon-linkedin">' in HTML
-assert "View on GitHub" in HTML and "Open full screen" in HTML
-assert "Alex_Lopez_Resume-preview.webp" in HTML and "<iframe" not in HTML
-assert '<dialog id="lightbox"' in HTML
-assert sha256((ROOT / "assets/Alex_Lopez_Resume.pdf").read_bytes()).hexdigest() == "14e02edb07ab81dcb3899e03b59daed59c7fab3aadba808a17d99915ad681321"
-assert "zeus" not in (HTML + CSS + SCRIPTS).lower() and "triggerGridPulse" not in SCRIPTS
-assert "https://www.youtube.com/@alex17-OX" in HTML and '<use href="#icon-youtube">' in HTML and 'id="icon-youtube"' in HTML
-assert "intro-role" not in HTML + CSS and "intro-tagline" not in HTML + CSS
-assert "mailto:" not in HTML
-assert "Email: lopez.alexan@northeastern.edu" in HTML
-assert "data-email" not in HTML
-assert "clipboard" not in SCRIPTS
-assert 'id="copy-email"' not in HTML
-assert "const outroEase" in SCRIPTS and "scene-outro-active" in SCRIPTS
+data = json.loads((ROOT / "data" / "strava.json").read_text())
+week = data["week"]
+for key in ("miles", "pace_sec_per_mi", "elev_ft", "runs", "days", "moving_time_s"):
+    assert key in week, f"week.{key} missing"
+assert len(week["days"]) == 7 and all(d >= 0 for d in week["days"])
+assert abs(sum(week["days"]) - week["miles"]) < 0.15, "days should sum to the week's miles"
+assert data["latest"]["polyline"] and len(site.canvas["data-route"]) > 20, "route missing"
+assert isinstance(data.get("feeling"), str) and data["pr"]["half_marathon"] == "1:32"
+assert data["generated_at"].endswith("Z")
 
-print(f"Site check passed: {len(site.ids)} ids, {len(site.anchors)} links, {len(site.assets)} local assets")
+print(f"Site check passed: {len(site.ids)} ids, {len(site.anchors)} links, {len(site.images)} images, {len(site.assets)} local assets")
