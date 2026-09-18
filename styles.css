@@ -153,7 +153,7 @@ main > section:last-of-type { padding-bottom: 0; }
 /* Running */
 .run { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px 56px; align-items: start; }
 .route-panel { min-width: 0; }
-#route { display: block; width: 100%; aspect-ratio: 4 / 3; touch-action: none; cursor: crosshair; }
+#route { display: block; width: 100%; aspect-ratio: 4 / 3; touch-action: pan-y; cursor: crosshair; }
 .route-readout { display: flex; flex-wrap: wrap; gap: 4px 22px; min-height: 1.5em; margin: 10px 0 6px; font-size: .92rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .route-readout span:empty { display: none; }
 .route-caption { margin: 0; }
@@ -170,6 +170,7 @@ main > section:last-of-type { padding-bottom: 0; }
 .track::-webkit-progress-bar { background: var(--rule); }
 .track::-webkit-progress-value { background: var(--accent); transition: width 900ms cubic-bezier(.2, .7, .2, 1); }
 .track::-moz-progress-bar { background: var(--accent); }
+.week-line { margin: 0 0 14px; color: var(--ink-2); font-size: .95rem; font-variant-numeric: tabular-nums; }
 .run-note { margin: 0 0 14px; }
 .countdown { margin: 0 0 22px; font-size: .92rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .countdown b { font-weight: 500; }
