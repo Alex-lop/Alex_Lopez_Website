@@ -1,12 +1,5 @@
 # Project asset provenance
 
-- `reglineage-logo.png` is a cropped web-optimized mark from Alex Lopez's RegLineage branding (horizontal baby-blue logo on black).
-- `x-api-analyst.jpg` comes from Alex Lopez's X-Scraper repository at commit `66bec449d7adccbd1e6123d4c1e6cc77117bea32` (`images/X_cool.png`, MIT). This copy is cropped and compressed for the web. The X mark is used descriptively and does not imply endorsement by X Corp.
 - `graphene-mission-control.webp` is a web-optimized copy of `Graphene_main_img.png` (SHA-256 `443e6a904929eac4739cfa87dd19d892d461c7c1e491a03fb1220fcf18a97eef`; original removed from the repo, see git history), originally Alex Lopez's Graphene banner at `docs/assets/Graphene_main_img.png` (Apache-2.0).
-- `imc-prosperity-3.webp` is a web-optimized copy of the user-supplied `IMC_3.png` (SHA-256 `1a3d2f12edcd5ab5477a276001bc657c7a6e7480d5f6db375359b8ffaa06fc29`; original removed from the repo, see git history).
 
-Source repositories retain their respective license notices:
-
-- https://github.com/Alex-lop/RegLineage
-- https://github.com/Alex-lop/X-Scraper
-- https://github.com/Alex-lop/Graphene
+Source repository retains its license notice: https://github.com/Alex-lop/Graphene
