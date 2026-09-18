@@ -42,6 +42,12 @@
       var els = document.querySelectorAll('[data-run="' + k + '"]');
       for (var i = 0; i < els.length; i++) els[i].textContent = out[k];
     }
+    var bar = document.querySelector('[data-week-goal]');
+    if (bar) {
+      bar.max = 50;
+      bar.value = w.miles;
+      bar.textContent = w.miles.toFixed(1) + ' of 50 miles this week';
+    }
     var latestIdx = -1;
     if (l.date && d.week_start) { var diff = Math.round((Date.parse(l.date) - Date.parse(d.week_start)) / 864e5); if (diff >= 0 && diff < 7) latestIdx = diff; }
     if (days.length === 7) drawBars(days, latestIdx);

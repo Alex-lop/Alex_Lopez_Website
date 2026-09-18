@@ -6,8 +6,8 @@
   color-scheme: dark;
   --bg: #0d1117;
   --bg-raised: #121722;
-  --ink: #ecebe6;
-  --muted: #9aa0aa;
+  --ink: #f7f6f2;
+  --muted: #c8ccd4;
   --hair: #222937;
   --hair-strong: #364052;
   --red: #e6392d;
@@ -60,24 +60,47 @@ p { margin: 0 0 16px; }
 .btn-go { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .btn-go:hover { background: var(--red); border-color: var(--red); color: var(--ink); }
 
-/* Hero with the run field behind it */
-.hero { position: relative; isolation: isolate; min-height: min(80vh, 780px); overflow: hidden; }
-.run-field { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; display: block; }
-.hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 52%) 1fr; min-height: inherit; }
-.hero-copy { padding-block: clamp(72px, 11vh, 120px) clamp(72px, 12vh, 140px); }
+/* Hero: work first. The run field lives on #running. */
+.hero { padding-block: clamp(48px, 7vw, 88px); }
 .hero-copy .eyebrow { color: var(--ink); }
-.hero-legend { grid-column: 1 / -1; align-self: end; margin: 0 0 18px; color: var(--muted); font-size: .72rem; }
-.hero-legend figcaption { display: inline-block; max-width: 100%; padding: 6px 10px; border: 1px solid var(--hair); background: rgba(13, 17, 23, .75); }
+
+.run-stage { position: relative; isolation: isolate; min-height: min(80vh, 780px); overflow: hidden; padding-block: 0; }
+.run-field { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; display: block; }
+.run-grid { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 52%) minmax(0, 1fr); min-height: inherit; }
+.run-copy { min-width: 0; padding-block: clamp(64px, 8vw, 104px); max-width: 440px; }
+.whoo {
+  margin: 0 0 10px; color: var(--red);
+  font: 800 clamp(3.2rem, 9vw, 5.6rem)/.8 var(--sans);
+  letter-spacing: -.06em; text-transform: uppercase;
+  text-shadow: 0 2px 0 #0d1117, 0 0 28px rgba(13, 17, 23, .9);
+}
+.week-goal figcaption {
+  display: block; padding: 12px 14px 14px;
+  border: 1px solid var(--hair); background: rgba(13, 17, 23, .82);
+}
+.week-goal-meta {
+  display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px;
+  font: 650 .72rem/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+}
+.week-goal-meta span:last-child { color: var(--ink); }
+.week-goal progress {
+  display: block; width: 100%; height: 12px; margin: 0; border: 0;
+  background: var(--hair); accent-color: var(--red);
+  -webkit-appearance: none; appearance: none;
+}
+.week-goal progress::-webkit-progress-bar { background: var(--hair); }
+.week-goal progress::-webkit-progress-value { background: var(--red); }
+.week-goal progress::-moz-progress-bar { background: var(--red); }
 html:not(.js) .run-field { display: none; }
 
 main > section { padding-block: clamp(64px, 8vw, 104px); border-top: 1px solid var(--hair); }
-.section-note { max-width: 56ch; color: var(--muted); }
+.section-note { max-width: 56ch; color: var(--ink); }
 
 /* Ledger: label left, text right, one spine down the label column */
 .ledger { margin: 26px 0 0; border-top: 1px solid var(--hair-strong); }
 .ledger > div { display: grid; grid-template-columns: minmax(200px, .32fr) 1fr; gap: 0; border-bottom: 1px solid var(--hair); }
 .ledger dt { padding: 14px 24px 14px 0; font: 650 .7rem/1.5 var(--mono); letter-spacing: .04em; text-transform: uppercase; }
-.ledger dd { margin: 0; padding: 14px 0 14px 24px; border-left: 1px solid var(--hair); color: var(--muted); font-size: .88rem; min-width: 0; }
+.ledger dd { margin: 0; padding: 14px 0 14px 24px; border-left: 1px solid var(--hair); color: var(--ink); font-size: .88rem; min-width: 0; }
 .ledger dd p { margin: 0 0 10px; }
 .ledger dd p:last-child { margin-bottom: 0; }
 .ledger code { color: var(--ink); }
@@ -86,7 +109,7 @@ main > section { padding-block: clamp(64px, 8vw, 104px); border-top: 1px solid v
 /* Work rows: the label column is a stack, the text column is dash points */
 .roles dt { text-transform: none; letter-spacing: 0; font: 400 .95rem/1.4 var(--sans); }
 .roles dt b { display: block; color: var(--ink); font-weight: 620; }
-.roles dt span { display: block; color: var(--muted); }
+.roles dt span { display: block; color: var(--ink); }
 .roles dt small { display: block; margin-top: 6px; color: var(--muted); font: 400 .72rem/1.5 var(--mono); }
 .points { margin: 0; padding-left: 1.1em; list-style-type: "- "; font-size: .92rem; }
 .points li::marker { content: "- "; }
@@ -94,6 +117,30 @@ main > section { padding-block: clamp(64px, 8vw, 104px); border-top: 1px solid v
 .photo { margin: 14px 0 0; }
 .photo img { display: block; width: 240px; border: 1px solid var(--hair); }
 .photo figcaption { margin-top: 8px; font: 400 .72rem/1.5 var(--mono); color: var(--muted); }
+
+/* Outside: three photos, hairline frames, short captions */
+.hobbies {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin: 26px 0 0;
+}
+.hobbies article { min-width: 0; }
+.hobbies img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin: 0 0 14px;
+  border: 1px solid var(--hair);
+}
+.hobbies article:nth-child(1) img { object-position: center 40%; }
+.hobbies article:nth-child(2) img { object-position: 28% center; }
+.hobbies article:nth-child(3) img { object-position: center 45%; }
+.hobbies h3 { margin: 0 0 8px; }
+.hobbies p { margin: 0 0 8px; color: var(--ink); font-size: .88rem; }
+.hobbies p:last-child { margin-bottom: 0; }
+.hobbies + .photo { margin-top: 22px; }
 
 /* Featured projects */
 .project { display: grid; grid-template-columns: minmax(200px, .34fr) 1fr; gap: clamp(22px, 4vw, 48px); padding-block: 40px; border-top: 1px solid var(--hair); margin-top: 30px; }
@@ -119,7 +166,7 @@ main > section { padding-block: clamp(64px, 8vw, 104px); border-top: 1px solid v
 .proof-strip { margin: 22px 0 0; border-top: 1px solid var(--hair-strong); }
 .proof-strip > div { display: grid; grid-template-columns: minmax(170px, .5fr) 1.5fr; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--hair); }
 .proof-strip dt { font: 650 .7rem/1.5 var(--mono); letter-spacing: .04em; text-transform: uppercase; }
-.proof-strip dd { margin: 0; color: var(--muted); font-size: .88rem; }
+.proof-strip dd { margin: 0; color: var(--ink); font-size: .88rem; }
 
 /* The margin note: one red rule in the body, the one piece of writing on the page */
 .note { margin: 28px 0 0; padding: 18px 0 18px 22px; border-left: 1px solid var(--red); max-width: 58ch; }
@@ -154,7 +201,7 @@ main > section { padding-block: clamp(64px, 8vw, 104px); border-top: 1px solid v
 /* Closing */
 .closing .wrap { text-align: center; }
 .plate-svg { display: block; width: min(100%, 880px); margin: 0 auto 22px; border: 1px solid var(--hair); }
-.closing-line { max-width: 40ch; margin: 0 auto; color: var(--muted); }
+.closing-line { max-width: 40ch; margin: 0 auto; color: var(--ink); }
 .closing .actions { justify-content: center; }
 .email { margin: 18px 0 0; color: var(--muted); font: 400 .8rem/1.5 var(--mono); }
 
@@ -164,21 +211,20 @@ footer p { margin: 0; }
 footer ul { display: flex; gap: 18px; margin: 0; padding: 0; list-style: none; }
 
 @media (max-width: 900px) {
-  .hero-grid { grid-template-columns: 1fr; }
-  .hero { min-height: 800px; }
-  .hero-copy { padding-block: 52px 340px; }
-  .hero-legend { margin-bottom: 12px; font-size: .68rem; }
+  .run-grid { grid-template-columns: minmax(0, 1fr); }
+  .run-stage { min-height: 800px; }
+  .run-copy { padding-block: 52px 340px; max-width: none; }
   .project { grid-template-columns: 1fr; gap: 18px; }
   .ledger > div { grid-template-columns: minmax(170px, .35fr) 1fr; }
 }
 @media (max-width: 620px) {
   body { font-size: 15px; }
+  .nav .wrap { gap: 12px; }
   .nav li:nth-child(n+4) { display: none; }
-  .nav ul { gap: 18px; }
+  .nav ul { gap: 10px; font-size: .8rem; }
   h1 { font-size: clamp(2.4rem, 12vw, 3.2rem); }
-  .brk { display: none; }
-  .hero { min-height: 660px; }
-  .hero-copy { padding-block: 44px 300px; }
+  .run-stage { min-height: 660px; }
+  .run-copy { padding-block: 44px 300px; }
   .lede { font-size: 1rem; }
   .ledger { border-left: 1px solid var(--hair); padding-left: 12px; }
   .ledger > div { grid-template-columns: 1fr; }
@@ -188,6 +234,7 @@ footer ul { display: flex; gap: 18px; margin: 0; padding: 0; list-style: none; }
   .quad { grid-template-columns: 1fr 1fr; }
   .quad > :nth-child(odd) { border-left: 0; }
   .quad > :nth-child(n+3) { border-top: 1px solid var(--hair); }
+  .hobbies { grid-template-columns: 1fr; gap: 28px; }
   .photo img { width: min(240px, 100%); }
   footer .wrap { display: block; }
   footer ul { margin-top: 10px; flex-wrap: wrap; }
