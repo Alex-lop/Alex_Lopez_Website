@@ -13,12 +13,13 @@
   var css = getComputedStyle(document.documentElement);
   function token(n, f) { return (css.getPropertyValue(n) || f).trim(); }
   var INK = token('--ink', '#171613'), ACCENT = token('--accent', '#1a5fff'), PAPER = token('--paper', '#f5f5f0');
-  var RUN = 120000, HOLD = 8000, PULSE = 1500, FRAME = 33, FONT = '11px system-ui, sans-serif';
+  var RUN = 120000, HOLD = 8000, PULSE = 1500, FRAME = 33, FONT = '500 12px "Plex Sans", system-ui, sans-serif';
   var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function motionOff() { return mq.matches || document.documentElement.dataset.motion === 'off'; }
 
   var R = null, S = null, W = 0, H = 0, g = null, rect = null;
   var phase = 'start', pulseT = 0, elapsed = 0, holdT = 0, last = 0, raf = 0, drawnAt = 0, combAt = 0;
-  var onScreen = false, hidden = document.hidden, reduce = mq.matches, lastMile = -1;
+  var onScreen = false, hidden = document.hidden, reduce = motionOff(), lastMile = -1;
   var hover = false, drag = false, origin = null, keyUntil = 0, scrubF = 0, shownF = 0;
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
@@ -63,7 +64,7 @@
   function setRoute(meta) {
     if (!meta || !meta.polyline) return;
     /* same route, new keys: merge so a fetch that lacks a seeded key (moving_time_s) keeps it */
-    if (R && R.meta.polyline === meta.polyline) { R.meta = Object.assign({}, R.meta, meta); setStreams(); repaint(); return; }
+    if (R && R.meta.polyline === meta.polyline) { R.meta = Object.assign({}, R.meta, meta); setStreams(); attr('aria-valuemax', miles().toFixed(2)); lastMile = -1; repaint(); return; }  /* -1: the repaint re-announces the mile now that the split cards exist */
     var p = decodePolyline(meta.polyline), i;
     if (p.length < 2) return;
     var c = Math.cos(p[0][0] * Math.PI / 180);
@@ -78,6 +79,7 @@
     for (i = 1; i < u.length; i++) cum.push(t += Math.hypot(u[i][0] - u[i - 1][0], u[i][1] - u[i - 1][1]));
     for (i = 0; i < cum.length; i++) cum[i] /= t || 1;
     R = { u: u, w: (x1 - x0) / s, h: (y1 - y0) / s, cum: cum, meta: meta };
+    attr('aria-valuemax', miles().toFixed(2));
     setStreams(); layout(); reset(); sync(); repaint();
   }
   function setStreams() {
@@ -85,7 +87,11 @@
     S = (s && s.time && s.miles && s.time.length > 1 && s.time.length === s.miles.length) ? s : null;
   }
   function miles() { return Number(R.meta.miles) || 0; }
-  function total() { return (S ? S.time[S.time.length - 1] : Number(R.meta.moving_time_s)) || 1; }
+  /* streams, else the detail's moving time, else distance x pace: the seed and a summary-only run always carry those */
+  function total() {
+    if (S) return S.time[S.time.length - 1] || 1;
+    return Number(R.meta.moving_time_s) || Math.round(miles() * Number(R.meta.pace_sec_per_mi)) || 1;
+  }
   /* the two directions between distance and activity time; without streams, constant speed */
   function tauOf(f) { return S ? lerpAt(S.miles, S.time, f * miles()) : f * total(); }
   function fracOf(tau) { return clamp(S ? lerpAt(S.time, S.miles, tau) / (miles() || 1) : tau / total(), 0, 1); }
@@ -99,7 +105,8 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     var ix = w * 0.08, iy = h * 0.08, bw = w - 2 * ix, bh = h - 2 * iy;
     var rw = R ? R.w || 1 : 1, rh = R ? R.h || 1 : 1, k = Math.min(bw / rw, bh / rh);
-    g = { k: k, ox: ix + (bw - rw * k) / 2, oy: iy + (bh - rh * k) / 2, x0: ix, y0: iy, x1: w - ix, y1: h - iy };
+    var fw = rw * k, fh = rh * k, m = 14, ox = m, oy = iy + (bh - fh) / 2;  /* the corners hug the route, and the route sits on the page's left edge */
+    g = { k: k, ox: ox, oy: oy, x0: ox - m, y0: oy - m, x1: ox + fw + m, y1: oy + fh + m };
   }
   function px(i) { return g.ox + R.u[i][0] * g.k; }
   function py(i) { return g.oy + R.u[i][1] * g.k; }
@@ -129,19 +136,24 @@
     ctx.fillStyle = INK; ctx.fillText(text, lx, ly);
   }
   function set(el, txt) { if (el && el.textContent !== txt) el.textContent = txt; }
+  function attr(n, v) { if (canvas.getAttribute(n) !== v) canvas.setAttribute(n, v); }
 
-  function readout(f, tau) {
-    set(ro.dist, (f * miles()).toFixed(2) + ' mi');
-    set(ro.time, mmss(tau));
-    var pace = '', extra = '';
+  /* The canvas is a slider to assistive tech. Its value only moves when the reader moves it or the
+     run is at rest, so a focused screen reader is not read a new number every second of the trace. */
+  function readout(f, tau, aria) {
+    var dist = (f * miles()).toFixed(2) + ' mi', time = mmss(tau), pace = '', extra = '';
     if (S && S.pace_sec_per_mi) {
       var i = idxOf(S.time, tau), p = S.pace_sec_per_mi[i], bits = [];
       pace = p == null ? 'stopped' : mmss(p) + ' /mi';
       if (S.hr && S.hr[i] != null) bits.push(Math.round(S.hr[i]) + ' bpm');
       if (S.alt_ft && S.alt_ft[i] != null) bits.push(Math.round(S.alt_ft[i]) + ' ft');
-      extra = bits.join(' · ');
+      extra = bits.join(', ');
     } else if (Number(R.meta.pace_sec_per_mi)) pace = mmss(R.meta.pace_sec_per_mi) + ' /mi';
-    set(ro.pace, pace); set(ro.extra, extra);
+    set(ro.dist, dist); set(ro.time, time); set(ro.pace, pace); set(ro.extra, extra);
+    if (aria) {
+      attr('aria-valuenow', (f * miles()).toFixed(2));
+      attr('aria-valuetext', [dist, time, pace, extra].filter(Boolean).join(', '));
+    }
   }
 
   /* One fraction decides everything drawn, so scrubbing back removes markers as it goes. */
@@ -164,7 +176,7 @@
       label(m.x, m.y, k + ' mi' + (sp && sp.pace_sec_per_mi ? ' · ' + mmss(sp.pace_sec_per_mi) : ''));
     }
     dot(head.x, head.y, 4);
-    readout(f, tau);
+    readout(f, tau, scrubbing() || phase !== 'run' || reduce);
     emit(mi, f, tau, false);
     if (!reduce && (head.dx || head.dy)) comb(head);
   }
@@ -175,7 +187,7 @@
     corners();
     dot(px(0), py(0), 4 + 1.5 * (1 - Math.cos(now / PULSE * Math.PI * 2))); /* 4 -> 7px, 1.5s */
     shownF = 0;
-    readout(0, 0);
+    readout(0, 0, true);
   }
 
   function comb(head) {
@@ -185,15 +197,16 @@
     /* the field measures angles from vertical: atan2(dx, -dy), same as its own wake */
   f.comb(rect.left + head.x * (rect.width / W), rect.top + head.y * (rect.height / H), Math.atan2(head.dx, -head.dy));
   }
+  /* one event per integer mile, in either direction; a reset forgets the last mile so mile 0 is sent again on the next run */
   function emit(mile, fraction, t, reset) {
     var f = Math.floor(mile);
     if (f === lastMile && !reset) return;
-    lastMile = f;
-    document.dispatchEvent(new CustomEvent('route:at', { detail: { mile: mile, fraction: fraction, t: t, reset: !!reset } }));
+    lastMile = reset ? -1 : f;
+    document.dispatchEvent(new CustomEvent('route:at', { detail: { mile: f, fraction: fraction, t: t, reset: !!reset } }));
   }
 
   function scrubbing() { return hover || drag || performance.now() < keyUntil; }
-  function reset() { phase = 'start'; pulseT = elapsed = holdT = 0; lastMile = 0; emit(0, 0, 0, true); }
+  function reset() { phase = 'start'; pulseT = elapsed = holdT = 0; emit(0, 0, 0, true); }
   function release(f) { /* reseat the 120s clock where the scrub left the dot */
     elapsed = clamp(tauOf(f) / total(), 0, 1) * RUN;
     phase = elapsed >= RUN ? 'hold' : 'run';
@@ -277,6 +290,12 @@
   canvas.addEventListener('pointerleave', endScrub);
   canvas.addEventListener('pointerup', function () { origin = null; endScrub(); });
   canvas.addEventListener('pointercancel', function () { origin = null; endScrub(); });
+  /* Keyboard focus pins the trace where it is, so the value a reader hears is the one the arrows step
+     from; blur lets the run go on from there. A pointer focuses the canvas too (tabindex), so click,
+     which follows focus for mouse and touch alike, lifts the pin again. */
+  canvas.addEventListener('focus', function () { if (!R || !g) return; scrubF = shownF; keyUntil = Infinity; readout(shownF, tauOf(shownF), true); });
+  canvas.addEventListener('blur', function () { if (keyUntil === Infinity) { keyUntil = 0; release(scrubF); if (!raf) repaint(); } });
+  canvas.addEventListener('click', function () { if (keyUntil === Infinity) keyUntil = 0; });
   canvas.addEventListener('keydown', function (e) {
     var step = e.shiftKey ? 1 / 20 : 1 / 200, f;
     if (e.key === 'ArrowLeft') f = shownF - step;
@@ -286,7 +305,7 @@
     else return;
     e.preventDefault();
     scrubF = clamp(f, 0, 1);
-    keyUntil = performance.now() + 1500;
+    if (keyUntil !== Infinity) keyUntil = performance.now() + 1500;
     if (phase === 'start') { phase = 'run'; pulseT = PULSE; }
     if (R && g) { rect = canvas.getBoundingClientRect(); paint(scrubF); }
   });
@@ -296,8 +315,9 @@
   if (window.IntersectionObserver) new IntersectionObserver(function (es) { onScreen = es[0].isIntersecting; sync(); }, { threshold: 0.25 }).observe(canvas);
   else onScreen = true;
   document.addEventListener('visibilitychange', function () { hidden = document.hidden; sync(); });
-  function modeChange() { reduce = mq.matches; sync(); repaint(); }
+  function modeChange() { reduce = motionOff(); sync(); repaint(); }
   if (mq.addEventListener) mq.addEventListener('change', modeChange); else mq.addListener(modeChange);
+  document.addEventListener('motion:change', modeChange);
 
   window.__route = setRoute;
   var d = canvas.dataset;

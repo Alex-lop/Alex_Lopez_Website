@@ -9,7 +9,9 @@ offline asserts and touches nothing. The hand-edited keys `feeling` and `pr` are
 Shape and rules live in DESIGN.md §6. The token exchange and the activity list are fatal; the
 detail, streams and athlete-stats calls are optional and their keys are simply omitted on failure.
 """
+import http.client
 import json
+import math
 import os
 import random
 import subprocess
@@ -21,6 +23,7 @@ from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 MI, FT, OUT, TZ = 1609.344, 3.28084, "data/strava.json", ZoneInfo("America/New_York")
+ORIGIN = (42.0, -71.0)   # the published route is a shape at this point, not a place
 RUN_TYPES = ("Run", "TrailRun")
 ATHLETE = "141554769"
 STREAM_KEYS = "time,distance,velocity_smooth,altitude,heartrate"
@@ -32,15 +35,22 @@ def api(url, token=None, form=None):
         urllib.parse.urlencode(form).encode() if form else None,
         {"Authorization": "Bearer " + token} if token else {},
     )
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.load(r)
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:
+        # Strava's error body names the field and the code ("refresh_token invalid"), never a secret
+        e.msg = f"{e.reason}: {e.read().decode('utf-8', 'replace')[:300]}"
+        raise
 
 
 def api_opt(url, token):
-    """Same, but None instead of an exception: these calls only add keys."""
+    """Same, but None instead of an exception: these calls only add keys. OSError covers HTTPError
+    and URLError, a read timeout and a refused or reset connection; HTTPException a body cut off
+    mid-way; ValueError a body that is not JSON."""
     try:
         return api(url, token)
-    except (urllib.error.HTTPError, urllib.error.URLError) as e:
+    except (OSError, ValueError, http.client.HTTPException) as e:
         print(f"optional call failed ({e}): {url}", file=sys.stderr)
         return None
 
@@ -83,13 +93,38 @@ def encode_polyline(pts):
 
 
 def stride(seq, n):
-    """Uniform stride down to at most n items, the last item always kept."""
+    """Evenly spaced down to exactly n items when there are more, first and last always kept."""
     seq = list(seq)
     if len(seq) <= n:
         return seq
-    out = seq[:: -(-len(seq) // n)]
-    out[-1] = seq[-1]
-    return out
+    last = len(seq) - 1
+    return [seq[round(i * last / (n - 1))] for i in range(n)]
+
+
+def metres(p, q):
+    """Flat-earth distance between two (lat, lng) points; plenty over a few hundred metres."""
+    dy = (p[0] - q[0]) * 111320
+    dx = (p[1] - q[1]) * 111320 * math.cos(math.radians(q[0]))
+    return math.hypot(dx, dy)
+
+
+def route_out(poly, n=800):
+    """A polyline as the page gets it: moved so its first point is ORIGIN, <= n points, re-encoded.
+    The page only ever uses the shape (js/route.js normalises it to unit space; `place` is its own
+    string), so the file never says where the run was: not the door, not a pass by it mid-run.
+    Strava's privacy zones hide the door from other viewers, not from the owner's own token, which
+    is the one this sync holds. Moving 42.34 N to 42.0 N changes the map's cos(lat) by 0.5%."""
+    pts = decode_polyline(poly)
+    if len(pts) < 2:
+        return ""
+    la, ln = pts[0]
+    pts = [(round(ORIGIN[0] + a - la, 5), round(ORIGIN[1] + b - ln, 5)) for a, b in pts]
+    return encode_polyline(stride(pts, n))
+
+
+def kind(a):
+    """sport_type is the current field; type is its deprecated twin and what older fixtures carry."""
+    return a.get("sport_type") or a.get("type")
 
 
 # ---------------------------------------------------------------- pieces
@@ -97,7 +132,7 @@ def stride(seq, n):
 def pick_latest(acts):
     """The hero draws a route, so `latest` is the newest run that has a public one; read_all also
     returns private activities and those never leave this script."""
-    runs = [a for a in acts if a.get("type") in RUN_TYPES and a.get("distance", 0) > 0]
+    runs = [a for a in acts if kind(a) in RUN_TYPES and a.get("distance", 0) > 0]
     public = [a for a in runs if a.get("visibility") == "everyone" and (a.get("map") or {}).get("summary_polyline")]
     return max(public, key=lambda a: a["start_date_local"], default=None)
 
@@ -156,19 +191,20 @@ def week_rows(runs, monday, n=8):
 
 
 def lifts_before_runs(acts, monday):
-    """Days this week with a WeightTraining that started within two hours before a run."""
+    """Runs this week that started within two hours after a WeightTraining: the same unit as
+    week.runs, so the ticker's "lifted before every run" compares like with like."""
     at = lambda a: datetime.fromisoformat(a["start_date_local"][:19])
     lo, hi = monday.isoformat(), (monday + timedelta(days=7)).isoformat()
     week = [a for a in acts if lo <= a["start_date_local"][:10] < hi]
-    lifts = [at(a) for a in week if a.get("type") == "WeightTraining"]
-    days = {r.date() for r in (at(a) for a in week if a.get("type") in RUN_TYPES)
-            if any(timedelta(0) <= r - lift <= timedelta(hours=2) for lift in lifts)}
-    return len(days)
+    lifts = [at(a) for a in week if kind(a) == "WeightTraining"]
+    runs = (at(a) for a in week if kind(a) in RUN_TYPES and a.get("distance", 0) > 0)
+    return sum(1 for r in runs if any(timedelta(0) <= r - lift <= timedelta(hours=2) for lift in lifts))
 
 
-def build(acts, monday, old, detail=None, streams=None, stats=None):
+def build(acts, monday, old, detail=None, streams=None, stats=None, today=None):
     """Pure: everything network-shaped is handed in. See DESIGN.md §6 "JSON shape"."""
-    runs = [a for a in acts if a.get("type") in RUN_TYPES and a.get("distance", 0) > 0]
+    today = today or monday + timedelta(days=6)
+    runs = [a for a in acts if kind(a) in RUN_TYPES and a.get("distance", 0) > 0]
     lo, hi = monday.isoformat(), (monday + timedelta(days=7)).isoformat()
     week = [a for a in runs if lo <= a["start_date_local"][:10] < hi]
     dist = sum(a["distance"] for a in week)
@@ -200,13 +236,13 @@ def build(acts, monday, old, detail=None, streams=None, stats=None):
             "miles": round(latest["distance"] / MI, 2),
             "pace_sec_per_mi": round(latest["moving_time"] / (latest["distance"] / MI)),
             "elev_ft": round(latest["total_elevation_gain"] * FT),
-            "polyline": latest["map"]["summary_polyline"],
+            "polyline": route_out(latest["map"]["summary_polyline"]),
         }
         if detail:
             poly = (detail.get("map") or {}).get("polyline")
             hr = detail.get("has_heartrate")
             out["latest"].update({
-                "polyline": encode_polyline(stride(decode_polyline(poly), 800)) if poly else out["latest"]["polyline"],
+                "polyline": route_out(poly) or out["latest"]["polyline"],
                 "id": detail.get("id"),
                 "name": detail.get("name") or out["latest"]["name"],
                 "moving_time_s": detail.get("moving_time"),
@@ -233,8 +269,7 @@ def build(acts, monday, old, detail=None, streams=None, stats=None):
         "all_miles": mi(allt),
         "lifts_before_runs_this_week": lifts_before_runs(acts, monday),
     }
-    # 30 days back from the end of the live week; build() gets no clock of its own
-    since = (monday + timedelta(days=7) - timedelta(days=30)).isoformat()
+    since = (today - timedelta(days=29)).isoformat()   # today and the 29 days before it
     recent = [a for a in runs if a["start_date_local"][:10] >= since]
     out["achievements"] = {
         "prs_30d": sum(a.get("pr_count") or 0 for a in recent),
@@ -283,11 +318,16 @@ def rotate(new_token):
     pat = os.environ.get("GH_SECRETS_PAT")
     if not pat:
         return False
-    subprocess.run(
-        ["gh", "secret", "set", "STRAVA_REFRESH_TOKEN", "--repo",
-         os.environ.get("GITHUB_REPOSITORY", "Alex-lop/Alex_Lopez_Website")],
-        input=new_token, text=True, check=True, env={**os.environ, "GH_TOKEN": pat},
-    )
+    try:
+        subprocess.run(
+            ["gh", "secret", "set", "STRAVA_REFRESH_TOKEN", "--repo",
+             os.environ.get("GITHUB_REPOSITORY", "Alex-lop/Alex_Lopez_Website")],
+            input=new_token, text=True, check=True, capture_output=True, env={**os.environ, "GH_TOKEN": pat},
+        )
+    except (subprocess.SubprocessError, OSError) as e:
+        # the message names the command and gh's reason, never the token; the data is still written, then exit 3
+        print(f"could not write the rotated token back: {e} {getattr(e, 'stderr', '') or ''}".strip(), file=sys.stderr)
+        return False
     print("rotated the refresh token secret")
     return True
 
@@ -295,14 +335,16 @@ def rotate(new_token):
 # ---------------------------------------------------------------- self-check
 
 def self_check():
+    pts = [(42.34 + i * 2e-4, -71.09 - i * 3e-4) for i in range(1200)]   # a straight line from 42.34 N, ~29 m per step
+    short = encode_polyline(pts[:40])
     lift = {"type": "WeightTraining", "distance": 0, "moving_time": 1149, "total_elevation_gain": 0,
             "start_date_local": "2026-09-16T16:32:43Z"}
-    early_lift = {"type": "WeightTraining", "distance": 0, "moving_time": 900, "total_elevation_gain": 0,
+    early_lift = {"sport_type": "WeightTraining", "distance": 0, "moving_time": 900, "total_elevation_gain": 0,
                   "start_date_local": "2026-09-15T14:00:00Z"}  # 3h before Tuesday's run: must not count
     acts = [
         {"type": "Run", "distance": 3.82 * MI, "moving_time": 1639, "total_elevation_gain": 23.0, "pr_count": 1,
-         "start_date_local": "2026-09-14T17:23:18Z", "name": "a", "visibility": "everyone", "map": {"summary_polyline": "x"}},
-        {"type": "Run", "distance": 4.34 * MI, "moving_time": 1863, "total_elevation_gain": 23.0, "achievement_count": 2,
+         "start_date_local": "2026-09-14T17:23:18Z", "name": "a", "visibility": "everyone", "map": {"summary_polyline": short}},
+        {"sport_type": "TrailRun", "type": "Run", "distance": 4.34 * MI, "moving_time": 1863, "total_elevation_gain": 23.0, "achievement_count": 2,
          "start_date_local": "2026-09-15T17:18:31Z", "name": "b", "visibility": "everyone", "map": {}},
         {"type": "Run", "distance": 6.03 * MI, "moving_time": 2804, "total_elevation_gain": 35.0, "pr_count": 2,
          "start_date_local": "2026-09-16T17:00:42Z", "name": "c", "visibility": "only_me", "map": {"summary_polyline": "secret"}},
@@ -323,7 +365,12 @@ def self_check():
     w = out["week"]
     assert (w["runs"], w["miles"], w["elev_ft"], w["moving_time_s"]) == (3, 14.2, 266, 6306), w
     assert 440 <= w["pace_sec_per_mi"] <= 450 and w["days"][3:] == [0, 0, 0, 0] and w["days"][2] == 6.03, w
-    assert out["latest"]["date"] == "2026-09-14" and out["latest"]["polyline"] == "x", out["latest"]
+    assert out["latest"]["date"] == "2026-09-14", out["latest"]
+    dec = decode_polyline(out["latest"]["polyline"])
+    assert len(dec) == 40 and dec[0] == ORIGIN, dec[:2]
+    assert all(abs((p[0] - ORIGIN[0]) - (q[0] - pts[0][0])) < 2e-5 and abs((p[1] - ORIGIN[1]) - (q[1] - pts[0][1])) < 2e-5
+               for p, q in zip(dec, pts)), "the shape is intact"
+    assert min(metres(p, pts[0]) for p in dec) > 30000, "no published point is anywhere near the run"
     assert build([lift], monday, old)["latest"] == old["latest"]
     assert out["feeling"] == "keep me" and out["pr"] == {"half_marathon": "1:32"}
     empty = build([], date(2026, 9, 21), old)["week"]
@@ -340,11 +387,15 @@ def self_check():
     assert (weeks[-1]["miles"], weeks[-1]["runs"]) == (14.2, 3) and weeks[-2]["miles"] == 4.0, weeks[-2:]
     assert not any(r["miles"] == 9.0 for r in weeks), weeks
 
-    # achievements: the 30-day window, so the 4.0 last week counts and the 9.0 in July does not
+    # achievements: today and the 29 days before it, so the 4.0 last week counts and the 9.0 in July does not
     assert out["achievements"] == {"prs_30d": 3, "achievements_30d": 3}, out["achievements"]
+    assert build(acts, monday, old, today=date(2026, 10, 20))["achievements"] == {"prs_30d": 0, "achievements_30d": 0}
+
+    # a degenerate polyline publishes nothing; stride keeps exactly the cap
+    assert route_out("") == "" and route_out(encode_polyline(pts[:1])) == ""
+    assert stride(list(range(801)), 800)[:3] == [0, 1, 2] and len(stride(range(1601), 800)) == 800
 
     # detail + streams + stats
-    pts = [(42.34 + i * 2e-4, -71.09 - i * 3e-4) for i in range(1200)]
     detail = {
         "id": 16111222333, "name": "Afternoon Run", "moving_time": 2857, "elapsed_time": 2901,
         "has_heartrate": True, "average_heartrate": 158.4, "max_heartrate": 179.0,
@@ -359,8 +410,8 @@ def self_check():
     raw = {
         "time": {"data": list(range(900))},
         "distance": {"data": [i * 3.2 for i in range(900)]},
-        # index 300 survives the stride of 3, so the stopped sample is in the output
-        "velocity_smooth": {"data": [0.0 if i == 300 else 3.5 for i in range(900)]},
+        # the last sample is always kept, so the stopped sample is in the output
+        "velocity_smooth": {"data": [0.0 if i == 899 else 3.5 for i in range(900)]},
         "altitude": {"data": [10.0 + (i % 50) * 0.5 for i in range(900)]},
     }
     stats = {"ytd_run_totals": {"count": 112, "distance": 1_207_008.0},
@@ -369,9 +420,8 @@ def self_check():
     lat = out["latest"]
     assert (lat["id"], lat["name"], lat["moving_time_s"], lat["elapsed_time_s"]) == (16111222333, "Afternoon Run", 2857, 2901), lat
     assert (lat["avg_hr"], lat["max_hr"], lat["cadence"], lat["suffer_score"], lat["calories"]) == (158, 179, 84.2, 103, 712.0), lat
-    assert len(decode_polyline(lat["polyline"])) <= 800, len(decode_polyline(lat["polyline"]))
-    end = decode_polyline(lat["polyline"])[-1]
-    assert max(abs(a - b) for a, b in zip(end, pts[-1])) <= 1e-5, "the last route point is always kept"
+    dec = decode_polyline(lat["polyline"])
+    assert len(dec) == 800 and dec[0] == ORIGIN and metres(dec[-1], pts[-1]) > 30000, (len(dec), dec[0])
 
     sp = lat["splits"]
     assert [s["mile"] for s in sp] == [1, 2, 3] and sp[0]["pace_sec_per_mi"] == 458, sp
@@ -380,9 +430,9 @@ def self_check():
     assert not sp[0]["partial"] and sp[0]["elev_change_ft"] == 39, sp[0]
 
     st = lat["streams"]
-    assert all(len(v) == len(st["time"]) for v in st.values()) and len(st["time"]) <= 300, {k: len(v) for k, v in st.items()}
-    assert st["time"][-1] == 899 and st["miles"][-1] == round(899 * 3.2 / MI, 3), "the last sample is always kept"
-    assert st["pace_sec_per_mi"][st["time"].index(300)] is None, "a stopped sample has no pace"
+    assert all(len(v) == len(st["time"]) for v in st.values()) and len(st["time"]) == 300, {k: len(v) for k, v in st.items()}
+    assert st["time"][0] == 0 and st["time"][-1] == 899 and st["miles"][-1] == round(899 * 3.2 / MI, 3), "first and last samples kept"
+    assert st["pace_sec_per_mi"][-1] is None, "a stopped sample has no pace"
     assert st["pace_sec_per_mi"][0] == round(MI / 3.5) and st["alt_ft"][0] == round(10.0 * FT, 1), st
     assert st["hr"] == [None] * len(st["time"]), "a stream Strava did not return is aligned nulls"
 
@@ -405,6 +455,11 @@ def self_check():
 # ---------------------------------------------------------------- main
 
 def main():
+    # the workflow passes every secret through, so a missing one arrives as "" rather than unset
+    missing = [k for k in ("STRAVA_CLIENT_ID", "STRAVA_CLIENT_SECRET", "STRAVA_REFRESH_TOKEN") if not os.environ.get(k)]
+    if missing:
+        sys.exit("set these repo secrets first: " + ", ".join(missing)
+                 + " (steps 1-4 in the header of .github/workflows/strava-sync.yml)")
     old = json.load(open(OUT)) if os.path.exists(OUT) else {}
     today = datetime.now(TZ).date()
     monday = today - timedelta(days=today.weekday())
@@ -436,7 +491,7 @@ def main():
             f"https://www.strava.com/api/v3/activities/{cand['id']}/streams?keys={STREAM_KEYS}&key_by_type=true", access)
     stats = api_opt(f"https://www.strava.com/api/v3/athletes/{ATHLETE}/stats", access)
 
-    new = build(acts, monday, old, detail, streams, stats)
+    new = build(acts, monday, old, detail, streams, stats, today)
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     if {k: v for k, v in old.items() if k != "generated_at"} == new:
         # quiet day: keep "synced N hours ago" honest without eight commits a day

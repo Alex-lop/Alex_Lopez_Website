@@ -96,6 +96,10 @@ assert len(week["days"]) == 7 and all(d >= 0 for d in week["days"])
 assert abs(sum(week["days"]) - week["miles"]) < 0.15, "days should sum to the week's miles"
 latest = data["latest"]
 assert latest["polyline"], "route missing"
+sys.path.insert(0, str(ROOT / "tools"))
+from strava_sync import ORIGIN, decode_polyline  # noqa: E402
+for label, poly in (("seeded data-route", route["data-route"]), ("latest.polyline", latest["polyline"])):
+    assert decode_polyline(poly)[0] == ORIGIN, f"{label} is not published at the fixed origin, so it says where the run was"
 assert isinstance(data.get("feeling"), str) and data["pr"]["half_marathon"] == "1:32"
 assert data["generated_at"].endswith("Z")
 

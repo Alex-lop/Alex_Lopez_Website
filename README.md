@@ -12,7 +12,7 @@ styles.css                         all of the CSS
 js/field.js                        the | field: the canvas of vertical ticks behind everything
 js/route.js                        the route trace in Running
 js/site.js                         reads data/strava.json; odometer, splits, ticker, countdown,
-                                   reveals, photo strip, video cards
+                                   reveals, photo strip, video cards, the Pause motion button
 data/strava.json                   the running data, written by the sync
 tools/strava_sync.py               the sync (stdlib only)
 .github/workflows/strava-sync.yml  runs the sync every 3 hours
@@ -62,13 +62,15 @@ moving time, the seven day miles), `latest` (id, date, name, place, miles, pace,
 polyline downsampled to <= 800 points, moving and elapsed time, heart rate, cadence, relative
 effort, calories, per-mile `splits`, and `streams` of <= 300 samples of time/miles/pace/altitude/HR),
 `weeks` (the last eight Monday-start weeks, America/New_York), `totals` (year-to-date and all-time
-runs and miles, plus days this week with a lift in the two hours before a run), `achievements` (PRs
+runs and miles, plus the runs this week that started within two hours after a lift), `achievements` (PRs
 and achievements in the last 30 days), and the hand-edited `feeling` and `pr`. Units are miles, feet
 and seconds; `null` means Strava has no value. The detail and stream calls are optional, so their
 keys are simply absent when Strava refuses them. Full shape: DESIGN.md section 6.
 
-Only public activities with a polyline are used as `latest`. Privacy zones are Strava's job; the
-sync never widens them.
+Only public activities with a polyline are used as `latest`, and the route is written as a shape
+moved to a fixed origin (42.0 N, 71.0 W): Strava's privacy zones hide the door from other viewers,
+not from the owner's own token, and the page only draws the shape. The file never says where a run
+was; `place` is its own string.
 
 ## Checks
 

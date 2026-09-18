@@ -4,11 +4,13 @@
   var doc = document;
   doc.documentElement.classList.add('reveal-ready');
 
-  var mq = matchMedia('(prefers-reduced-motion: reduce)'), reduce = mq.matches, IO = window.IntersectionObserver;
+  var mq = matchMedia('(prefers-reduced-motion: reduce)'), IO = window.IntersectionObserver;
+  function motionOff() { return mq.matches || doc.documentElement.dataset.motion === 'off'; }
+  var reduce = motionOff();
 
   function all(sel, ctx) { return (ctx || doc).querySelectorAll(sel); }
   function mmss(s) { s = Math.round(s); return (s / 60 | 0) + ':' + String(s % 60).padStart(2, '0'); }
-  function hm(s) { var m = Math.round(s / 60); return Math.floor(m / 60) + 'h ' + String(m % 60).padStart(2, '0') + 'm'; }
+  function hm(s) { var m = Math.round(s / 60), h = Math.floor(m / 60); return h ? h + 'h ' + String(m % 60).padStart(2, '0') + 'm' : m + 'm'; }
   function day(iso, opts) { var d = new Date(iso + 'T12:00:00'); return isNaN(d) ? iso : d.toLocaleDateString('en-US', opts || { month: 'short', day: 'numeric' }); }
   function ago(iso) {
     var s = (Date.now() - Date.parse(iso)) / 1e3, n, u;
@@ -23,11 +25,13 @@
   function revealAll() { reveals.forEach(function (el) { el.classList.add('in'); }); }
   if (reduce || !IO) revealAll();
   else {
+    var seen = false;
     var ro = new IO(function (es) {
+      seen = true;
       es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); ro.unobserve(e.target); } });
     }, { rootMargin: '0px 0px -20% 0px' });
     reveals.forEach(function (el) { ro.observe(el); });
-    setTimeout(revealAll, 2000);
+    setTimeout(function () { if (!seen) revealAll(); }, 2000);  // only for an observer that never reports at all
   }
 
   /* week odometer */
@@ -37,7 +41,7 @@
   function paintOdo(v) {
     if (cols.length !== 3) return;
     odo.setAttribute('aria-label', v.toFixed(1) + ' miles');
-    if (v >= 100) { odo.textContent = v.toFixed(1); return; }
+    if (v >= 100) { odo.textContent = v.toFixed(1); cols = []; return; }  // the columns are gone; say so
     var s = v.toFixed(1).replace('.', ''), blank = s.length < 3;  // "142", or "97" under ten
     cols[0].classList.toggle('blank', blank);
     [blank ? 0 : s[0], s[s.length - 2], s[s.length - 1]].forEach(function (n, i) {
@@ -67,15 +71,17 @@
     var n = weeks.length, mi = weeks.map(function (w) { return +w.miles || 0; });
     var top = Math.max(50, Math.max.apply(null, mi)) * 1.1;
     var x = function (i) { return 10 + i * 290 / (n - 1); };
-    var y = function (v) { return 70 - v / top * 62; };  // 0..top -> baseline 70 up to 8
+    var y = function (v) { return 70 - v / top * 58; };  // 0..top -> baseline 70 up to 12
     var g = y(50), lx = x(n - 1), ly = y(mi[n - 1]), dim = 'fill="var(--ink-2)"';
+    var low = mi[n - 1] < mi[n - 2] && ly + 13 > 64;  // a near-zero last week: nothing fits under the point, so the value goes right of it
+    var ty = low ? 73 : (mi[n - 1] >= mi[n - 2] ? ly - 6 : ly + 13);  // otherwise on the side the line does not come from
     s.setAttribute('font-size', 10);
     s.innerHTML =
-      '<line x1="10" x2="300" y1="' + g + '" y2="' + g + '" stroke="var(--rule)" stroke-dasharray="3 3"/>' +
+      '<line x1="10" x2="300" y1="' + g + '" y2="' + g + '" stroke="var(--ink-2)" stroke-dasharray="3 3"/>' +
       '<text x="303" y="' + (g + 3.5) + '" ' + dim + '></text>' +
       '<polyline points="' + mi.map(function (v, i) { return x(i) + ',' + y(v); }).join(' ') + '" fill="none" stroke="var(--ink)" stroke-width="1.5"/>' +
       '<circle cx="' + lx + '" cy="' + ly + '" r="3.5" fill="var(--accent)"/>' +
-      '<text x="' + (lx - 7) + '" y="' + (ly + 3.5) + '" text-anchor="end"></text>' +
+      '<text x="' + (low ? lx + 6 : lx - 7) + '" y="' + ty + '"' + (low ? '' : ' text-anchor="end"') + ' fill="var(--ink)"></text>' +
       '<text x="10" y="78" ' + dim + '></text><text x="300" y="78" text-anchor="end" ' + dim + '></text>';
     ['50', mi[n - 1].toFixed(1), day(weeks[0].week_start), day(weeks[n - 1].week_start)]
       .forEach(function (v, i) { s.querySelectorAll('text')[i].textContent = v; });
@@ -122,9 +128,10 @@
       if (selfScroll) selfScroll = false; else touched = Date.now();
     }, { passive: true });
     doc.addEventListener('route:at', function (ev) {
-      var d = ev.detail || {}, on = null;
-      all('.split', splits).forEach(function (card) {
-        var hit = !d.reset && d.mile > 0 && +card.getAttribute('data-mile') === d.mile;
+      var d = ev.detail || {}, on = null, cards = all('.split', splits);
+      var cur = Math.min(cards.length, (d.mile || 0) + 1);  // d.mile is the integer mile passed; the split being run is the next card
+      cards.forEach(function (card) {
+        var hit = !d.reset && +card.getAttribute('data-mile') === cur;
         card.classList.toggle('on', hit);
         if (hit) on = card;
       });
@@ -169,20 +176,20 @@
   }
 
   /* photo strip, desktop only */
-  var strip = doc.querySelector('[data-strip]'), outside = doc.getElementById('outside');
+  var strip = doc.querySelector('[data-strip]'), outside = doc.getElementById('outside'), stripFrame = null;
   if (strip && outside && matchMedia('(pointer: fine)').matches) {
     var queued = false;
-    var frame = function () {
+    var frame = stripFrame = function () {
       queued = false;
       if (reduce) return;
       var r = outside.getBoundingClientRect();
       var prog = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight + r.height)));
-      strip.style.transform = 'translateX(' + (60 - prog * (60 + strip.scrollWidth * 0.35)) + 'px)';
+      var over = Math.max(0, strip.scrollWidth - strip.parentNode.clientWidth);  // travel the real overflow, never past the last photo
+      strip.style.transform = over ? 'translateX(' + (-prog * over) + 'px)' : '';
     };
     addEventListener('scroll', function () {
       if (!queued && !reduce) { queued = true; requestAnimationFrame(frame); }
     }, { passive: true });
-    if (!reduce) frame();
   }
 
   /* video cards */
@@ -192,27 +199,38 @@
     var cap = btn.parentNode.querySelector('figcaption');
     var caption = cap ? cap.textContent.trim() : '';
     btn.disabled = false;
-    btn.removeAttribute('aria-disabled');
     btn.setAttribute('aria-label', 'Play video: ' + caption);
     btn.addEventListener('click', function () {
       var f = doc.createElement('iframe');
+      f.className = 'video-frame';
       f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1';
       f.title = caption;
       f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
       f.setAttribute('allowfullscreen', '');
       f.setAttribute('loading', 'lazy');
-      btn.textContent = '';
-      btn.appendChild(f);
+      btn.replaceWith(f);  // the button goes with its click handler; a player inside a live button is not valid
+      f.focus();
     });
   });
 
-  mq.addEventListener('change', function () {
-    reduce = mq.matches;
-    if (reduce) { revealAll(); if (strip) strip.style.transform = ''; }
+  /* reduced motion: the OS setting or the footer toggle, same effect. The button's label is its state;
+     under the OS setting there is nothing for it to resume, so it is disabled rather than lying. */
+  var toggle = doc.querySelector('[data-motion-toggle]');
+  function applyMotion() {
+    reduce = motionOff();
+    if (reduce) { revealAll(); if (strip) strip.style.transform = ''; } else if (stripFrame) stripFrame();
+    if (toggle) { toggle.textContent = reduce ? 'Resume motion' : 'Pause motion'; toggle.disabled = mq.matches; }
     marquee();
+  }
+  mq.addEventListener('change', applyMotion);
+  doc.addEventListener('motion:change', applyMotion);
+  if (toggle) toggle.addEventListener('click', function () {
+    if (doc.documentElement.dataset.motion === 'off') delete doc.documentElement.dataset.motion; else doc.documentElement.dataset.motion = 'off';
+    doc.dispatchEvent(new CustomEvent('motion:change'));
   });
 
-  marquee();
+  applyMotion();
+  if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(marquee);  // --w must be a real-font width
 
   fetch('data/strava.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
     var w = d.week || {}, l = d.latest || {}, synced = d.generated_at ? ago(d.generated_at) : '';

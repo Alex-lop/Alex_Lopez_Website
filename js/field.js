@@ -171,11 +171,12 @@
     window[m]('pointerdown', onPoint, PASS);
     window[m]('scroll', onScroll, PASS);
     window[m]('pointerup', onUp, PASS);
+    window[m]('pointercancel', onLeave, PASS);     // a touch that became a page scroll ends here, not in pointerup
     document.documentElement[m]('mouseleave', onLeave, PASS);
   }
 
   function apply() {
-    reduce = mqReduce.matches; api.static = reduce;
+    reduce = mqReduce.matches || document.documentElement.dataset.motion === 'off'; api.static = reduce;
     stop(); listen(!reduce); size();
     if (reduce) {
       for (var i = 0; i < ticks.length; i++) { ticks[i].a = 0; ticks[i].v = 0; }
@@ -202,6 +203,7 @@
 
   if (mqReduce.addEventListener) mqReduce.addEventListener('change', apply);
   else if (mqReduce.addListener) mqReduce.addListener(apply);
+  document.addEventListener('motion:change', apply);   // the footer's Pause motion button
 
   if (document.readyState === 'complete') apply();
   else addEventListener('load', apply);

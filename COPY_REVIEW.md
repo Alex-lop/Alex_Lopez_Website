@@ -54,6 +54,7 @@ ellipsis on the last line. Placeholders are labelled boxes with the captions bel
 - **confirm** "TMBBM" (an `<!-- ALEX -->` comment sits above the sentence).
 - **confirm** "Instead of just asking AI like I've been doing lately" (the brief's rewrite of "However, dealing with the recent use cases of AI"); comment in the HTML.
 - **finish** "When is the last time that I…" — styled as a hanging ending; not completed.
+- The brief's second paragraph is split in two so the IMG C / IMG D row sits between "…passes the TMBBM)." and "But at the end of the day…"; no words changed.
 - New captions written for the placeholders: "An old senior dev next to Patrick Star", "Hopkins School", "The benchmark graph", "Horse Tinder", "“Looks good to me”", "Terrance's video", "One more", "Writing this, at my desk", "The Group Theory textbook". Change any of them when you send the images.
 - New alt: "The Hopkins School seal, founded 1660".
 
@@ -65,7 +66,7 @@ Nemisis
 - Stack "Python 3.12+ · uv · pydantic · MCP SDK · pytest / v0.2.0 on PyPI · Docker 77 MB · Apache-2.0" → "Python 3.12+, uv, pydantic, MCP SDK, pytest. v0.2.0 on PyPI, Docker 77 MB, Apache-2.0."
 - Links "GitHub ↗" / "Live page ↗" → "GitHub" / "Live page"
 - Paragraphs 1–3 and the terminal output are unchanged.
-- Cut for space (the brief asks for roughly a third of the space): the banner image and the four-row proof strip: "Red-teamed nightly: 600 of 600 generated handlers agreed with an independent oracle, 300 per scenario", "Caught by its own red team: The engine issued a false FIX_PROVEN on tail-bytes writes for five nights because SQLite's close-time checkpoint truncated the file before the engine read it. Fixed, and the shape is pinned as a refusal", "Refused by design: 28 shapes pinned as refusals: raw SQL, shadow tables, bytes past the last page. A correct fix the engine cannot instrument exits 2 and names the remedy", "Not proven: Anything outside two scenarios, one handler shape, SQLite and POSIX SIGKILL. The narrowness is what makes the verdict trustworthy". The 600/600 figure survives in the stats. Say if you want any row back.
+- Cut for space (the brief asks for roughly a third of the space): the banner image and the proof strip's four-row framing. Three of its rows are kept as one plain paragraph after "The model never judges…": "Red-teamed nightly: 600 of 600 generated handlers agreed with an independent oracle, 300 per scenario. 28 shapes are pinned as refusals: raw SQL, shadow tables, bytes past the last page. Not proven: anything outside two scenarios, one handler shape, SQLite and POSIX SIGKILL. The narrowness is what makes the verdict trustworthy." Still cut: "Caught by its own red team: The engine issued a false FIX_PROVEN on tail-bytes writes for five nights because SQLite's close-time checkpoint truncated the file before the engine read it. Fixed, and the shape is pinned as a refusal" and "A correct fix the engine cannot instrument exits 2 and names the remedy". Say if you want either back.
 
 RegLineage
 
@@ -99,8 +100,8 @@ IMC Prosperity 3
 - Golf: "Reliably humbling; one clean shot is enough to bring me back." → "I picked up golf recently and I've really been loving it; it's one of those sports that really, really humbles you every single time you step on the course, but that one perfect shot keeps pulling you right back out there." (Sep 7 site, the underlined big "really" rendered as plain text).
 - Chess: "Seven years in, still hanging pieces and queuing another game." → "7 years in playing chess and I still blunder every other move, but add me — always down to get a quick game in." (your line, from the brief). Link "Chess.com ↗" → "Add me on Chess.com" (Sep 7 site).
 - Luna caption "Luna" → "Luna: Chief Code Reviewer" (Sep 7 site).
-- New photo captions: "Boston, 2026" (running group), "Golf", "Chess". No places or years invented for the last two.
-- Alt text rewritten: "Alex with his running group after a race, seven runners with bibs under the trees"; "Alex at the top of a golf swing, in an orange cap"; "A green chess pawn in front of a knight and a rook" (was "A chess pawn on a chessboard"); "Luna, a cream lop-eared rabbit, sitting on a rug" (was "Luna the rabbit").
+- New photo caption: "Boston, 2026" (running group). The golf and chess photos carry no caption until you give a place and year (`TODO_ALEX.md` §4).
+- Alt text rewritten: "Alex and six teammates after a race, most still wearing their bibs, under the trees" (six bibs are visible; the seventh runner has none); "Alex at the top of a golf swing, in an orange cap"; "A green chess pawn in front of a knight and a rook" (was "A chess pawn on a chessboard"); "Luna, a cream lop-eared rabbit, sitting on a rug" (was "Luna the rabbit").
 
 ## Running
 
@@ -108,15 +109,32 @@ IMC Prosperity 3
 - "this week / 14.2 / 50 mi" → "This week" label, the odometer "14.2", "/ 50 mi".
 - "Half marathon in 1:32, a first marathon in training. The numbers come from Strava; the note is written by hand." → split into "Half marathon in 1:32, a first marathon in training." and, at the bottom, "Numbers from Strava, synced Sep 16, 2026. The note is written by hand."
 - "week of Sep 14 · 1h 45m moving" and the Mon–Sun bar chart → removed (replaced by the odometer, the eight-week strip and the split strip).
-- New: "Eversource Hartford, Oct 10 · 23 days" (countdown; distance and goal to add once confirmed).
-- New: "Latest run, Sep 16, Boston, MA. Hover or drag the route to scrub."
+- New: "3 runs, 7:25 per mile, 266 ft of climbing, 1h 45m moving." (the week line; every number is the JSON's, and a week under an hour reads "28m").
+- New: "23 days to Eversource Hartford, Oct 10." (countdown; the number is live; on the day it reads "Race day: Eversource Hartford." and afterwards the line is hidden; distance and goal to add once confirmed).
+- New: "Latest run, Sep 16, Boston, MA. Hover, drag, or use the arrow keys on the route to scrub."
+- New progress-bar fallback text (shown only where `<progress>` does not render): "14.2 of 50 miles this week".
 - New sparkline caption: "Last 8 weeks, with the 50-mile line".
 - Screen-reader line "Sep 16 · 6.03 mi · 7:45 /mi · 115 ft · Boston, MA" → "Sep 16, 6.03 miles at 7:45 per mile, 115 feet of climbing, Boston, MA."
 - "Note — Legs were flat Monday…" → the note alone, in italics, without the "Note —" label. Text unchanged.
 - "strava athlete 141554769 ↗ · synced Sep 16, 2026" → folded into the "Numbers from Strava, synced …" line.
-- New ticker: "this week 14.2 mi · latest 6.03 mi Wed · synced Sep 16" (the brief's format; grows "lifted before every run" once the sync supplies it).
+- New ticker: "this week 14.2 mi · latest 6.03 mi Wed · synced Sep 16" (the brief's format; grows "lifted before every run", or "lifted before 1 of 3 runs" when only some runs had a lift, once the sync supplies it).
+- New stale warning, shown only when the data is more than 10 days old: "Last synced 2026-09-16; the log is behind."
 
 ## Closing and footer
 
 - The closing section (the wordmark plate, "Every number here is one you can check. The repos are public.", GitHub/LinkedIn buttons, email) → removed; the email and links live in the footer, as the brief orders the page.
 - Footer "Alex Lopez · New Haven, CT / Boston, MA" → replaced by the email as plain text. Links: GitHub, LinkedIn, YouTube, Strava, Chess.com, Resume (Strava and Chess.com added to the footer per the brief).
+- New footer button: "Pause motion", which becomes "Resume motion" once pressed. It stops the ticker, the route trace, the `|` field, the photo strip and the reveals, the same as the OS reduced-motion setting; the page needs a pause of its own for keyboard users.
+
+## Screen-reader and control copy (new)
+
+Read aloud, never shown:
+
+- Route canvas: "Position along the latest run", a slider whose value reads like the readout, e.g. "2.31 mi, 17:52, 7:41 /mi".
+- Before the route summary: "Latest run, drawn as a route on the canvas:" (then the summary sentence above).
+- Progress track: "Miles this week toward 50". Odometer: "14.2 miles".
+- Split strip: "Mile splits of the latest run". Sparkline: "Miles per week for the last 8 weeks", then per week "Aug 3: 31.2, …; goal 50".
+- Terminal panel: "Real output of nemisis check".
+- Video buttons, once a video id is pasted: "Play video: Terrance's video" and "Play video: One more".
+- Route readout: a stream sample with no forward motion reads "stopped" in place of the pace.
+- Essay placeholders: "Placeholder for an image: an old senior dev next to Patrick Star", "…: the funny benchmark graph", "…: horse Tinder", "…: the looks good to me meme", "Placeholder for a photo: Alex writing this at his desk, shot over the shoulder", "Placeholder for an image: the Group Theory textbook cover", and on the two video cards "Video placeholder, link to come".

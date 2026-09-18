@@ -50,14 +50,14 @@
     </div>
   </header>
 
-  <section id="about">
+  <section id="about" aria-labelledby="h-about">
     <div class="wrap" data-reveal>
-      <h2>About</h2>
+      <h2 id="h-about">About</h2>
       <p class="prose">I'm Alex, a third year at Northeastern studying CS and Math. Most of what I build is about keeping a human in the loop when AI agents write code: Graphene, Nemisis, RegLineage. During the year I TA databases and discrete math and sit on the SHPE board. The rest of the time I'm running, golfing, or losing at chess.</p>
     </div>
   </section>
 
-  <section id="projects">
+  <section id="projects" aria-label="Projects">
     <div class="wrap" data-reveal>
       <h2>Graphene</h2>
       <p class="tagline">Publication control for parallel coding agents</p>
@@ -112,11 +112,11 @@
         <div class="ph-row videos">
           <!-- ALEX: paste the YouTube video ids into data-video (the part after v=). Empty = placeholder. -->
           <figure class="ph">
-            <button class="video" type="button" data-video="" disabled aria-disabled="true"><span class="ph-box" style="aspect-ratio: 16 / 9" aria-hidden="true"><span>VIDEO E</span></span><span class="sr-only">Video placeholder, link to come</span></button>
+            <button class="video" type="button" data-video="" disabled><span class="ph-box" style="aspect-ratio: 16 / 9" aria-hidden="true"><span>VIDEO E</span></span><span class="sr-only">Video placeholder, link to come</span></button>
             <figcaption>Terrance's video</figcaption>
           </figure>
           <figure class="ph">
-            <button class="video" type="button" data-video="" disabled aria-disabled="true"><span class="ph-box" style="aspect-ratio: 16 / 9" aria-hidden="true"><span>VIDEO E</span></span><span class="sr-only">Video placeholder, link to come</span></button>
+            <button class="video" type="button" data-video="" disabled><span class="ph-box" style="aspect-ratio: 16 / 9" aria-hidden="true"><span>VIDEO E</span></span><span class="sr-only">Video placeholder, link to come</span></button>
             <figcaption>One more</figcaption>
           </figure>
         </div>
@@ -157,6 +157,7 @@
           <p>A payment webhook credits an order twice when the worker dies mid-handler. An ordinary test cannot catch that: it calls the handler once, in one process, with nothing going wrong. The agent's patch ships green and still double-charges. One fixture in the repo has the same crash window, a different tree, green tests, and ends at $50 instead of $25.</p>
           <p>CrashCheck runs the patched handler in a real worker process and SIGKILLs it the moment the effect is durably on disk. A fresh worker starts, the byte-identical event is redelivered, and an independent read-only connection reads what survived. The hunt runs on the base before the patch is read at all, so the test cannot be tuned to the fix. Five fresh worlds per tree must agree, then a sweep kills once after every store commit the patch makes. A no-crash control delivers twice with no kill, to prove the duplicate needs the crash.</p>
           <p>The model never judges. Deterministic code owns the kill points and the decision, and refusing to answer is a first-class outcome: any write the injected store did not make exits 2, never pass, never fail. It ships as a CLI, an MCP server, a GitHub Action, and a skill an agent can use to prove its own fix.</p>
+          <p>Red-teamed nightly: 600 of 600 generated handlers agreed with an independent oracle, 300 per scenario. 28 shapes are pinned as refusals: raw SQL, shadow tables, bytes past the last page. Not proven: anything outside two scenarios, one handler shape, SQLite and POSIX SIGKILL. The narrowness is what makes the verdict trustworthy.</p>
 <pre class="terminal" role="region" aria-label="Real output of nemisis check" tabindex="0"><code><span class="prompt">$</span> uv run nemisis check --base fixture:sqlite-credit-v1/buggy \
     --candidate fixture:sqlite-credit-v1/misleading-green --mode local
 verdict: <span class="em">PATCH_FAILED_STILL_REPRODUCES</span>
@@ -190,9 +191,9 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
     </div>
   </section>
 
-  <section id="work">
+  <section id="work" aria-labelledby="h-work">
     <div class="wrap" data-reveal>
-      <h2>Experience</h2>
+      <h2 id="h-work">Experience</h2>
       <div class="ground">
       <div class="roles">
         <article class="role">
@@ -248,9 +249,9 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
     </div>
   </section>
 
-  <section id="outside">
+  <section id="outside" aria-labelledby="h-outside">
     <div class="wrap" data-reveal>
-      <h2>Outside the terminal</h2>
+      <h2 id="h-outside">Outside the terminal</h2>
       <div class="hobbies">
         <div>
           <h3>Running</h3>
@@ -270,20 +271,20 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
     </div>
     <div class="strip-wrap">
       <div class="strip" data-strip>
-        <figure><img src="assets/running-team.jpg" width="800" height="600" loading="lazy" alt="Alex with his running group after a race, seven runners with bibs under the trees"><figcaption>Boston, 2026</figcaption></figure>
-        <figure><img src="assets/golf-swing.jpg" width="434" height="325" loading="lazy" alt="Alex at the top of a golf swing, in an orange cap"><figcaption></figcaption></figure>
-        <figure><img src="assets/chess.jpg" width="447" height="447" loading="lazy" alt="A green chess pawn in front of a knight and a rook"><figcaption></figcaption></figure>
+        <figure><img src="assets/running-team.jpg" width="800" height="600" loading="lazy" alt="Alex and six teammates after a race, most still wearing their bibs, under the trees"><figcaption>Boston, 2026</figcaption></figure>
+        <figure><img src="assets/golf-swing.jpg" width="434" height="325" loading="lazy" alt="Alex at the top of a golf swing, in an orange cap"></figure>
+        <figure><img src="assets/chess.jpg" width="447" height="447" loading="lazy" alt="A green chess pawn in front of a knight and a rook"></figure>
         <figure><img src="assets/luna-small.jpg" width="270" height="360" loading="lazy" alt="Luna, a cream lop-eared rabbit, sitting on a rug"><figcaption>Luna: Chief Code Reviewer</figcaption></figure>
       </div>
     </div>
   </section>
 
-  <section id="running">
+  <section id="running" aria-labelledby="h-running">
     <div class="wrap" data-reveal>
-      <h2>Running</h2>
+      <h2 id="h-running">Running</h2>
       <div class="run">
         <div class="route-panel">
-          <canvas id="route" aria-hidden="true" tabindex="0" data-route="gklaGpm}pLQt@Q^QLi@RYP_@d@c@|@KNSHGCKSEc@Ca@AyAKeA_@{AS]aCyCWk@i@oCe@}C[_Aq@iAi@g@y@_@W_@EOKg@Q_B?eEKcEKW_Ay@[_@UMWGI?a@OU?c@HQC[@cAUq@Kq@?[Fk@Na@l@c@`@QR[r@Md@KfACh@Fd@?^T`AP\d@f@X^h@d@Z`@VVdAr@dAZTDd@Bf@LP?NC^F|@E|@Of@ETQNYBa@O{@Cg@?y@DuACaBMyBAMBEFCh@@`BI\BPBp@T|@j@j@j@b@v@z@xDFh@h@~BVxARr@f@xAJj@JVv@zAPTbAbANLNDfAfAR`@N~@E~AG^Wj@Ol@uA|C_@t@YZOHYDeACOMKo@EmBC_@Gg@[sAIUS[cAyAq@y@]o@Kc@QwAYuAQmAU{@a@{@i@o@OQSOe@QSQQYKa@Ga@KqA@kBBu@CkCEe@S_@K]EWKOMOOIa@e@KGu@Ui@Ei@FOAQBi@EqAWk@Cu@J_@Pc@l@c@`@c@v@Mb@M|@C\@|@Fv@Hd@FTRZh@n@bA|@Z`@nAbA^LjAXn@Jr@H|@Aj@G`@I^Ed@OPS@GBg@Eg@G}@FcCA_AQiDBMDC`A@t@EVBj@Hp@Rn@Xf@`@^b@^r@Nn@l@lCXrBRn@\dB`@hAPt@Fb@L`@f@|@p@~@RNNPVRVJf@^p@dANdA?PMb@]~@e@|@Op@Sl@ILQJa@Ri@b@w@nAOPODE?GCKUE]C}BC[a@iBSg@QYkAwAy@iAKa@Q{@K}@Om@QyAWaA[s@i@y@a@a@s@_@QMUe@UeBQm@AsABqACgBIuAIWEa@EKk@a@[a@QMUKq@IY?q@Fo@CwA[o@?c@Fm@NY^o@l@W^Qd@GTObAEt@@d@H|@FVN^LRJFX^j@j@bAlAf@`@zAj@xAVl@Dn@@r@Cv@Or@EPGJGHU@OAQKm@C_@AaC@Y@eBEaAMgADMJEf@Br@Cj@@p@F^LTLr@b@j@f@Zb@Vh@V`Af@dDDR" data-miles="6.03" data-pace="465" data-elev="115" data-date="2026-09-16" data-place="Boston, MA" data-time="2804"></canvas>
+          <canvas id="route" role="slider" aria-label="Position along the latest run" aria-valuemin="0" aria-valuemax="6.03" aria-valuenow="0" aria-valuetext="0.00 mi, 0:00" tabindex="0" data-route="_cj_G~djpLQt@Q^QLi@RYP_@d@c@|@KNSHGCKSEc@Ca@AyAKeA_@{AS]aCyCWk@i@oCe@}C[_Aq@iAi@g@y@_@W_@EOKg@Q_B?eEKcEKW_Ay@[_@UMWGI?a@OU?c@HQC[@cAUq@Kq@?[Fk@Na@l@c@`@QR[r@Md@KfACh@Fd@?^T`AP\d@f@X^h@d@Z`@VVdAr@dAZTDd@Bf@LP?NC^F|@E|@Of@ETQNYBa@O{@Cg@?y@DuACaBMyBAMBEFCh@@`BI\BPBp@T|@j@j@j@b@v@z@xDFh@h@~BVxARr@f@xAJj@JVv@zAPTbAbANLNDfAfAR`@N~@E~AG^Wj@Ol@uA|C_@t@YZOHYDeACOMKo@EmBC_@Gg@[sAIUS[cAyAq@y@]o@Kc@QwAYuAQmAU{@a@{@i@o@OQSOe@QSQQYKa@Ga@KqA@kBBu@CkCEe@S_@K]EWKOMOOIa@e@KGu@Ui@Ei@FOAQBi@EqAWk@Cu@J_@Pc@l@c@`@c@v@Mb@M|@C\@|@Fv@Hd@FTRZh@n@bA|@Z`@nAbA^LjAXn@Jr@H|@Aj@G`@I^Ed@OPS@GBg@Eg@G}@FcCA_AQiDBMDC`A@t@EVBj@Hp@Rn@Xf@`@^b@^r@Nn@l@lCXrBRn@\dB`@hAPt@Fb@L`@f@|@p@~@RNNPVRVJf@^p@dANdA?PMb@]~@e@|@Op@Sl@ILQJa@Ri@b@w@nAOPODE?GCKUE]C}BC[a@iBSg@QYkAwAy@iAKa@Q{@K}@Om@QyAWaA[s@i@y@a@a@s@_@QMUe@UeBQm@AsABqACgBIuAIWEa@EKk@a@[a@QMUKq@IY?q@Fo@CwA[o@?c@Fm@NY^o@l@W^Qd@GTObAEt@@d@H|@FVN^LRJFX^j@j@bAlAf@`@zAj@xAVl@Dn@@r@Cv@Or@EPGJGHU@OAQKm@C_@AaC@Y@eBEaAMgADMJEf@Br@Cj@@p@F^LTLr@b@j@f@Zb@Vh@V`Af@dDDR" data-miles="6.03" data-pace="465" data-elev="115" data-date="2026-09-16" data-place="Boston, MA" data-time="2804"></canvas>
           <p class="route-readout" data-route-readout aria-hidden="true"><span data-ro="dist"></span><span data-ro="time"></span><span data-ro="pace"></span><span data-ro="extra"></span></p>
           <p class="sr-only">Latest run, drawn as a route on the canvas: <span data-run="latest.line">Sep 16, 6.03 miles at 7:45 per mile, 115 feet of climbing, Boston, MA.</span></p>
           <p class="small route-caption">Latest run, <span data-run="latest.when">Sep 16, Boston, MA</span>. Hover, drag, or use the arrow keys on the route to scrub.</p>
@@ -300,7 +301,7 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
             <figcaption>Last 8 weeks, with the 50-mile line</figcaption>
             <svg viewBox="0 0 320 80" width="320" height="80" role="img" aria-label="Miles per week for the last 8 weeks"></svg>
           </figure>
-          <div class="splits" data-splits hidden tabindex="0" aria-label="Mile splits of the latest run"></div>
+          <div class="splits" data-splits hidden tabindex="0" role="region" aria-label="Mile splits of the latest run"></div>
           <p class="feeling"><em data-run="feeling">Legs were flat Monday, then the six on Wednesday clicked. Relative effort 103 and I still wanted another mile.</em></p>
           <p class="source">Numbers from <a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Strava</a>, <span data-synced data-run="synced">synced Sep 16, 2026</span>. The note is written by hand.</p>
           <p class="source" data-run-stale hidden></p>
@@ -321,6 +322,7 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
       <li><a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Strava</a></li>
       <li><a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener noreferrer">Chess.com</a></li>
       <li><a href="assets/Alex_Lopez_Resume.pdf" target="_blank" rel="noopener noreferrer">Resume</a></li>
+      <li><button type="button" data-motion-toggle>Pause motion</button></li>
     </ul>
   </div>
 </footer>

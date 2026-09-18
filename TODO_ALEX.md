@@ -18,8 +18,10 @@ Set them once (the workflow header has the same steps):
    and copy `refresh_token` from the response.
 4. In the repo: `gh secret set STRAVA_CLIENT_ID`, `gh secret set STRAVA_CLIENT_SECRET`,
    `gh secret set STRAVA_REFRESH_TOKEN` (each prompts for the value).
-5. Check the privacy zone around home is on in Strava before the first run; the route starts at
-   your door otherwise.
+5. Keep the privacy zone around home on in Strava. Your own token sees past the zones, so the sync
+   publishes the route as a shape moved to a fixed origin; the file never carries where you ran.
+   The route already in the repo was moved the same way in this branch (older commits still hold
+   the original; rewrite the history if that matters to you).
 6. Actions → strava-sync → Run workflow. The first success rewrites `data/strava.json` with the
    real week (20.2 mi as of Sep 17) and the new fields, and Pages redeploys.
 
@@ -67,7 +69,7 @@ chess image is an illustration, so it can stay uncaptioned or take a line of you
 
 ## 5. The race
 
-The countdown is on the page: "Eversource Hartford, Oct 10 · N days". It needs two facts I do
+The countdown is on the page: "N days to Eversource Hartford, Oct 10." It needs two facts I do
 not have: the distance (half marathon?) and your goal time. Add them to the `.countdown` line in
 `index.html` once you decide, or tell me and I will.
 

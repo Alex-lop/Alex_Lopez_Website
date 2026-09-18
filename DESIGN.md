@@ -16,7 +16,7 @@ secondary ink, a hairline, one accent.
 | `--paper-2` | `#ebeae2` | panels: the terminal snippet, split cards, placeholder boxes, the ticker   |
 | `--ink`     | `#171613` | text, the `\|` ticks, the route line. Warm near-black, not dark-mode black |
 | `--ink-2`   | `#55554f` | captions, dates, secondary lines (6.9:1 on paper)                          |
-| `--rule`    | `#d8d7ce` | the few hairlines: progress track, placeholder inset, underline at rest    |
+| `--rule`    | `#d8d7ce` | the few hairlines: progress track, placeholder inset, the hanging line's end mark |
 | `--accent`  | `#1a5fff` | link hover and focus, the live Strava mark, the runner dot, odometer digits |
 
 The accent is the old site's blue (commit `3c50259`), kept on purpose: it is the one colour Alex
@@ -61,13 +61,13 @@ Scale (desktop → phone):
 
 | role            | size                            | weight | notes                                       |
 | --------------- | ------------------------------- | ------ | ------------------------------------------- |
-| body            | 17px → 16px, line-height 1.6    | 400    | prose measure 66ch                          |
+| body            | 17px → 16px, line-height 1.6    | 400    | prose measure 56ch (≈ 66 characters; Plex's `ch` is its tabular zero) |
 | lede            | 1.2rem, 46ch                    | 400    | hero only                                   |
 | hero greeting   | 1.15rem, sentence case, `--ink` | 400    | same face as body, same left edge; not caps, not an eyebrow |
 | h1              | clamp(2.75rem, 7vw, 4.5rem)     | 600    | tracking −0.02em, line-height 1.02          |
 | h2              | clamp(1.75rem, 3.4vw, 2.4rem)   | 600    | tracking −0.015em                           |
 | h3              | 1.25rem                         | 600    | project and role names                      |
-| essay           | 19px Plex Serif, line-height 1.65, 68ch | 400 | one clear step up from body; its h4s stay in Sans 600 at 1.5rem |
+| essay           | 19px Plex Serif, line-height 1.65, 630px (≈ 74 characters) | 400 | one clear step up from body; "Why I built it" is Sans 600 at 1.6–1.9rem and its h4s stay a step below at 1.5rem (1.3rem on phones, where the heading sits at its 1.6rem floor) |
 | small / caption | 0.9rem / 0.85rem, `--ink-2`     | 400    | dates, photo captions, source lines         |
 | readout         | 0.92rem, tabular figures        | 400    | route readout, split cards, ticker, countdown |
 | odometer        | clamp(2.5rem, 5.5vw, 3.75rem)   | 500    | the Running section's headline; smaller than the h1 at every width |
@@ -106,7 +106,7 @@ blocks marked "solid".
  | | Graphene on GitHub                                                           | | | |
  | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
  | | Why I built it                                                               | | | |
- | | ┌ solid --paper column, 68ch, Plex Serif 19px ────────────────────────────┐  | | | |
+ | | ┌ solid --paper column, 630px, Plex Serif 19px ───────────────────────────┐  | | | |
  | | │ You'll never need to write CSS again                                    │  | | | |
  | | │ Now I know for most people ...            [ IMG A placeholder, 4:3 ]    │  | | | |
  | | │ [ hopkinslll.jpg 112px ] I know there are already plenty of videos ...  │  | | | |
@@ -239,8 +239,9 @@ flipping the OS setting takes effect without a reload.
 | route trace              | Running section on screen              | start dot pulses ≈ 1.5s; the dot runs the route in 120s following the real time profile when streams exist; mile markers drop as passed; 8s hold at the finish; restart from the start point; pauses off screen and when the tab is hidden, on an accumulated clock so it never jumps |
 | route scrub              | hover or drag on the route canvas      | the dot snaps to the nearest route point and the readout shows that point's distance, elapsed, pace, HR and elevation; on release the clock is reseated there and the run continues |
 | split strip              | the runner passes a mile               | the matching card gets the accent inset; the strip nudges horizontally to keep it in view unless the reader touched the strip in the last 1.5s |
-| photo strip (Outside)    | page scroll through the section (desktop, fine pointer) | translateX linked to scroll progress, the strip travels ≈ 35% of its width across the section; on phones it is a native swipe scroller and the scroll handler is not attached |
-| ticker band              | always, once on the page               | one line, CSS marquee, ≈ 45s per loop; pauses on hover and focus and while off screen |
+| photo strip (Outside)    | page scroll through the section (desktop, fine pointer) | the strip starts on the content column and is translated by exactly its overflow times the section's scroll progress, so the last photo ends flush with the column's right edge. The photos are 250px tall, so at 1280 and wider the overflow (93px) is smaller than the column's gutter and no photo ever leaves the column; a narrower fine-pointer window slides further and the first photo can leave; a strip that fits does not move; on phones it is a native swipe scroller and the scroll handler is not attached |
+| ticker band              | always, once on the page               | one line, CSS marquee, ≈ 45s per loop; pauses on hover and while off screen |
+| pause motion             | the footer's Pause motion button       | every row above takes its reduced-motion state until Resume motion; the OS setting does the same and each script listens for both. The page's own pause (WCAG 2.2.2) for the marquee, the trace and the field |
 
 Reduced motion, per item: field drawn once and static; reveals off; odometer shows its value;
 route drawn complete with all markers and the finish readout (scrub still works, it is
@@ -293,9 +294,10 @@ No stock, no generated art, no drawn characters.
 
 ## 6. Structure, hooks and contracts
 
-Single page, in this order, one landmark each with these ids: `top` (hero), `about`, `projects`
-(Graphene, the essay, then "Also built"), `work` (Experience and the Record list), `outside`,
-`running`; footer last. Nav: Work · Projects · Outside · Running · Resume · GitHub, plus the skip
+Single page, in this order, with these ids: `top` (the hero, a `<header>` inside `<main>`, so an
+anchor target and not a landmark), then one named `region` landmark each for `about`, `projects`
+(Graphene, the essay, then "Also built"; labelled "Projects" because it holds two h2s), `work`
+(Experience and the Record list), `outside`, `running`; footer last. Nav: Work · Projects · Outside · Running · Resume · GitHub, plus the skip
 link to `#main`.
 
 Files:
@@ -303,7 +305,7 @@ Files:
 - `index.html`, `styles.css`
 - `js/field.js` — the `|` field (≤ 10 KB). The 8-bucket `globalAlpha` stroke loop is lifted from `git show 1669e62:js/run-field.js`.
 - `js/route.js` — the route trace. The polyline decoder and its test vector are lifted from the same file.
-- `js/site.js` — fetch + render, odometer, split strip, sparkline, ticker, countdown, reveals, photo strip, video cards
+- `js/site.js` — fetch + render, odometer, split strip, sparkline, ticker, countdown, reveals, photo strip, video cards, the Pause motion button
 - `tools/strava_sync.py`, `.github/workflows/strava-sync.yml`, `data/strava.json`
 - `tests/site_check.py`
 
@@ -312,12 +314,12 @@ Files:
 | hook                                   | used by    | meaning                                                               |
 | -------------------------------------- | ---------- | --------------------------------------------------------------------- |
 | `<canvas id="field" aria-hidden>`      | field.js   | fixed, full viewport, `z-index: 0`, `pointer-events: none`            |
-| `<canvas id="route" data-route data-miles data-pace data-elev data-date data-place data-time tabindex="0">` | route.js | seeded latest run. `data-time` is `round(miles × pace)`, the only elapsed figure the seed can honestly carry. `pointer-events: auto`, `touch-action: pan-y` |
+| `<canvas id="route" role="slider" aria-label aria-valuemin aria-valuemax aria-valuenow aria-valuetext tabindex="0" data-route data-miles data-pace data-elev data-date data-place data-time>` | route.js | seeded latest run. `data-time` is `round(miles × pace)`, the only elapsed figure the seed can honestly carry. `pointer-events: auto`, `touch-action: pan-y`. It is focusable for the keyboard scrub, so it cannot be `aria-hidden`; it is a `role="slider"` (`aria-valuemin/max/now/valuetext`), the arrow keys move it, and its value text is the readout, written when the reader moves it or the run is at rest so a focused screen reader is not read a new number every second; keyboard focus pins the trace where it is until blur, so the arrows step from the value that was read (a click lifts the pin, so pointer users keep the running trace). The sr-only line carries the summary |
 | `[data-route-readout]` with `[data-ro="dist"]`, `[data-ro="time"]`, `[data-ro="pace"]`, `[data-ro="extra"]` | route.js | the counting readout under the panel (aria-hidden; the sr-only line carries the summary) |
 | `[data-run="week.miles"]` etc.         | site.js    | text swaps from JSON, same keys as before plus the new ones below     |
 | `[data-odo]` with three `.d` columns   | site.js    | the week odometer, columns shipped in the HTML: tens (blank under 10), ones, tenths; the decimal point is static text. `aria-label` carries the value; the columns are aria-hidden |
 | `<progress data-week-goal max="50">`   | site.js    | the native progress track, styled 3px; value clamped by the element   |
-| `[data-splits]`                        | site.js    | the split strip, `hidden` until `latest.splits` exists (it is below the primary stats and below the fold at load, so revealing it shifts nothing in view) |
+| `[data-splits]` (`role="region"`)       | site.js    | the split strip, `hidden` until `latest.splits` exists (it is below the primary stats and below the fold at load, so revealing it shifts nothing in view) |
 | `[data-weeks]`                         | site.js    | the sparkline `<svg>`, same rule                                      |
 | `[data-ticker]`                        | site.js    | the marquee text; seeded statically, rebuilt from JSON                |
 | `[data-countdown="2026-10-10"]`        | site.js    | days to race, computed from local date parts                          |
@@ -325,7 +327,8 @@ Files:
 | `[data-run-stale]`                     | site.js    | the >10-day warning                                                   |
 | `[data-reveal]`                        | site.js    | one per section; only the first two children animate                  |
 | `[data-strip]`                         | site.js    | the Outside photo strip                                               |
-| `[data-video]`                         | site.js    | click-to-load video `<button>`; empty attribute = disabled placeholder |
+| `[data-video]`                         | site.js    | click-to-load video `<button>`; empty attribute = disabled placeholder; on click the button is replaced by the `iframe` |
+| `[data-motion-toggle]`                 | site.js    | the footer button; toggles `data-motion="off"` on `<html>` and dispatches `motion:change`, which all three scripts treat like the OS reduced-motion setting. Its label is its state ("Pause motion" / "Resume motion", no `aria-pressed`); under the OS setting it reads "Resume motion" and is disabled, since there is nothing for the page to resume |
 
 ### Script contracts
 
@@ -338,7 +341,8 @@ The field rebuilds its tick grid only when the width changes or the height chang
 
 `js/route.js` exposes `window.__route(latest)` (the name the old code used) and dispatches one
 idempotent state event on `document`: `route:at` with `detail = {mile, fraction, t, reset}`,
-sent whenever the integer mile changes in either direction, and with `reset: true` at a restart.
+sent whenever the integer mile changes in either direction (`mile` is that integer, 0 at the start),
+and with `reset: true` at a restart.
 It reads the seeded `data-*` attributes at load so the trace runs before any fetch. It reads
 `canvas.getBoundingClientRect()` once per frame to convert the dot into viewport pixels for
 `__field.comb`, and throttles its own drawing and comb calls to 30fps (a 10px/s dot needs no more).
@@ -352,15 +356,21 @@ only when `latest.splits` exists; otherwise "1 mi" alone. The trace clock is an 
 hover moves the dot to the nearest point and shows its numbers; on a phone a drag scrubs only once
 it is clearly horizontal (|dx| > 10 and |dx| > |dy|), so vertical swipes scroll the page; the canvas
 is focusable and the left/right arrow keys step the dot along the route (shift for bigger steps),
+Home and End jump to the start and the finish,
 so the scrub has a keyboard path. The split strip is focusable too and scrolls with the arrow keys
 as a native scroller. Mile
 labels are painted over a small `--paper` rectangle so they never sit on live ticks.
 
 `js/site.js` fetches `data/strava.json` with `cache: 'no-cache'`; on failure the seeded markup
 stands. It never writes a value the JSON does not contain. It adds the `reveal-ready` class that
-turns on the reveal CSS, so if the script fails nothing is hidden, and it has a 2s fallback that
-reveals everything still pending. The photo-strip scroll handler is not attached on coarse-pointer
-devices. Split strip: highlight via a class from `route:at`; the nudge sets `scrollLeft` on the
+turns on the reveal CSS, so if the script fails nothing is hidden, and a 2s fallback reveals
+everything only if the observer never reported at all (a working one reports on its first frame).
+The photo-strip scroll handler is not attached on coarse-pointer devices; on fine-pointer ones the
+strip is translated by its overflow times the section's progress (see §4). The footer's Pause
+motion button sets `data-motion="off"` on `<html>` and dispatches `motion:change`; the three
+scripts treat it exactly like the OS setting, and Resume motion clears it. Split strip: the card
+for the split being run (`mile + 1`, capped at the last card so the partial final split lights
+after the last marker) gets a class from `route:at`; the nudge sets `scrollLeft` on the
 strip only (never `scrollIntoView`) and skips if the strip was touched in the last 1.5s. Countdown:
 `> 0` days → "23 days to Eversource Hartford, Oct 10"; `0` → "Race day: Eversource Hartford";
 past → the line is hidden. Distance and goal time are not on the page until Alex confirms them.
@@ -396,11 +406,18 @@ achievements{prs_30d, achievements_30d},            # new
 feeling, pr{half_marathon}                          # hand-edited, preserved
 ```
 
-`latest.polyline` becomes the full-resolution `map.polyline` downsampled by uniform stride to
-≤ 800 points and re-encoded, so the decoder on the page does not change. The encoder diffs against
+`latest.polyline` is the full-resolution `map.polyline` (or the summary polyline when the detail
+call failed) moved so that its first point is a fixed origin (42.0 N, 71.0 W), then evenly
+downsampled to ≤ 800 points and re-encoded, so the decoder on the page does not change. That is
+the sync's own privacy zone: Strava's zones hide the door from other viewers, not from the owner's
+token that this sync uses, and trimming the ends would still publish a loop that passes home
+mid-run. The page only draws the shape (route.js normalises it to unit space; `place` is its own
+string), so the file never says where a run was; the seeded route in `index.html` and the
+committed JSON were moved the same way. Moving 42.34 N to 42.0 N changes the drawn aspect by 0.5%. The encoder diffs against
 the previously rounded integer (not the float) and is proven offline against the decoder's own test
-vector plus a round-trip check. Only public activities with a polyline qualify as `latest`; privacy
-zones are Strava's job and the sync never widens them. Stream arrays are written compactly so a
+vector plus a round-trip check. Only public activities with a polyline qualify as `latest`; the sync
+narrows what Strava returns and never widens it. `totals.lifts_before_runs_this_week` counts the
+week's runs that started within two hours after a WeightTraining, the same unit as `week.runs`. Stream arrays are written compactly so a
 sync is a small diff.
 
 ### The sync (`tools/strava_sync.py`, `strava-sync.yml`)
@@ -413,7 +430,15 @@ sync is a small diff.
   − 56 days, `per_page=200`, paged until short), the detail call and the streams call (each
   optional: a 4xx/5xx there falls back to the summary fields and omits the new keys, and the run
   still writes the week), the athlete stats. Write, then exit 3 if a rotation could not be
-  persisted, with a message naming `STRAVA_REFRESH_TOKEN` and the re-authorisation steps. The
+  persisted, with a message naming `STRAVA_REFRESH_TOKEN` and the re-authorisation steps. A
+  `gh secret set` that fails for any reason (no Secrets permission, `gh` missing, GitHub down)
+  counts as not persisted: the data is still written and the same message and exit 3 follow.
+- Missing secrets stop the run before the token call with their names (the workflow passes every
+  secret through, so an unset one arrives as an empty string). An HTTP error carries Strava's
+  response body, which names the field and the code and never a secret. Activities are classified
+  by `sport_type`, falling back to the deprecated `type`. Weeks and days bucket on the activity's
+  own local date (`start_date_local`, Strava's date for the run); the Monday boundaries come from
+  New York. The achievements window is today and the 29 days before it. The
   workflow commits the file whenever it changed (`if: always()`, pull-rebase before push for the
   eight-runs-a-day race) and then fails the job if the sync step did not succeed.
 - `generated_at` is bumped when the data changed, and also once a day on quiet days (heartbeat),
@@ -421,9 +446,13 @@ sync is a small diff.
 - `--self-check` runs offline with fixtures and asserts: the week figures as before; `latest` from
   a detailed fixture (id, name, moving time, HR fields, cadence, suffer score, calories); splits
   with a partial last split and a negative elevation change; streams of 900 raw samples
-  downsampled to ≤ 300 with a zero-velocity sample → `null` pace; `weeks` of length 8 with the
-  live week last and a week-9 run excluded; `totals.lifts_before_runs_this_week` counting only
-  lifts within two hours before a run; achievements over 30 days; the polyline encoder's test
+  downsampled to exactly 300 with the stopped last sample → `null` pace; a 1,200-point route to
+  exactly 800 starting at the origin with its shape intact and every point over 30 km from where
+  it was, and a degenerate polyline publishing nothing; `weeks` of length 8 with the
+  live week last and a week-9 run excluded; `totals.lifts_before_runs_this_week` counting the
+  week's runs that started within two hours after a lift, and not a run whose lift was three hours
+  earlier; achievements over today and the 29 days before it, and none a month later; `sport_type` and
+  `type` both classify; the polyline encoder's test
   vector and a round-trip; and that the output serialises with `allow_nan=False`.
 
 ### Test contract (`tests/site_check.py`)
@@ -495,7 +524,80 @@ What changed after the plan was reviewed (three independent critics, then a judg
   fights a touch; the photo strip is a transform on desktop and a native scroller on phones, never
   both; the field rebuilds its grid only on real resizes; scroll velocity is read in the frame.
 
+What changed after the build was reviewed (five reviewers on the branch: brief compliance, front-end
+code, the sync, accessibility and copy, visual; every finding was checked against the code before it
+was fixed, and the ones below are what survived):
+
+- Split highlight: `route:at` carried a fractional mile and the cards carry integers, so no card
+  ever lit and the nudge never ran. The event now carries the integer, and the card for the split
+  being run lights, the partial last one included.
+- The field ignored `pointercancel`, which is what a touch that becomes a scroll fires, so a phone
+  could be left with a bright sunburst at the last finger position. Bound.
+- The reveal fallback fired unconditionally at 2s, revealing every section before the reader got
+  there. It now fires only if the observer never reported.
+- The ticker's loop width was measured in the fallback font; it is re-measured once the faces load.
+  The loaded video replaces its button instead of nesting inside it.
+- The route canvas is a slider to assistive tech (arrow keys move it, the value text is the readout)
+  instead of an image whose label promised numbers the readout hid. About, Experience, Outside and
+  Running are named regions and Projects is labelled. Empty figcaptions, a duplicate
+  `aria-disabled`, the invisible `.source` underline, the 1.3:1 goal line and the 4.2:1 terminal
+  prompt are fixed. A Pause motion button in the footer is the page's own pause for the marquee,
+  the trace and the field (WCAG 2.2.2), wired through the same path as the OS setting.
+- Layout: the photo strip sits on the content column and travels exactly its overflow (it sat 24px
+  from the viewport edge and was translated past its last photo); the hidden split strip no longer
+  renders 32px of empty flex box; the essay column sits on the page's one left edge and its heading
+  is a step above its subheads; Nemisis uses the Graphene grid; stat numbers right-align so labels
+  share one edge; the meme placeholders are small inline figures; the prose measure is 56ch (≈ 66
+  characters); the footer links sit on the left edge; the route's corner marks hug the route; the
+  hanging last line is set as an ending; the sparkline's value label sits off the line (and right
+  of the point when the current week is near zero); the essay measure is 630px (≈ 74 characters);
+  the route is drawn from the column's left edge rather than centred in its canvas; the strip's
+  photos are 250px tall so the strip's overflow fits its gutter at 1280 and wider.
+- After the fixes were reviewed again: the slider pins the trace while it holds keyboard focus so
+  the arrows step from the value that was read; the Pause motion button has its own CSS rest state
+  (no reveal burst on the press), its label is its state and it is disabled under the OS setting;
+  Resume motion puts the strip back where the scroll left it; a same-route fetch re-announces the
+  mile so the split card lights under reduced motion too; the paused ticker sits on the column.
+- Copy: the three Nemisis proof rows the brief said to keep are back as one plain paragraph; the
+  running-group alt text counts the bibs correctly; `COPY_REVIEW.md` matches the page and lists the
+  screen-reader strings.
+- Sync: a failed `gh secret set` no longer aborts the run before the data is written; the optional
+  calls survive timeouts and non-JSON bodies; missing secrets are named; downsampling keeps exactly
+  the cap; the achievements window is a real 30 days; `sport_type` is read first; the lifts figure
+  counts runs, not days; the route is published as a shape at a fixed origin (the seed and the
+  committed JSON too) because the owner's token sees past Strava's privacy zones and an end trim
+  would still publish a loop that passes home mid-run. On the page, the elapsed clock falls back to distance × pace when a
+  summary-only run has no moving time, and a week under an hour reads "28m", not "0h 28m".
+- Left as decided: the countdown stays (Alex confirmed the race; distance and goal time are still
+  his to add) and the mile labels on the canvas keep "1 mi · 7:38".
+
 ## 9. Measurements
 
-Filled in during QA (Phase 5): field frame time at 1280 and 390 wide, Lighthouse mobile
-performance, first-load bytes, the widths checked and what broke.
+Taken on Sep 18, 2026 on this MacBook (headless Chrome 153 through Playwright 1.63, Lighthouse 13.4
+with its mobile simulation, Playwright's WebKit and Firefox) against the local server, after the
+review fixes in §8. The scripts (`qa.js`, `verify.js`, `xbrowser.js`, `lh.sh`, `trace_shot.js`)
+live in the session scratchpad, not the repo.
+
+| what                                          | result                                                       |
+| --------------------------------------------- | ------------------------------------------------------------ |
+| Lighthouse mobile                             | performance 99, accessibility 100, best practices 100, SEO 100; LCP 2.0 s, CLS 0, TBT 0 ms, FCP 1.4 s; no audit below 1, also with the split strip and sparkline force-rendered (axe clean at 1280 and 390) |
+| Lighthouse desktop                            | performance 100, accessibility 100, best practices 100, SEO 100; LCP 0.5 s, CLS 0, TBT 0 ms |
+| first load                                    | 14 requests, 243 KB: HTML 28 KB, CSS 17 KB, JS 39 KB, fonts 84 KB (five Plex faces), the Graphene webp 73 KB, JSON 1.6 KB, favicon |
+| `\|` field, 1280×800, pointer sweeping        | 1,470 ticks at 26px; 0.2–0.5 ms per frame average and 0.3–0.8 ms max over 60 sampled frames, across three runs on a busy and an idle machine (budget 3 ms) |
+| `\|` field, 390×844 touch                     | 264 ticks at 34px; a touch that turns into a scroll (`pointercancel`) leaves 0 brightened pixels around the last finger position 2.5 s later |
+| field idle stop                               | frames stop advancing 20 s after the last input on fine-pointer devices and resume on the next; with Pause motion pressed, no frame is drawn for a pointer sweep |
+| route trace                                   | 338-point seeded polyline, published as a shape at the fixed origin; the corner marks hug the route's box and the route sits on the column's left edge; with a synced-shape payload (7 splits, 300 stream samples) the arrow keys light split cards 2 → 3 → 4 → 5 → 7 (the partial one) and nudge the strip 0 → 142 → 284 → 426 → 561 px; Home lights card 1; the slider reads "1.21 mi, 9:21, 7:45 /mi, 169 bpm, 44 ft" |
+| a summary-only latest run (no `moving_time_s`) | the readout counts (0.15 mi, 1:12 at 4.5 s in) instead of 0:00 |
+| widths 360 / 390 / 768 / 1280 / 1920          | no page errors, `scrollWidth == viewport width` at every width; at 1280 and 1920 the essay (630px wide), its heading and its subheads, the h2s, the route frame and the footer share the 104 / 424 px left edge; the photo strip starts on that edge and travels 93 px, its overflow, so its first photo ends at x = 15 and its last flush with the column; on the phone the essay heading is 25.6px over 20.8px subheads |
+| OS dark mode                                  | with `prefers-color-scheme: dark` emulated the page stays `#f5f5f0` / `#171613`, the panels `#ebeae2`; `color-scheme` computes to `light` |
+| reduced motion (Chrome, WebKit, Firefox)      | field draws one static frame, ticker static, every section revealed, readout and `aria-valuetext` show the finish values ("6.03 mi, 46:44, 7:45 /mi") |
+| Pause motion                                  | one click: `data-motion="off"`, the label "Resume motion", field static, ticker stopped, wrapping and on the column, trace at its finish, every section revealed with no transition running on the press; a second click restores all of it, the strip included; under the OS setting the button reads "Resume motion" and is disabled |
+| keyboard                                      | skip link first, then nav, hero buttons, links in page order; 2px accent ring on `:focus-visible`; twenty ArrowRight presses on the route move the readout 0.00 → 0.60 mi and the slider's value with it; focus 8 s into the run pins the trace (value 0.32 mi, still 0.32 after 6 s), one press steps it 0.03 mi, blur lets it run on, and a mouse click then leave keeps it running |
+| Safari and Firefox                            | Playwright WebKit and Firefox at 1280 and 390: no errors, all five fonts loaded, essay in Plex Serif, trace running, odometer set, ticker running, strip transform on desktop only (`translateX(-93px)` at the section's end) |
+| tests                                         | `python3 tests/site_check.py` passes (16 ids, 23 links, 7 images, 17 local assets; the seeded route and the JSON route start at the fixed origin) and runs `--self-check` (offline, also on Python 3.9, 3.13 and 3.14) |
+
+What was not measured: a real mid-range laptop (the field budget was checked on this machine only),
+a physical iOS device (the address-bar resize path and touch scrubbing were checked in WebKit's
+emulation), a real screen reader (the slider and regions were checked in the accessibility tree
+and by Lighthouse), and the sync against the live Strava API, which cannot run until the secrets
+exist.
