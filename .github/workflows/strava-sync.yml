@@ -1,5 +1,8 @@
-# Refreshes data/strava.json once a day and commits it if it changed. GitHub Pages
-# redeploys on the push, so the running section updates itself.
+# Refreshes data/strava.json from Strava every 3 hours and commits it if it changed. GitHub Pages
+# redeploys on the push, so the running section updates itself: week mileage, the latest run's
+# route and splits, the 8-week strip, totals and achievements. tools/strava_sync.py does the work
+# (stdlib only) and also bumps generated_at once a day on quiet days so "synced N hours ago" and
+# the 10-day stale warning stay honest without eight commits a day.
 #
 # One-time setup:
 #   1. https://www.strava.com/settings/api -> create an app, callback domain "localhost".
@@ -11,33 +14,57 @@
 #        -d client_secret=CLIENT_SECRET -d code=CODE -d grant_type=authorization_code
 #      Copy refresh_token from the response.
 #   4. gh secret set STRAVA_CLIENT_ID; gh secret set STRAVA_CLIENT_SECRET; gh secret set STRAVA_REFRESH_TOKEN
-#   5. Turn on a Strava privacy zone around home before the first run; the route starts at your door otherwise.
+#   5. Keep a Strava privacy zone around home too. Zones hide the door from other viewers, not from
+#      your own token, so the sync publishes the route as a shape at a fixed origin: the file never
+#      carries where you ran.
 #   6. Actions tab -> strava-sync -> Run workflow, to check it once.
+#
+# Refresh-token rotation, two paths:
+#   * With an optional GH_SECRETS_PAT secret (a fine-grained PAT on this repo with Secrets: write),
+#     the script writes the new refresh token straight back into STRAVA_REFRESH_TOKEN with
+#     `gh secret set` and the sync keeps running unattended. The token is never printed.
+#   * Without it, the sync still finishes and commits today's data, then exits 3 and this job
+#     fails with a message naming STRAVA_REFRESH_TOKEN. Fix it by redoing steps 2-4 above, or by
+#     adding GH_SECRETS_PAT once so it never happens again.
 name: strava-sync
 on:
   schedule:
-    - cron: '20 11 * * *'   # 07:20 New York in summer, 06:20 in winter
+    - cron: '17 */3 * * *'   # every 3 hours, off the top of the hour (GitHub delays those most)
   workflow_dispatch:
 permissions:
   contents: write
 concurrency: strava-sync
 jobs:
   sync:
+    if: github.repository == 'Alex-lop/Alex_Lopez_Website'   # forks stay green
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Self-check
         run: python3 tools/strava_sync.py --self-check
       - name: Refresh data/strava.json
+        id: sync
+        continue-on-error: true   # commit what we have, then fail the job in the last step
         env:
           STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
           STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
           STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          GH_SECRETS_PAT: ${{ secrets.GH_SECRETS_PAT }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: python3 tools/strava_sync.py
       - name: Commit if changed
+        if: always()
         run: |
           git diff --quiet data/strava.json && exit 0
           git config user.name "strava-sync"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Update running data" data/strava.json
+          git pull --rebase --autostash   # eight runs a day; someone else may have pushed
           git push
+      - name: Fail if the sync did not succeed
+        if: steps.sync.outcome != 'success'
+        run: |
+          echo "The sync step failed. Read its log above: exit 3 means Strava rotated the refresh"
+          echo "token and STRAVA_REFRESH_TOKEN needs re-authorising (steps 2-4 in this file's"
+          echo "header) or a GH_SECRETS_PAT secret; anything else is a Strava API or network error."
+          exit 1
