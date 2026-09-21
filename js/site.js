@@ -192,27 +192,6 @@
     }, { passive: true });
   }
 
-  /* video cards */
-  all('button.video[data-video]').forEach(function (btn) {
-    var id = btn.getAttribute('data-video');
-    if (!/^[\w-]{6,20}$/.test(id)) return;
-    var cap = btn.parentNode.querySelector('figcaption');
-    var caption = cap ? cap.textContent.trim() : '';
-    btn.disabled = false;
-    btn.setAttribute('aria-label', 'Play video: ' + caption);
-    btn.addEventListener('click', function () {
-      var f = doc.createElement('iframe');
-      f.className = 'video-frame';
-      f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1';
-      f.title = caption;
-      f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
-      f.setAttribute('allowfullscreen', '');
-      f.setAttribute('loading', 'lazy');
-      btn.replaceWith(f);  // the button goes with its click handler; a player inside a live button is not valid
-      f.focus();
-    });
-  });
-
   /* reduced motion: the OS setting or the footer toggle, same effect. The button's label is its state;
      under the OS setting there is nothing for it to resume, so it is disabled rather than lying. */
   var toggle = doc.querySelector('[data-motion-toggle]');
@@ -280,21 +259,24 @@
 
   var titles = {
     home: 'Alex Lopez',
-    about: 'About — Alex Lopez',
     projects: 'Graphene — Alex Lopez',
     also: 'Also built — Alex Lopez',
-    work: 'Experience — Alex Lopez',
-    outside: 'Outside — Alex Lopez',
-    running: 'Running — Alex Lopez'
+    work: 'XP: experience — Alex Lopez',
+    outside: 'Outside — Alex Lopez'
   };
+  var pin = { nemisis: 'nemisis', reglineage: 'reglineage', imc: 'imc', running: 'running', golf: 'golf' };
   function onView(moveFocus) {
     var v = doc.documentElement.dataset.view || 'home';
-    if (titles[v]) doc.title = titles[v];
+    var hash = location.hash.slice(1);
+    if (hash === 'running') doc.title = 'Running — Alex Lopez';
+    else if (titles[v]) doc.title = titles[v];
     var root = v === 'home' ? doc.getElementById('top') : doc.getElementById(v);
     var rev = root && root.querySelector('[data-reveal]');
     if (rev) rev.classList.add('in');
     if (moveFocus && v !== 'home') {
+      var target = doc.getElementById(pin[hash]) || (root && root.querySelector('h1'));
       scrollTo(0, 0);
+      if (pin[hash] && target && hash !== 'running') target.scrollIntoView();
       var heading = root && root.querySelector('h1');
       if (heading) {
         heading.setAttribute('tabindex', '-1');
@@ -303,8 +285,7 @@
     } else if (moveFocus) {
       scrollTo(0, 0);
     }
-    if (v === 'outside' && stripFrame) stripFrame();
-    if (v === 'running') { rollOdo(); marquee(); }
+    if (v === 'outside') { rollOdo(); marquee(); if (stripFrame) stripFrame(); }
   }
   addEventListener('hashchange', function () { onView(true); });
   onView(location.hash.length > 1);

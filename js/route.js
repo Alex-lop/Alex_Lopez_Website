@@ -1,5 +1,5 @@
 /* The route trace: frame corners and a pulsing start dot, then a runner dot walking the latest
-   run's polyline over 120s, line drawing behind it, mile markers, a counting readout, and a tape
+   run's polyline over 70s, line drawing behind it, mile markers, a counting readout, and a tape
    under the map to pause, rewind, and scrub. The canvas itself ignores the pointer. Decoder
    lifted from js/run-field.js at 1669e62. */
 (function () {
@@ -22,7 +22,7 @@
   var css = getComputedStyle(document.documentElement);
   function token(n, f) { return (css.getPropertyValue(n) || f).trim(); }
   var INK = token('--ink', '#171613'), ACCENT = token('--accent', '#1a5fff'), PAPER = token('--paper', '#f5f5f0');
-  var RUN = 120000, HOLD = 8000, PULSE = 1500, FRAME = 33, FONT = '500 12px "Plex Sans", system-ui, sans-serif';
+  var RUN = 70000, HOLD = 6000, PULSE = 500, FRAME = 16, FONT = '500 12px "Plex Sans", system-ui, sans-serif';
   var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
   function motionOff() { return mq.matches || document.documentElement.dataset.motion === 'off'; }
 
@@ -238,7 +238,7 @@
 
   function scrubbing() { return drag || performance.now() < keyUntil; }
   function reset() { phase = 'start'; pulseT = elapsed = holdT = 0; emit(0, 0, 0, true); }
-  function seat(f) { /* reseat the 120s clock where the tape left the dot */
+  function seat(f) { /* reseat the run clock where the tape left the dot */
     elapsed = clamp(tauOf(f) / total(), 0, 1) * RUN;
     phase = elapsed >= RUN ? 'hold' : 'run';
     holdT = 0;
@@ -250,7 +250,7 @@
 
   function frame(now) {
     raf = requestAnimationFrame(frame);
-    if (now - drawnAt < FRAME) return; /* 30fps */
+    if (now - drawnAt < FRAME) return;
     drawnAt = now;
     var dt = Math.min(now - last, 50);
     last = now;
@@ -377,16 +377,30 @@
   if (startBtn) startBtn.addEventListener('click', goStart);
   if (playBtn) playBtn.addEventListener('click', togglePlay);
 
-  if (window.ResizeObserver) new ResizeObserver(function () { layout(); repaint(); }).observe(canvas);
-  else window.addEventListener('resize', function () { layout(); repaint(); });
-  if (window.IntersectionObserver) new IntersectionObserver(function (es) { onScreen = es[0].isIntersecting; sync(); }, { threshold: 0.25 }).observe(canvas);
+  function outsideView() { return document.documentElement.dataset.view === 'outside'; }
+  function kick() {
+    if (outsideView()) layout();
+    onScreen = outsideView() && canvas.clientWidth > 0;
+    sync();
+    if (onScreen) repaint();
+  }
+
+  if (window.ResizeObserver) new ResizeObserver(function () { layout(); kick(); }).observe(canvas);
+  else window.addEventListener('resize', function () { layout(); kick(); });
+  if (window.IntersectionObserver) new IntersectionObserver(function (es) {
+    if (es[0].isIntersecting) onScreen = true;
+    else if (!outsideView()) onScreen = false;
+    sync();
+  }, { threshold: 0 }).observe(canvas);
   else onScreen = true;
   document.addEventListener('visibilitychange', function () { hidden = document.hidden; sync(); });
   function modeChange() { reduce = motionOff(); sync(); repaint(); }
   if (mq.addEventListener) mq.addEventListener('change', modeChange); else mq.addListener(modeChange);
   document.addEventListener('motion:change', modeChange);
+  addEventListener('hashchange', kick);
 
   window.__route = setRoute;
   var d = canvas.dataset;
   if (d.route) setRoute({ polyline: d.route, miles: d.miles, pace_sec_per_mi: d.pace, elev_ft: d.elev, date: d.date, place: d.place, moving_time_s: d.time });
+  kick();
 })();

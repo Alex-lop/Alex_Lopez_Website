@@ -19,13 +19,13 @@
 #      carries where you ran.
 #   6. Actions tab -> strava-sync -> Run workflow, to check it once.
 #
-# Refresh-token rotation, two paths:
-#   * With an optional GH_SECRETS_PAT secret (a fine-grained PAT on this repo with Secrets: write),
-#     the script writes the new refresh token straight back into STRAVA_REFRESH_TOKEN with
-#     `gh secret set` and the sync keeps running unattended. The token is never printed.
-#   * Without it, the sync still finishes and commits today's data, then exits 3 and this job
-#     fails with a message naming STRAVA_REFRESH_TOKEN. Fix it by redoing steps 2-4 above, or by
-#     adding GH_SECRETS_PAT once so it never happens again.
+# Refresh-token rotation. Strava may invalidate the old refresh token on every exchange.
+#   * This job caches the latest token in Actions cache so the next run (every 3 hours) keeps
+#     working without anyone updating secrets.
+#   * Optional GH_SECRETS_PAT (a fine-grained PAT on this repo with Secrets: write) also writes
+#     the new token back into STRAVA_REFRESH_TOKEN with `gh secret set`. The token is never printed.
+#   * If neither cache nor PAT can persist it, the sync still finishes and commits today's data,
+#     then exits 3. Fix it by redoing steps 2-4 above.
 name: strava-sync
 on:
   schedule:
@@ -40,8 +40,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # pull --rebase below needs history; default depth 1 races with other pushes
       - name: Self-check
         run: python3 tools/strava_sync.py --self-check
+      - name: Restore rotated refresh token
+        uses: actions/cache/restore@v4
+        with:
+          path: .strava-refresh-token
+          key: strava-refresh-token-${{ github.run_id }}
+          restore-keys: |
+            strava-refresh-token-
       - name: Refresh data/strava.json
         id: sync
         continue-on-error: true   # commit what we have, then fail the job in the last step
@@ -49,9 +58,16 @@ jobs:
           STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
           STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
           STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          STRAVA_REFRESH_TOKEN_FILE: .strava-refresh-token
           GH_SECRETS_PAT: ${{ secrets.GH_SECRETS_PAT }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python3 tools/strava_sync.py
+      - name: Save rotated refresh token
+        if: hashFiles('.strava-refresh-token') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: .strava-refresh-token
+          key: strava-refresh-token-${{ github.run_id }}
       - name: Commit if changed
         if: always()
         run: |
@@ -64,7 +80,8 @@ jobs:
       - name: Fail if the sync did not succeed
         if: steps.sync.outcome != 'success'
         run: |
-          echo "The sync step failed. Read its log above: exit 3 means Strava rotated the refresh"
-          echo "token and STRAVA_REFRESH_TOKEN needs re-authorising (steps 2-4 in this file's"
-          echo "header) or a GH_SECRETS_PAT secret; anything else is a Strava API or network error."
+          echo "The sync step failed. Read its log above."
+          echo "Exit 2: STRAVA_CLIENT_ID / STRAVA_CLIENT_SECRET / STRAVA_REFRESH_TOKEN are missing."
+          echo "Exit 3: Strava rotated the refresh token and it could not be persisted."
+          echo "Anything else is a Strava API or network error."
           exit 1

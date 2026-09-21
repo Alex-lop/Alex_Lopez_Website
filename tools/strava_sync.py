@@ -2,8 +2,9 @@
 """Refresh data/strava.json from Strava. Stdlib only.
 
 Run by .github/workflows/strava-sync.yml with STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET and
-STRAVA_REFRESH_TOKEN in the environment; GH_SECRETS_PAT (optional) lets it write a rotated
-refresh token back into the repo secret. `python3 tools/strava_sync.py --self-check` runs the
+STRAVA_REFRESH_TOKEN in the environment. STRAVA_REFRESH_TOKEN_FILE (optional) is a cache the
+workflow restores so a rotated refresh token survives to the next run; GH_SECRETS_PAT (optional)
+also writes it back into the repo secret. `python3 tools/strava_sync.py --self-check` runs the
 offline asserts and touches nothing. The hand-edited keys `feeling` and `pr` are preserved.
 
 Shape and rules live in DESIGN.md §6. The token exchange and the activity list are fatal; the
@@ -313,6 +314,35 @@ def write(out):
     os.replace(tmp, OUT)
 
 
+def current_refresh_token():
+    """Prefer a token file the workflow caches across runs; fall back to the repo secret."""
+    path = os.environ.get("STRAVA_REFRESH_TOKEN_FILE")
+    if path:
+        try:
+            tok = open(path).read().strip()
+            if tok:
+                return tok
+        except OSError:
+            pass
+    return os.environ.get("STRAVA_REFRESH_TOKEN", "")
+
+
+def persist_refresh_token(token):
+    """Write the latest refresh token to STRAVA_REFRESH_TOKEN_FILE. True if it landed."""
+    path = os.environ.get("STRAVA_REFRESH_TOKEN_FILE")
+    if not path or not token:
+        return False
+    try:
+        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as f:
+            f.write(token)
+        return True
+    except OSError as e:
+        print(f"could not persist refresh token: {e}", file=sys.stderr)
+        return False
+
+
 def rotate(new_token):
     """Persist a refresh token Strava rotated. True if it landed in the secret."""
     pat = os.environ.get("GH_SECRETS_PAT")
@@ -449,6 +479,25 @@ def self_check():
 
     json.dumps(out, allow_nan=False)
     assert json.loads(dumps(out)) == out and '"time": [' in dumps(out), "compact arrays, valid JSON"
+
+    import tempfile
+    prev_file, prev_rt = os.environ.get("STRAVA_REFRESH_TOKEN_FILE"), os.environ.get("STRAVA_REFRESH_TOKEN")
+    os.environ["STRAVA_REFRESH_TOKEN"] = "from-env"
+    os.environ.pop("STRAVA_REFRESH_TOKEN_FILE", None)
+    assert current_refresh_token() == "from-env"
+    path = os.path.join(tempfile.mkdtemp(), "rt")
+    os.environ["STRAVA_REFRESH_TOKEN_FILE"] = path
+    assert persist_refresh_token("from-file") and current_refresh_token() == "from-file"
+    os.remove(path)
+    if prev_file is None:
+        os.environ.pop("STRAVA_REFRESH_TOKEN_FILE", None)
+    else:
+        os.environ["STRAVA_REFRESH_TOKEN_FILE"] = prev_file
+    if prev_rt is None:
+        os.environ.pop("STRAVA_REFRESH_TOKEN", None)
+    else:
+        os.environ["STRAVA_REFRESH_TOKEN"] = prev_rt
+
     print("ok")
 
 
@@ -456,10 +505,14 @@ def self_check():
 
 def main():
     # the workflow passes every secret through, so a missing one arrives as "" rather than unset
-    missing = [k for k in ("STRAVA_CLIENT_ID", "STRAVA_CLIENT_SECRET", "STRAVA_REFRESH_TOKEN") if not os.environ.get(k)]
+    rt = current_refresh_token()
+    missing = [k for k in ("STRAVA_CLIENT_ID", "STRAVA_CLIENT_SECRET") if not os.environ.get(k)]
+    if not rt:
+        missing.append("STRAVA_REFRESH_TOKEN")
     if missing:
-        sys.exit("set these repo secrets first: " + ", ".join(missing)
-                 + " (steps 1-4 in the header of .github/workflows/strava-sync.yml)")
+        print("set these repo secrets first: " + ", ".join(missing)
+              + " (steps 1-4 in the header of .github/workflows/strava-sync.yml)", file=sys.stderr)
+        sys.exit(2)
     old = json.load(open(OUT)) if os.path.exists(OUT) else {}
     today = datetime.now(TZ).date()
     monday = today - timedelta(days=today.weekday())
@@ -467,12 +520,16 @@ def main():
         "client_id": os.environ["STRAVA_CLIENT_ID"],
         "client_secret": os.environ["STRAVA_CLIENT_SECRET"],
         "grant_type": "refresh_token",
-        "refresh_token": os.environ["STRAVA_REFRESH_TOKEN"],
+        "refresh_token": rt,
     })
     access = tok["access_token"]
     # Before anything else: if Strava rotated the refresh token, the one in the secret is dead.
-    stale_secret = (tok.get("refresh_token") != os.environ["STRAVA_REFRESH_TOKEN"]
-                    and not rotate(tok["refresh_token"]))
+    # Persist to the cached file first so the next run has it even without GH_SECRETS_PAT.
+    new_rt = tok.get("refresh_token") or rt
+    persisted = persist_refresh_token(new_rt)
+    if persisted:
+        print("cached the refresh token")
+    stale_secret = (new_rt != rt and not rotate(new_rt) and not persisted)
 
     after = int(datetime.combine(monday - timedelta(days=56), datetime.min.time(), TZ).timestamp())
     acts, page = [], 1
