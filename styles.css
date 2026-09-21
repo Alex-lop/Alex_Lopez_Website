@@ -134,7 +134,7 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
 @media (max-width: 620px) { .feature-body { font-size: 18px; } }
 .feature-body p { margin: 0 0 18px; max-width: none; }
 .feature-body p:last-child { margin-bottom: 0; }
-.photo figcaption, .weeks figcaption { margin-top: 8px; font: 400 .85rem/1.45 var(--sans); color: var(--ink-2); }
+.photo figcaption { margin-top: 8px; font: 400 .85rem/1.45 var(--sans); color: var(--ink-2); }
 
 /* Also built */
 .nemisis { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px 56px; align-items: start; margin: 0 0 48px; }
@@ -210,9 +210,26 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
 .run-note { margin: 0 0 14px; }
 .countdown { margin: 0 0 22px; font-size: .92rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .countdown b { font-weight: 500; }
-.weeks { margin: 0 0 22px; max-width: 440px; }
-.weeks svg { display: block; width: 100%; height: auto; overflow: visible; font: 400 10px var(--sans); }
-.weeks figcaption { margin: 0 0 8px; }
+.avg-week { margin: 0 0 22px; max-width: 440px; }
+.avg-readout { display: flex; align-items: baseline; gap: 12px; margin: 0 0 14px; }
+.avg-num { color: var(--accent); font-weight: 500; font-size: clamp(2rem, 4.2vw, 2.75rem); line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.avg-plot { position: relative; height: 112px; margin: 0 0 6px; overflow: visible; user-select: none; }
+.avg-bars { display: flex; align-items: stretch; gap: 6px; height: 100%; }
+.avg-bar { position: relative; flex: 1; min-width: 0; margin: 0; padding: 0; border: 0; background: var(--paper-2); border-radius: 2px; cursor: pointer; }
+.avg-fill { position: absolute; left: 0; right: 0; bottom: 0; height: var(--h, 0%); background: var(--ink); border-radius: 1px 1px 0 0; pointer-events: none; transition: height 900ms cubic-bezier(.2, .7, .2, 1), background-color 180ms ease; }
+.avg-bar.pre .avg-fill { background: color-mix(in srgb, var(--ink) 36%, var(--paper-2)); }
+.avg-bar.live .avg-fill, .avg-bar[aria-selected="true"] .avg-fill { background: var(--accent); }
+.avg-bar.live::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--accent); pointer-events: none; }
+.avg-bar.start { margin-left: 8px; }
+.avg-bar[aria-selected="true"] { box-shadow: inset 0 0 0 1.5px var(--accent); }
+.avg-val { position: absolute; left: 0; right: 0; top: 4px; font-size: .7rem; line-height: 1; text-align: center; font-variant-numeric: tabular-nums; color: var(--ink-2); pointer-events: none; opacity: 0; transition: opacity 180ms ease; }
+.avg-bar[aria-selected="true"] .avg-val { opacity: 1; color: var(--accent); }
+.avg-mean, .avg-goal { position: absolute; left: 0; right: 0; z-index: 2; pointer-events: none; }
+.avg-mean { bottom: var(--p, 0%); border-top: 1px dashed var(--accent); transition: bottom 420ms cubic-bezier(.2, .7, .2, 1); }
+.avg-mean span { position: absolute; right: 0; top: -1.2em; color: var(--accent); font-size: 10px; line-height: 1; font-variant-numeric: tabular-nums; }
+.avg-goal { bottom: var(--p, 100%); border-top: 1px dashed var(--rule); }
+.avg-axis { display: flex; justify-content: space-between; margin: 0 0 10px; font-size: .75rem; line-height: 1.3; color: var(--ink-2); }
+.avg-caption { margin: 0; min-height: 1.45em; color: var(--ink-2); font-size: .9rem; font-variant-numeric: tabular-nums; }
 .splits { display: flex; gap: 10px; margin: 0 0 22px; padding: 2px 0 8px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; }
 .split { flex: none; width: 132px; padding: 10px 12px; scroll-snap-align: start; background: var(--paper-2); border-radius: 2px; font-size: .82rem; line-height: 1.5; font-variant-numeric: tabular-nums; color: var(--ink-2); }
 .split b { display: block; font-weight: 500; font-size: 1rem; color: var(--ink); }
@@ -263,7 +280,7 @@ footer a:hover { color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   .reveal-ready [data-reveal] > :first-child { clip-path: none; transition: none; }
   .reveal-ready [data-reveal] > :nth-child(2) { opacity: 1; transform: none; transition: none; }
-  .odo .d span, .track::-webkit-progress-value { transition: none; }
+  .odo .d span, .track::-webkit-progress-value, .avg-fill, .avg-mean, .avg-val { transition: none; }
   .ticker-track { animation: none; white-space: normal; padding-inline: max(var(--pad), calc((100% - 1120px) / 2 + var(--pad))); }
   .ticker-track span + span { display: none; }
   .tape-deck { display: none; }
@@ -273,7 +290,7 @@ footer a:hover { color: var(--accent); }
 /* The footer's Pause motion button: the same rest state as the OS setting, so nothing animates on the press itself */
 :root[data-motion="off"] [data-reveal] > :first-child { clip-path: none; transition: none; }
 :root[data-motion="off"] [data-reveal] > :nth-child(2) { opacity: 1; transform: none; transition: none; }
-:root[data-motion="off"] .odo .d span, :root[data-motion="off"] .track::-webkit-progress-value { transition: none; }
+:root[data-motion="off"] .odo .d span, :root[data-motion="off"] .track::-webkit-progress-value, :root[data-motion="off"] .avg-fill, :root[data-motion="off"] .avg-mean, :root[data-motion="off"] .avg-val { transition: none; }
 :root[data-motion="off"] .ticker-track { animation: none; white-space: normal; padding-inline: max(var(--pad), calc((100% - 1120px) / 2 + var(--pad))); }
 :root[data-motion="off"] .ticker-track span + span { display: none; }
 :root[data-motion="off"] .tape-deck { display: none; }
