@@ -3,8 +3,9 @@
 Personal site: a static hub plus inner pages, no build step, no framework, no dependencies. GitHub
 Pages serves `main` from the repo root, so a push to `main` is a deploy. Plain HTML, CSS and three
 vanilla JS files; every path is relative. The landing page is a Skula-style rail (greeting, then
-`work` and `signals`); each section is a hash destination (`#about`, `#projects`, `#also`, `#work`,
-`#outside`, `#running`) with a `‹ index` back link.
+labeled groups: projects, XP: experience, thing I like to do w/ my free time, links). Each section is a hash
+destination (`#projects`, `#nemisis` / `#reglineage` / `#imc`, `#work`, `#outside`) with
+a `‹ index` back link. `#running` opens Outside at the live log. About lives on XP: experience. Resume is in the inner footer, not on the hub.
 
 ## Layout
 
@@ -14,7 +15,7 @@ styles.css                         all of the CSS
 js/field.js                        the | field: the canvas of vertical ticks behind everything
 js/route.js                        the route trace in Running
 js/site.js                         reads data/strava.json; odometer, splits, ticker, countdown,
-                                   reveals, photo strip, video cards, the Pause motion button
+                                   reveals, the Pause motion button
 data/strava.json                   the running data, written by the sync
 tools/strava_sync.py               the sync (stdlib only)
 .github/workflows/strava-sync.yml  runs the sync every 3 hours
@@ -28,7 +29,7 @@ TODO_ALEX.md                       what still needs Alex: secrets, images, copy 
 
 ## The Running section
 
-It reads `data/strava.json`: the week odometer against the 50-mile goal and its progress track, the
+It lives at the top of Outside (hobbies). It reads `data/strava.json`: the week odometer against the 50-mile goal and its progress track, the
 route trace of the latest run with mile markers and a tape to rewind, the mile-split strip, the last eight
 weeks as a sparkline, the ticker band, "synced N hours ago", and the countdown to Oct 10.
 

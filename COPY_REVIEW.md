@@ -11,18 +11,22 @@ new fact about Alex. Items marked **confirm** are in `TODO_ALEX.md` as well.
 
 ## Nav
 
-- The top nav is gone. The hub is the nav: two labeled lists, lowercase, in the manner of [skula.me](https://skula.me/).
-- work: about, graphene, also built, experience, outside, running
-- signals: github, linkedin, youtube, resume
-- Inner pages get a `‹ index` back link (same words as Skula; it returns to the hub). Email stays plain text on the inner footer, not a `mailto:`.
+- The hub is the nav: labeled lists in the manner of [skula.me](https://skula.me/).
+- projects: graphene, other projects (Nemisis, RegLineage, IMC live on that page; they are not listed on the hub)
+- XP: experience: internships, teaching, research (one line, so the label is not repeated)
+- thing I like to do w/ my free time: this week's miles, golf, chess, luna (one line, `#outside`)
+- links: github, linkedin, youtube. Resume is off the hub; it still sits in the inner-page footer.
+- Inner pages get a `‹ index` back link. Email stays plain text on the inner footer, not a `mailto:`.
 
 ## Hub
 
 Replaces the hero. Skula's sentence shape, Alex's words:
 
-- "Helloooo world" / "Alex Lopez" / the lede / Resume and GitHub buttons → "Hi, I’m Alex, I keep a human in the loop." (from the About sentence about keeping a human in the loop; the four About sentences still live on `#about`) **confirm**
+- "Helloooo world" / "Alex Lopez" / the lede / Resume and GitHub buttons → "Hi, I’m Alex, I keep a human in the loop." → "Helloooo, I'm Alex"
 
-## About (new section)
+## About
+
+Folded into Experience. The four sentences now open `#work`, they are not a separate destination. `#about` still aliases there.
 
 The Sep 7 site said: "I'm Alex, a junior studying Math + CS at Northeastern and really trying to make an : Impact". New, four sentences:
 
@@ -33,32 +37,21 @@ The Sep 7 site said: "I'm Alex, a junior studying Math + CS at Northeastern and 
 
 ## Section headings
 
-- "Work and teaching." → "Experience"
+- "Work and teaching." → "Experience" → "XP: experience" (matches the hub label)
 - "What I have been building." → "Graphene" (main project) and "Also built" (the rest)
 - "Outside the terminal." → "Outside the terminal"
-- "Running" unchanged
+- "Running" is now an h2 on the hobbies page, not its own destination
 
 ## Graphene
 
 - Eyebrow "02" and the "Selected projects" eyebrow → removed.
 - Stack line "Aug 2026 / Python 3.13 · FastAPI · Google ADK · MCP SDK / Textual · SQLite · Cytoscape.js · Apache-2.0" → "August 2026. Python 3.13, FastAPI, Google ADK, MCP SDK, Textual, SQLite, Cytoscape.js. Apache-2.0." (format only; same items, same order)
 - Link "GitHub ↗" → "Graphene on GitHub"
-- The three technical paragraphs are unchanged, word for word.
-- New image alt: "Graphene wordmark: a letter G drawn as a graph of linked nodes" (was empty).
-- The margin note (eyebrow "Margin note · The book was wrong", four paragraphs, signature "— group theory, fall 2026") → replaced by the essay under the heading "Why I built it". The margin note was a paraphrase of the essay; the brief asks for the essay in your words instead.
-- Closing bridge kept as is: "Graphene runs on the same reflex. Let the agents write. Keep a human at the decision, holding evidence, allowed to say no." No better line proposed.
-
-## The essay
-
-Rendered from the brief with spelling and punctuation only: straight quotes → curly quotes, the
-ellipsis on the last line. Placeholders are labelled boxes with the captions below. Open items:
-
-- **confirm** "TMBBM" (an `<!-- ALEX -->` comment sits above the sentence).
-- **confirm** "Instead of just asking AI like I've been doing lately" (the brief's rewrite of "However, dealing with the recent use cases of AI"); comment in the HTML.
-- **finish** "When is the last time that I…" — styled as a hanging ending; not completed.
-- The brief's second paragraph is split in two so the IMG C / IMG D row sits between "…passes the TMBBM)." and "But at the end of the day…"; no words changed.
-- New captions written for the placeholders: "An old senior dev next to Patrick Star", "Hopkins School", "The benchmark graph", "Horse Tinder", "“Looks good to me”", "Terrance's video", "One more", "Writing this, at my desk", "The Group Theory textbook". Change any of them when you send the images.
-- New alt: "The Hopkins School seal, founded 1660".
+- Tagline "Publication control for parallel coding agents" → "A visual way to see what you can build next with an agent" (your words: knowing what to build next)
+- The three technical paragraphs (bounded agents / scheduler / exact-candidate ledger), then the long essay with placeholders, then the closing bridge → two short paragraphs next to the wordmark. The CSS moment and the "guiding and hoping" line fold into the origin story; the Group Theory book, TMBBM, horse Tinder, videos, and hanging ending come off until photos exist. **confirm** the two paragraphs:
+  - "I kept leaving an agent running for hours and having no idea, at a high level, what it had done. The only way to find out was reading thousands of lines of a markdown file. The last time I wrote CSS was junior year of high school — sitting through a YouTube tutorial I realized I'm never going to need to write it again, because of AI. If an agent can get to a solution that's honestly better than what you could've come up with in a day, you use it. Then you feel disconnected, like you're just guiding it down a path and hoping it gets it right."
+  - "Tokens are going to be cheap. How a developer works with an agent isn't going to be bounded by tokens. It's the ability to actually create initiative. Graphene tries to answer that with a visual approach to the decisions that can be made, because the limit for most developers is just that: knowing what to build next. Not another ledger of callbacks. A way to actually collaborate with the agent instead of steering it and hoping. Still working on this, and most likely going to submit it to a hackathon (probably the NVIDIA x Nebius hackathon)."
+- Numbers, stack, GitHub link unchanged. Only the Graphene wordmark stays; screenshots, essay photos, and video cards stay off.
 
 ## Also built
 
@@ -67,21 +60,23 @@ Nemisis
 - "01" and "Aug – Sep 2026" → "August – September 2026."
 - Stack "Python 3.12+ · uv · pydantic · MCP SDK · pytest / v0.2.0 on PyPI · Docker 77 MB · Apache-2.0" → "Python 3.12+, uv, pydantic, MCP SDK, pytest. v0.2.0 on PyPI, Docker 77 MB, Apache-2.0."
 - Links "GitHub ↗" / "Live page ↗" → "GitHub" / "Live page"
-- Paragraphs 1–3 and the terminal output are unchanged.
-- Cut for space (the brief asks for roughly a third of the space): the banner image and the proof strip's four-row framing. Three of its rows are kept as one plain paragraph after "The model never judges…": "Red-teamed nightly: 600 of 600 generated handlers agreed with an independent oracle, 300 per scenario. 28 shapes are pinned as refusals: raw SQL, shadow tables, bytes past the last page. Not proven: anything outside two scenarios, one handler shape, SQLite and POSIX SIGKILL. The narrowness is what makes the verdict trustworthy." Still cut: "Caught by its own red team: The engine issued a false FIX_PROVEN on tail-bytes writes for five nights because SQLite's close-time checkpoint truncated the file before the engine read it. Fixed, and the shape is pinned as a refusal" and "A correct fix the engine cannot instrument exits 2 and names the remedy". Say if you want either back.
+- Paragraphs 1–4 and the proof-strip cut for space → two short paragraphs: the webhook hook, then CrashCheck in one pass (SIGKILL, redelivery, independent read, 600/600, the not-proven bound). Terminal output unchanged. New image: the Nemisis banner (`nemisis-banner-dark.png`), used as a still, not a background.
 
 RegLineage
 
 - "03 · RegLineage" → "RegLineage"; "Jul – Aug 2026" → "July – August 2026."
 - Stack "Python 3.11 · DataHub · DuckDB / FastAPI · MCP SDK · Docker" → "Python 3.11, DataHub, DuckDB, FastAPI, MCP SDK, Docker."
 - "2,964,606 governed rows · 24 of 24 adversarial cases · 30 of 30 event-to-enforcement runs · 0 violations · 420 tests" → the same five numbers as a stats list: "2,964,606 governed rows", "24 of 24 adversarial cases", "30 of 30 event-to-enforcement runs, 0 violations", "420 tests"
-- Link "GitHub ↗" → "RegLineage on GitHub"; the logo image is cut. Paragraph unchanged.
+- Link "GitHub ↗" → "RegLineage on GitHub"; the logo image is cut.
+- Paragraph → "Revocable data access for AI agents. Analyses run under an immutable lease; when DataHub governance changes, only the intersecting lease suspends. Twenty-one MCP tools can request approval; none can grant it." (same facts, shorter)
 
 IMC Prosperity 3
 
 - "04 · IMC Prosperity 3" → "IMC Prosperity 3"; "Mar – Apr 2025" → "March – April 2025."
 - Stack "Python · NumPy · Pandas" → "Python, NumPy, Pandas."
-- The drawn rail "912 / ~13,000 TEAMS" → "912 of about 13,000 teams". Paragraph unchanged.
+- The drawn rail "912 / ~13,000 TEAMS" → "912 of about 13,000 teams".
+- "and balanced execution against risk-adjusted return" cut for length; the rest of the paragraph is unchanged.
+- New image: `imc-prosperity-3.webp`, the competition key art.
 
 ## Experience
 
@@ -89,6 +84,7 @@ IMC Prosperity 3
 - Date lines take the resume's form: "Westport, CT · Jun – Sep 2026" → "June 2026 – September 2026, Westport, CT"; "Boston, MA · Sep 2025 – present" → "September 2025 – Present, Boston, MA" (twice); "New Haven, CT · Jun – Sep 2023" → "June 2023 – September 2023, New Haven, CT".
 - All bullets unchanged.
 - Photo caption "Closing poster, O'Hern Lab, Yale Computational Biology, summer 2023" → "New Haven, 2023".
+- Northeastern TA sits next to the Northeastern seal (`northeastern.png`, the circular seal, not the wordmark). Hopkins "Before" sits next to the Hopkins seal.
 - "Record" eyebrow → removed; the five rows keep their labels. Values lose the " · " glue:
   - Degree: "Northeastern University, Khoury College · Combined BSE, Computer Science and Mathematics, AI concentration · GPA 3.71, major 3.84 · Expected May 2028" → "Northeastern University, Khoury College. Combined BSE in Computer Science and Mathematics, AI concentration. GPA 3.71, major 3.84. Expected May 2028."
   - Coursework: dots → commas, same six courses, same order.
@@ -98,14 +94,18 @@ IMC Prosperity 3
 
 ## Outside the terminal
 
+The live running module now opens this page. `#running` aliases here. The sliding photo strip is gone; each hobby has its photo beside the copy.
+
 - Running: "Training for a first marathon and still enjoying most of the steps." → "One of my favorite hobbies. The feeling of just running is (I know this sounds cliché) really when I feel the most free." (your line, from the brief). Link "Strava ↗" → "Check out my Strava" (Sep 7 site).
 - Golf: "Reliably humbling; one clean shot is enough to bring me back." → "I picked up golf recently and I've really been loving it; it's one of those sports that really, really humbles you every single time you step on the course, but that one perfect shot keeps pulling you right back out there." (Sep 7 site, the underlined big "really" rendered as plain text).
 - Chess: "Seven years in, still hanging pieces and queuing another game." → "7 years in playing chess and I still blunder every other move, but add me — always down to get a quick game in." (your line, from the brief). Link "Chess.com ↗" → "Add me on Chess.com" (Sep 7 site).
-- Luna caption "Luna" → "Luna: Chief Code Reviewer" (Sep 7 site).
+- Luna is its own row: heading "Luna", line "Chief Code Reviewer." (was only a strip caption: "Luna: Chief Code Reviewer").
 - New photo caption: "Boston, 2026" (running group). The golf and chess photos carry no caption until you give a place and year (`TODO_ALEX.md` §4).
 - Alt text rewritten: "Alex and six teammates after a race, most still wearing their bibs, under the trees" (six bibs are visible; the seventh runner has none); "Alex at the top of a golf swing, in an orange cap"; "A green chess pawn in front of a knight and a rook" (was "A chess pawn on a chessboard"); "Luna, a cream lop-eared rabbit, sitting on a rug" (was "Luna the rabbit").
 
 ## Running
+
+Lives at the top of Outside, not as its own page. Copy below is unchanged; only the placement moved.
 
 - "WHOO!" → removed.
 - "this week / 14.2 / 50 mi" → "This week" label, the odometer "14.2", "/ 50 mi".
@@ -137,6 +137,4 @@ Read aloud, never shown:
 - Progress track: "Miles this week toward 50". Odometer: "14.2 miles".
 - Split strip: "Mile splits of the latest run". Sparkline: "Miles per week for the last 8 weeks", then per week "Aug 3: 31.2, …; goal 50".
 - Terminal panel: "Real output of nemisis check".
-- Video buttons, once a video id is pasted: "Play video: Terrance's video" and "Play video: One more".
 - Route readout: a stream sample with no forward motion reads "stopped" in place of the pace.
-- Essay placeholders: "Placeholder for an image: an old senior dev next to Patrick Star", "…: the funny benchmark graph", "…: horse Tinder", "…: the looks good to me meme", "Placeholder for a photo: Alex writing this at his desk, shot over the shoulder", "Placeholder for an image: the Group Theory textbook cover", and on the two video cards "Video placeholder, link to come".

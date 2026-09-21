@@ -12,11 +12,11 @@ secondary ink, a hairline, one accent.
 
 | token       | hex       | job                                                                        |
 | ----------- | --------- | -------------------------------------------------------------------------- |
-| `--paper`   | `#f5f5f0` | page background; also the solid ground under the essay and Experience      |
-| `--paper-2` | `#ebeae2` | panels: the terminal snippet, split cards, placeholder boxes, the ticker   |
+| `--paper`   | `#f5f5f0` | page background; also the solid ground under Experience                    |
+| `--paper-2` | `#ebeae2` | panels: the terminal snippet, split cards, the ticker                      |
 | `--ink`     | `#171613` | text, the `\|` ticks, the route line. Warm near-black, not dark-mode black |
 | `--ink-2`   | `#55554f` | captions, dates, secondary lines (6.9:1 on paper)                          |
-| `--rule`    | `#d8d7ce` | the few hairlines: progress track, placeholder inset, the hanging line's end mark |
+| `--rule`    | `#d8d7ce` | the few hairlines: progress track                                          |
 | `--accent`  | `#1a5fff` | link hover and focus, the live Strava mark, the runner dot, odometer digits |
 
 The accent is the old site's blue (commit `3c50259`), kept on purpose: it is the one colour Alex
@@ -45,10 +45,11 @@ Two families, self-hosted in `assets/fonts/` (SIL OFL, licence included), 84 KB 
   SemiBold and Italic, subset to Latin (16–18 KB each). Its figures are fixed-width by default,
   so the odometer, readouts, split cards and ticker use it directly; no mono face is shipped.
   The one `<pre>` on the page (Nemisis output) uses the system monospace stack.
-- **IBM Plex Serif** Regular (15 KB) for the essay only. A low-contrast text serif, not a display
-  face: the essay is the one reading section on the page and the register change (Alex's own
-  writing vs. facts) should be visible before you read a word. Same skeleton as the sans, so the
-  two sit together without looking like a collage.
+- **IBM Plex Serif** Regular (15 KB) for the hub greeting and Graphene's origin copy. A
+  low-contrast text serif, not a display face: the Graphene paragraphs are the one reading
+  moment on an inner page, and the register change (Alex's own writing vs. facts) should be
+  visible before you read a word. Same skeleton as the sans, so the two sit together without
+  looking like a collage.
 
 Why not the usual suspects: Inter, DM Sans and Space Grotesk are what the last thousand portfolio
 sites shipped; an italic serif display over cream is the "warm AI site" the brief names. Plex is
@@ -67,7 +68,7 @@ Scale (desktop → phone):
 | h1              | clamp(2.75rem, 7vw, 4.5rem)     | 600    | tracking −0.02em, line-height 1.02          |
 | h2              | clamp(1.75rem, 3.4vw, 2.4rem)   | 600    | tracking −0.015em                           |
 | h3              | 1.25rem                         | 600    | project and role names                      |
-| essay           | 19px Plex Serif, line-height 1.65, 630px (≈ 74 characters) | 400 | one clear step up from body; "Why I built it" is Sans 600 at 1.6–1.9rem and its h4s stay a step below at 1.5rem (1.3rem on phones, where the heading sits at its 1.6rem floor) |
+| Graphene copy   | 19px Plex Serif, line-height 1.65 | 400 | the two origin paragraphs beside the wordmark; one step up from body |
 | small / caption | 0.9rem / 0.85rem, `--ink-2`     | 400    | dates, photo captions, source lines         |
 | readout         | 0.92rem, tabular figures        | 400    | route readout, split cards, ticker, countdown |
 | odometer        | clamp(2.5rem, 5.5vw, 3.75rem)   | 500    | the Running section's headline; smaller than the h1 at every width |
@@ -84,29 +85,49 @@ Call, later (Sep 21): the landing page is no longer the long scroll. It follows
 section is a hash destination with a `‹ index` back link. Palette, type, the `|` field, and inner
 page layout stay ours. The long-scroll wireframes below still describe each inner page.
 
-Hub, desktop and phone (the rail is `min(460px, 88vw)`, vertically centered):
+Call, later the same day: the hub was repeating its labels as links (`experience` / `experience`,
+`graphene` / `graphene`) and listing every other-project and hobby as its own destination. Four
+groups now: projects (graphene, other projects), XP: experience (one line: internships, teaching,
+research), thing I like to do w/ my free time (one line: this week's miles, golf, chess, luna), links (github, linkedin,
+youtube). `#nemisis` / `#reglineage` / `#imc` still work. `#running` and `#hobbies` alias to
+Outside; the live Strava module opens that page.
+
+Call, later the same day (copy and photos): Graphene's three technical paragraphs were the
+agent-written README (ledgers, callbacks, exact-candidate bundles). They are replaced with Alex's
+vision: hours of agent output with no high-level picture, tokens getting cheap, initiative as the
+bound, a visual approach to what can be decided next, still in progress, NVIDIA x Nebius. Nemisis
+and RegLineage are shortened to match. Running is no longer its own page; the odometer and route
+open Outside. The Lando photo strip is gone; golf, chess and Luna sit next to their photos, the
+running-group photo sits under the route. Restored stills: Nemisis banner, IMC key art, Northeastern
+seal beside TA, Hopkins seal on Before. Graphene keeps only the wordmark; screenshots stay off
+until Alex has them.
+
+Call, later the same day (tighten Graphene): the long essay and every placeholder/video come off.
+Graphene is the wordmark plus two origin paragraphs in Plex Serif. The hub's free-time group is one
+line. The Experience page heading matches the hub: "XP: experience".
+
+Hub, desktop and phone (the rail is `min(520px, 90vw)`, vertically centered):
 
 ```
  | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
- | |         Hi, I’m Alex,          | | | | | | | | | | | | | | | | | | | | |
- | |  I keep a human in the loop.   | | | | | | | | | | | | | | | | | | | | |
+ | |         Helloooo,               | | | | | | | | | | | | | | | | | | | | |
+ | |         I'm Alex                | | | | | | | | | | | | | | | | | | | | |
  | |                                | | | | | | | | | | | | | | | | | | | | |
- | |  work     | about              | | | | | | | | | | | | | | | | | | | | |
- | |           | graphene           | | | | | | | | | | | | | | | | | | | | |
- | |           | also built         | | | | | | | | | | | | | | | | | | | | |
- | |           | experience         | | | | | | | | | | | | | | | | | | | | |
- | |           | outside            | | | | | | | | | | | | | | | | | | | | |
- | |           | running            | | | | | | | | | | | | | | | | | | | | |
- | |  signals  | github             | | | | | | | | | | | | | | | | | | | | |
- | |           | linkedin           | | | | | | | | | | | | | | | | | | | | |
- | |           | youtube            | | | | | | | | | | | | | | | | | | | | |
- | |           | resume             | | | | | | | | | | | | | | | | | | | | |
+ | |  projects        | graphene     | | | | | | | | | | | | | | | | | | | | |
+ | |                  | other projects | | | | | | | | | | | | | | | | | | | |
+ | |  XP: experience  | internships, teaching, research | | | | | | | | | | |
+ | |  thing I like to do w/ my free time:  | | | | | | | | | | | | | | | | | |
+ | |                  | this week's miles, golf, chess, luna | | | | | | | | |
+ | |  links           | github       | | | | | | | | | | | | | | | | | | | | |
+ | |                  | linkedin     | | | | | | | | | | | | | | | | | | | | |
+ | |                  | youtube      | | | | | | | | | | | | | | | | | | | | |
  | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
                                                     Pause motion (fixed, corner)
 ```
 
 Inner page chrome: `‹ index` fixed top-left, same content as the matching block in the long-scroll
-wireframe, Pause motion still in the corner. `#projects` is Graphene (and the essay); `#also` is
+wireframe, Pause motion still in the corner. `#projects` is Graphene (wordmark + two origin
+paragraphs); `#also` is
 Nemisis, RegLineage, IMC.
 
 Desktop (1280 wide). The `|` field is behind everything; sections are transparent except the two
@@ -135,24 +156,6 @@ no-JS fallback.
  | | 209  commits in 19 days         ...                                          | | | |
  | |  25  known limitations, ...     ...                                          | | | |
  | | Graphene on GitHub                                                           | | | |
- | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
- | | Why I built it                                                               | | | |
- | | ┌ solid --paper column, 630px, Plex Serif 19px ───────────────────────────┐  | | | |
- | | │ You'll never need to write CSS again                                    │  | | | |
- | | │ Now I know for most people ...            [ IMG A placeholder, 4:3 ]    │  | | | |
- | | │ [ hopkinslll.jpg 112px ] I know there are already plenty of videos ...  │  | | | |
- | | │ [ IMG C ] [ IMG D ]  side by side                                       │  | | | |
- | | │ But at the end of the day, what is actually useful to learn, right?     │  | | | |
- | | │ I know there are videos going around ...  [ IMG F placeholder ]         │  | | | |
- | | │ [ ▶ VIDEO E card ] [ ▶ VIDEO E card ]                                   │  | | | |
- | | │ [ PHOTO G placeholder, 3:2, full width ]                                │  | | | |
- | | │ Even as I'm writing this ...                                            │  | | | |
- | | │ The book was wrong                                                      │  | | | |
- | | │ Just recently, as classes ...             [ BOOK placeholder, 2:3 ]     │  | | | |
- | | │ When is the last time that I…                                           │  | | | |
- | | └─────────────────────────────────────────────────────────────────────────┘  | | | |
- | | Graphene runs on the same reflex. Let the agents write. Keep a human at the  | | | |
- | | decision, holding evidence, allowed to say no.                               | | | |
  | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
  | | Also built                                                                   | | | |
  | | Nemisis (4/12)                  A payment webhook credits an order twice ... | | | |
@@ -229,7 +232,6 @@ the full width above the stats, the photo strip and split strip are native swipe
  |  209  commits in 19 days             |
  |   25  known limitations ...          |
  |  paragraphs ...                      |
- |  Why I built it (solid column)       |
  |  Also built: Nemisis / RegLineage /  |
  |  IMC stacked                         |
  |  Experience (solid block), poster    |
@@ -266,9 +268,9 @@ flipping the OS setting takes effect without a reload.
 | `\|` field: idle wave    | for 20s after the last pointer or scroll input, on fine-pointer devices only | ≈ 3° drift, 20s period across the field; then the loop stops and the field is still until the next input |
 | `\|` field: comb         | the route trace's runner dot           | ticks near the dot lean along the route's local bearing while it passes; one live comb point, expiring 800ms after the last update |
 | section reveal           | section enters 80% of the viewport     | the heading wipes in behind a clip edge (`clip-path` inset from the bottom → 0, 600ms), then its first block rises 8px and fades in, 120ms later. Once. Only those two elements; everything else in the section renders at rest |
-| hub rise                 | first paint of the home view           | greeting, then labels, then list items, staggered 40–580ms, 820ms ease-out, opacity + 12px (the hub's one reveal; inner pages keep the clip wipe). Off under reduced motion |
+| hub rise                 | first paint of the home view           | greeting, then labels, then list items, staggered 40–640ms, 820ms ease-out, opacity + 12px (the hub's one reveal; inner pages keep the clip wipe). Off under reduced motion |
 | week odometer            | the Running stats enter view           | three fixed digit columns roll to their values, 900ms, once (again only if the fetched value differs from the seed) |
-| route trace              | Running section on screen              | start dot pulses ≈ 1.5s; the dot runs the route in 120s following the real time profile when streams exist; mile markers drop as passed; 8s hold at the finish; restart from the start point; pauses off screen and when the tab is hidden, on an accumulated clock so it never jumps. The canvas ignores the pointer, so looking at the map cannot steal the runner |
+| route trace              | Running section on screen              | start dot pulses ≈ 0.5s; the dot runs the route in 70s following the real time profile when streams exist; mile markers drop as passed; 6s hold at the finish; restart from the start point; starts on its own when Outside opens (no Start click); pauses off screen and when the tab is hidden, on an accumulated clock so it never jumps. The canvas ignores the pointer, so looking at the map cannot steal the runner |
 | route tape               | Start, Pause/Play, drag or arrow the track under the map | the playhead follows the runner; drag (or arrow keys on the focused track) rewinds and the readout shows that point's distance, elapsed, pace, HR and elevation; Start jumps to the beginning and plays; Pause freezes the runner where it is; on release the clock is reseated there and the run continues unless Pause is down. Reduced motion hides Start/Pause; the track still previews while dragged |
 | split strip              | the runner passes a mile               | the matching card gets the accent inset; the strip nudges horizontally to keep it in view unless the reader touched the strip in the last 1.5s |
 | photo strip (Outside)    | page scroll through the section (desktop, fine pointer) | the strip starts on the content column and is translated by exactly its overflow times the section's scroll progress, so the last photo ends flush with the column's right edge. The photos are 250px tall, so at 1280 and wider the overflow (93px) is smaller than the column's gutter and no photo ever leaves the column; a narrower fine-pointer window slides further and the first photo can leave; a strip that fits does not move; on phones it is a native swipe scroller and the scroll handler is not attached |
@@ -298,42 +300,46 @@ Keep:
 | file                                            | where                         | caption                   |
 | ----------------------------------------------- | ----------------------------- | ------------------------- |
 | `assets/me-presenting.jpg`                      | Experience, beside O'Hern Lab | New Haven, 2023           |
-| `assets/running-team.jpg`                       | Outside, photo strip          | Boston, 2026              |
-| `assets/golf-swing.jpg`                         | Outside, photo strip          | none yet; place and year asked for in TODO_ALEX.md |
-| `assets/chess.jpg`                              | Outside, photo strip          | none; it is an illustration, so no place or year |
-| `assets/luna-small.jpg`                         | Outside, photo strip          | Luna: Chief Code Reviewer |
-| `assets/hopkinslll.jpg`                         | essay, IMG B                  | Hopkins School            |
+| `assets/northeastern.png`                       | Experience, beside TA         | (seal; no caption)        |
+| `assets/hopkinslll.jpg`                         | Experience Before             | (seal; no caption)        |
+| `assets/running-team.jpg`                       | Outside, under the route      | Boston, 2026              |
+| `assets/golf-swing.jpg`                         | Outside, beside Golf          | none yet; place and year asked for in TODO_ALEX.md |
+| `assets/chess.jpg`                              | Outside, beside Chess         | none; it is an illustration, so no place or year |
+| `assets/luna-small.jpg`                         | Outside, beside Luna          | (alt text only; heading carries "Chief Code Reviewer") |
 | `assets/projects/graphene-mission-control.webp` | Graphene, sized to its column | (alt text only; it has a transparent background so it sits on the paper) |
+| `assets/nemisis-banner-dark.png`                | Also built, Nemisis still     | (alt text only)           |
+| `assets/projects/imc-prosperity-3.webp`         | Also built, IMC still         | (alt text only)           |
 | `assets/Alex_Lopez_Resume.pdf`                  | nav, hero, footer             |                           |
 | `assets/fonts/*`                                | type                          |                           |
 
 Cut (decoration, logos used as marks, or unused):
 
-- `assets/nemisis-banner-dark.png` (a banner behind nothing)
 - `assets/projects/reglineage-logo.png` (a logo used as a "mark")
 - `assets/projects/x-api-analyst.jpg` (X-Scraper was dropped from the site earlier)
-- `assets/projects/imc-prosperity-3.webp` (unused since the dark rebuild)
-- `assets/expandya.jpg`, `assets/northeastern.png`, `assets/northeastern_shcool.png`, `assets/shpe.jpg` (employer and school logos)
+- `assets/expandya.jpg`, `assets/northeastern_shcool.png` (the wordmark-shaped Northeastern file; the circular seal is back as `northeastern.png`), `assets/shpe.jpg` (employer and school logos)
 - `assets/ohern-header4.gif` (lab banner)
 - `assets/.DS_Store`
 - `screenshots/phase1-*.png` from August (replaced by the new set)
 
-`assets/projects/README.md` keeps only the Graphene provenance entry.
+`assets/projects/README.md` keeps Graphene and IMC provenance.
 
-Placeholders in the essay are labelled boxes (`--paper-2`, a 1px `--rule` inset, the label, the
-caption beneath) at a fixed aspect ratio so the column does not shift when the real image arrives.
-No stock, no generated art, no drawn characters.
+The Nemisis banner and IMC key art came back as stills, not backgrounds. Northeastern TA uses the circular seal, matching Hopkins.
+
+Graphene shows only the wordmark. Essay photos, memes, and videos wait for a later pass.
 
 ## 6. Structure, hooks and contracts
 
 Single page in the source, one view at a time in the window. Hub (`#top` / `#` / empty hash) then
-the destinations `about`, `projects` (Graphene and the essay; `#graphene` is an alias), `also`
-(Nemisis, RegLineage, IMC), `work`, `outside`, `running`. A head script writes `data-view` before
+the destinations `projects` (Graphene; `#graphene` is an alias), `also`
+(Nemisis, RegLineage, IMC; `#nemisis` / `#reglineage` / `#imc` open that page), `work`
+(Experience, with the About sentences at the top; `#about` aliases here), `outside` (`#hobbies`,
+`#running`, and `#golf` alias here; the live Strava module opens the page). A head script writes `data-view` before
 first paint so the hub does not flash. Inner pages: `‹ index` back to the hub. Nav is the hub
 lists; the old top bar is gone. Footer (email + links) on inner pages only. Pause motion is a
 fixed corner control on every view.
 
-Ids `{top, about, projects, also, work, outside, running, main}`; one `h1` on the hub and one on
+Ids `{top, projects, also, work, outside, running, golf, main}` plus `{nemisis, reglineage, imc}` for the
+other-projects pins; one `h1` on the hub and one on
 each inner page.
 
 Files:
@@ -341,7 +347,7 @@ Files:
 - `index.html`, `styles.css`
 - `js/field.js` — the `|` field (≤ 10 KB). The 8-bucket `globalAlpha` stroke loop is lifted from `git show 1669e62:js/run-field.js`.
 - `js/route.js` — the route trace. The polyline decoder and its test vector are lifted from the same file.
-- `js/site.js` — fetch + render, odometer, split strip, sparkline, ticker, countdown, reveals, photo strip, video cards, the Pause motion button
+- `js/site.js` — fetch + render, odometer, split strip, sparkline, ticker, countdown, reveals, photo strip, the Pause motion button
 - `tools/strava_sync.py`, `.github/workflows/strava-sync.yml`, `data/strava.json`
 - `tests/site_check.py`
 
@@ -364,7 +370,6 @@ Files:
 | `[data-run-stale]`                     | site.js    | the >10-day warning                                                   |
 | `[data-reveal]`                        | site.js    | one per section; only the first two children animate                  |
 | `[data-strip]`                         | site.js    | the Outside photo strip                                               |
-| `[data-video]`                         | site.js    | click-to-load video `<button>`; empty attribute = disabled placeholder; on click the button is replaced by the `iframe` |
 | `[data-motion-toggle]`                 | site.js    | the footer button; toggles `data-motion="off"` on `<html>` and dispatches `motion:change`, which all three scripts treat like the OS reduced-motion setting. Its label is its state ("Pause motion" / "Resume motion", no `aria-pressed`); under the OS setting it reads "Resume motion" and is disabled, since there is nothing for the page to resume |
 
 ### Script contracts
@@ -495,7 +500,7 @@ sync is a small diff.
 
 ### Test contract (`tests/site_check.py`)
 
-Ids `{top, about, projects, also, work, outside, running, main}`; one `h1` on the hub and on each inner page; alt, width and height on
+Ids `{top, projects, also, work, outside, running, main, nemisis, reglineage, imc}`; one `h1` on the hub and on each inner page; alt, width and height on
 every `<img>`; external links `target="_blank" rel="noopener noreferrer"`; no `mailto:`; no phone
 number; the three script names; the canvases collected by id, `#route` carrying `data-route` and
 `#field` carrying `aria-hidden`; `prefers-reduced-motion` in the CSS and in each script; the
@@ -509,11 +514,9 @@ sync's `--self-check` run as a subprocess.
 Quips live in the hero greeting, About, and Outside. Everything else is plain. Every sentence I
 wrote or changed is in `COPY_REVIEW.md` as `old → new`. The About sentences are assembled only
 from facts already on the page (third year, CS and Math, the three projects and what they share,
-the TA courses, the SHPE board, running, golf, chess) and are listed there for approval. The essay
-is Alex's text with spelling and punctuation fixes only; its three `[ALEX: …]` notes ("TMBBM", the
-"Instead of just asking AI" rewrite, and "finish this thought") are HTML comments plus lines in
-`COPY_REVIEW.md` and `TODO_ALEX.md`, and the hanging last line is styled as a deliberate ending,
-not completed.
+the TA courses, the SHPE board, running, golf, chess) and are listed there for approval. Graphene's
+two origin paragraphs are Alex's words, shortened: the CSS moment and the "guiding and hoping"
+line stay; the book story, TMBBM, and hanging ending wait for photos.
 
 ## 8. Review against the remove list and the tells
 
@@ -522,12 +525,12 @@ Checked against §1 of the brief and the usual signs of a generated site:
 | tell                                            | status                                                                 |
 | ----------------------------------------------- | ---------------------------------------------------------------------- |
 | cream + terracotta                              | off-white + blue                                                       |
-| high-contrast serif display                     | none; a low-contrast text serif for the essay body only, headings stay sans |
+| high-contrast serif display                     | none; a low-contrast text serif for Graphene's origin copy and the hub, headings stay sans |
 | all-caps mono eyebrows over every heading       | removed; headings stand alone; the hero greeting is sentence-case body type |
 | 01/02/03 numbering on projects                  | removed                                                                |
 | meta strings glued with " · "                   | dates and places are sentences; lists use commas; the countdown is a sentence. The one exception is the ticker band, whose format the brief specifies |
 | "↗" on every link                               | removed; links are underlined at rest instead                          |
-| boxed plate / ledger / quad framing             | removed; structure from spacing and one left edge. What remains: two invisible solid grounds (essay, Experience) and three reading aids with a `--paper-2` fill (terminal, split cards, placeholders) |
+| boxed plate / ledger / quad framing             | removed; structure from spacing and one left edge. What remains: one invisible solid ground (Experience) and two reading aids with a `--paper-2` fill (terminal, split cards) |
 | identical rounded cards with the same shadow    | no cards, no shadows                                                   |
 | fade-up on everything                           | one reveal per section, two elements, a clip wipe rather than the stock rise-and-fade |
 | dark theme / `color-scheme: dark`               | `color-scheme: light`, `#f5f5f0`                                       |
@@ -536,7 +539,7 @@ Checked against §1 of the brief and the usual signs of a generated site:
 What changed after the plan was reviewed (three independent critics, then a judge):
 
 - Type: Plex Sans + Plex Mono was one voice doing everything and the standard developer pairing.
-  The essay now sets in Plex Serif at 19px so the reading section looks like one; the mono files
+  Graphene's origin copy now sets in Plex Serif at 19px so the reading moment looks like one; the mono files
   went (Plex's figures are fixed-width by default; the system monospace covers the one `<pre>`).
 - The idle wave contradicted "stop when settled". Resolved: the wave runs for 20s after the last
   input on fine-pointer devices, then the loop stops. Phones get the scroll lean only.
@@ -553,7 +556,7 @@ What changed after the plan was reviewed (three independent critics, then a judg
   with pagination, treats the detail and streams calls as optional, writes `null` for stopped
   samples with `allow_nan=False`, keeps the partial split flagged, names split elevation as a net
   change, adds a daily heartbeat to `generated_at`, and runs off the top of the hour.
-- Experience gets a solid ground like the essay: it is the block a recruiter reads line by line.
+- Experience gets a solid ground: it is the block a recruiter reads line by line.
   Everything else stays transparent at 8% ticks; Graphene and Nemisis paragraphs are checked on the
   Phase 2 screenshots and get the same ground only if they need it.
 - Smaller: the odometer is capped below the h1; the poster photo wireframe sits with O'Hern Lab;
