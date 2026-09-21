@@ -11,14 +11,16 @@ new fact about Alex. Items marked **confirm** are in `TODO_ALEX.md` as well.
 
 ## Nav
 
-- No copy change. Order: Work · Projects · Outside · Running · Resume · GitHub, as before.
+- The top nav is gone. The hub is the nav: two labeled lists, lowercase, in the manner of [skula.me](https://skula.me/).
+- work: about, graphene, also built, experience, outside, running
+- signals: github, linkedin, youtube, resume
+- Inner pages get a `‹ index` back link (same words as Skula; it returns to the hub). Email stays plain text on the inner footer, not a `mailto:`.
 
-## Hero
+## Hub
 
-- Eyebrow "Northeastern CS + Math · AI concentration · Boston" → removed (the brief removes eyebrows).
-- New greeting line above the name: "Helloooo world" (the About greeting from the Sep 7 site, moved up).
-- Lede "Third year at Northeastern, CS and Math. Internships, research, and tools that check what AI-written code actually does." → "Third year at Northeastern, CS and Math. Tools that check what AI-written code actually does, and a first marathon in training." (this was already the page's meta description).
-- Buttons "See the work" / "Resume" → "Resume" / "GitHub".
+Replaces the hero. Skula's sentence shape, Alex's words:
+
+- "Helloooo world" / "Alex Lopez" / the lede / Resume and GitHub buttons → "Hi, I’m Alex, I keep a human in the loop." (from the About sentence about keeping a human in the loop; the four About sentences still live on `#about`) **confirm**
 
 ## About (new section)
 
@@ -111,7 +113,7 @@ IMC Prosperity 3
 - "week of Sep 14 · 1h 45m moving" and the Mon–Sun bar chart → removed (replaced by the odometer, the eight-week strip and the split strip).
 - New: "3 runs, 7:25 per mile, 266 ft of climbing, 1h 45m moving." (the week line; every number is the JSON's, and a week under an hour reads "28m").
 - New: "23 days to Eversource Hartford, Oct 10." (countdown; the number is live; on the day it reads "Race day: Eversource Hartford." and afterwards the line is hidden; distance and goal to add once confirmed).
-- New: "Latest run, Sep 16, Boston, MA. Hover, drag, or use the arrow keys on the route to scrub."
+- New: "Latest run, Sep 16, Boston, MA. Drag the tape to rewind."
 - New progress-bar fallback text (shown only where `<progress>` does not render): "14.2 of 50 miles this week".
 - New sparkline caption: "Last 8 weeks, with the 50-mile line".
 - Screen-reader line "Sep 16 · 6.03 mi · 7:45 /mi · 115 ft · Boston, MA" → "Sep 16, 6.03 miles at 7:45 per mile, 115 feet of climbing, Boston, MA."
@@ -130,7 +132,7 @@ IMC Prosperity 3
 
 Read aloud, never shown:
 
-- Route canvas: "Position along the latest run", a slider whose value reads like the readout, e.g. "2.31 mi, 17:52, 7:41 /mi".
+- Tape: "Position along the latest run", a slider whose value reads like the readout, e.g. "2.31 mi, 17:52, 7:41 /mi". Start / Pause sit next to it (Pause becomes Play while frozen).
 - Before the route summary: "Latest run, drawn as a route on the canvas:" (then the summary sentence above).
 - Progress track: "Miles this week toward 50". Odometer: "14.2 miles".
 - Split strip: "Mile splits of the latest run". Sparkline: "Miles per week for the last 8 weeks", then per week "Aug 3: 31.2, …; goal 50".

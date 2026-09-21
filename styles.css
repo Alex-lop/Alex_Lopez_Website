@@ -45,38 +45,78 @@ b, strong { font-weight: 600; }
 
 /* Layers: the field below, everything else above */
 #field { position: fixed; inset: 0; z-index: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
-.nav, main, footer { position: relative; z-index: 1; }
-
-/* Nav */
-.nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; min-height: 64px; flex-wrap: wrap; padding-block: 8px; }
-.wordmark { font-weight: 600; text-decoration: none; font-size: 1.05rem; }
-.nav ul { display: flex; flex-wrap: wrap; gap: 0 20px; margin: 0; padding: 0; list-style: none; font-size: .95rem; }
-.nav a, footer a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
-.nav a:hover, footer a:hover { color: var(--accent); }
+.back, main, footer { position: relative; z-index: 1; }
 
 /* Type */
 h1, h2, h3, h4 { margin: 0; font-weight: 600; line-height: 1.1; text-wrap: balance; }
-h1 { margin: 0 0 20px; font-size: clamp(2.75rem, 7vw, 4.5rem); line-height: 1.02; letter-spacing: -.02em; }
+.page h1 { margin: 0 0 24px; font-size: clamp(1.75rem, 3.4vw, 2.4rem); letter-spacing: -.015em; }
 h2 { margin: 0 0 24px; font-size: clamp(1.75rem, 3.4vw, 2.4rem); letter-spacing: -.015em; }
 h3 { margin: 0 0 6px; font-size: 1.25rem; letter-spacing: -.01em; }
 .prose, .feature-body p, .nemisis-body p, .also p, .hobbies p, .run-note { max-width: var(--measure); }
 .tagline { margin: -12px 0 28px; font-size: 1.15rem; max-width: 50ch; }
 .tagline-small { margin: 0 0 8px; max-width: 32ch; }
 
-/* Hero */
-.hero { padding-block: clamp(64px, 11vh, 128px) clamp(56px, 9vh, 112px); }
-.hello { margin: 0 0 10px; font-size: 1.15rem; }
-.lede { max-width: 46ch; margin: 0 0 28px; font-size: 1.2rem; text-wrap: pretty; }
-.actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; }
-.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 20px; border: 1px solid var(--ink); border-radius: 2px; background: var(--ink); color: var(--paper); font-weight: 500; text-decoration: none; }
-.btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn-quiet { background: transparent; color: var(--ink); }
-.btn-quiet:hover { background: transparent; color: var(--accent); }
+/* Hub: Skula's rail — centered italic greeting, two labeled lists, a hairline */
+.hub { min-height: 100dvh; display: flex; align-items: safe center; justify-content: center; padding: 6vh var(--pad) 72px; }
+.hub-rail { width: min(460px, 88vw); }
+.hub h1 { margin: 0 0 clamp(40px, 7vh, 64px); font: 400 clamp(21px, 2.3vw, 29px)/1.48 var(--serif); font-style: italic; letter-spacing: 0; text-align: center; text-wrap: pretty; }
+.hub-sec { display: grid; grid-template-columns: 84px 1fr; column-gap: 20px; align-items: start; }
+.hub-sec + .hub-sec { margin-top: clamp(32px, 6vh, 56px); }
+.hub-label { margin: 0; padding-top: 1px; color: var(--ink-2); font: italic 400 20px/34px var(--serif); }
+.hub-list { display: flex; flex-direction: column; gap: 8px; border-left: 1px solid color-mix(in srgb, var(--ink) 28%, transparent); padding-left: 20px; }
+.hub-list a { position: relative; width: max-content; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; color: var(--ink); text-decoration: none; font: italic 400 20px/34px var(--serif); }
+.hub-list a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 7px; height: 1px; background: var(--accent); transform: scaleX(0); transform-origin: left center; transition: transform 240ms cubic-bezier(.2, .8, .2, 1); }
+.hub-list a:hover, .hub-list a:focus-visible { color: var(--accent); }
+.hub-list a:hover::after, .hub-list a:focus-visible::after { transform: scaleX(1); }
+@media (max-width: 540px) {
+  .hub-sec { grid-template-columns: 74px 1fr; column-gap: 16px; }
+  .hub-list { padding-left: 16px; }
+}
 
-/* Sections: one rhythm */
-main > section { padding-top: var(--gap); }
-main > section:last-of-type { padding-bottom: 0; }
-main > section > .wrap > p:last-child { margin-bottom: 0; } /* a closing paragraph must not add to the section gap */
+/* One destination at a time once the head script has set data-view. Without JS the hub sits above the long page. */
+html[data-view] .page { display: none; }
+html[data-view="about"] #about,
+html[data-view="projects"] #projects,
+html[data-view="also"] #also,
+html[data-view="work"] #work,
+html[data-view="outside"] #outside,
+html[data-view="running"] #running { display: block; }
+html[data-view]:not([data-view="home"]) .hub { display: none; }
+html[data-view="home"] footer { display: none; }
+
+.back { display: none; position: fixed; top: var(--pad); left: var(--pad); z-index: 30; min-width: 44px; min-height: 44px; align-items: center; font: italic 400 19px/1 var(--serif); color: var(--ink-2); text-decoration: none; }
+html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
+.back:hover, .back:focus-visible { color: var(--accent); }
+
+.page { padding-top: clamp(88px, 14vh, 140px); }
+.page > .wrap > p:last-child { margin-bottom: 0; }
+
+.motion-dock { position: fixed; z-index: 20; right: var(--pad); bottom: 12px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink-2); font: inherit; font-size: .9rem; cursor: pointer; }
+.motion-dock:hover { color: var(--accent); }
+.motion-dock[disabled] { cursor: default; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-view="home"] .hub h1,
+  html[data-view="home"] .hub-label,
+  html[data-view="home"] .hub-list a { animation: hub-rise 820ms cubic-bezier(.22, 1, .36, 1) both; }
+  html[data-view="home"] .hub h1 { animation-delay: 40ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(1) .hub-label { animation-delay: 220ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(2) .hub-label { animation-delay: 360ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(1) .hub-list a:nth-child(1) { animation-delay: 260ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(1) .hub-list a:nth-child(2) { animation-delay: 320ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(1) .hub-list a:nth-child(3) { animation-delay: 380ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(1) .hub-list a:nth-child(4) { animation-delay: 440ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(1) .hub-list a:nth-child(5) { animation-delay: 500ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(1) .hub-list a:nth-child(6) { animation-delay: 560ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(2) .hub-list a:nth-child(1) { animation-delay: 400ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(2) .hub-list a:nth-child(2) { animation-delay: 460ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(2) .hub-list a:nth-child(3) { animation-delay: 520ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(2) .hub-list a:nth-child(4) { animation-delay: 580ms; }
+}
+@keyframes hub-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
 
 /* Stats: number in mono, the rest in the body face */
 .stats { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 14px; align-items: baseline; margin: 0 0 16px; padding: 0; list-style: none; }
@@ -116,7 +156,6 @@ main > section > .wrap > p:last-child { margin-bottom: 0; } /* a closing paragra
 .video-frame { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 2px; }
 
 /* Also built */
-.also-heading { margin-top: 64px; }
 .nemisis { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px 56px; align-items: start; margin: 0 0 48px; }
 .links a + a { margin-left: 18px; }
 .terminal { margin: 6px 0 18px; padding: 16px 18px; overflow-x: auto; background: var(--paper-2); border-radius: 2px; font: 400 .82rem/1.55 var(--mono); color: var(--ink); tab-size: 2; }
@@ -157,9 +196,18 @@ main > section > .wrap > p:last-child { margin-bottom: 0; } /* a closing paragra
 /* Running */
 .run { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px 56px; align-items: start; }
 .route-panel { min-width: 0; }
-#route { display: block; width: 100%; aspect-ratio: 4 / 3; touch-action: pan-y; cursor: crosshair; }
-.route-readout { display: flex; flex-wrap: wrap; gap: 4px 22px; min-height: 1.5em; margin: 10px 0 6px; font-size: .92rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
+#route { display: block; width: 100%; aspect-ratio: 4 / 3; pointer-events: none; }
+.route-readout { display: flex; flex-wrap: wrap; gap: 4px 22px; min-height: 1.5em; margin: 10px 0 2px; font-size: .92rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .route-readout span:empty { display: none; }
+.tape { display: flex; align-items: center; gap: 16px 18px; margin: 0 0 8px; }
+.tape-deck { display: flex; gap: 16px; flex: none; }
+.tape-deck button { min-height: 44px; padding: 0; border: 0; background: none; color: inherit; font: inherit; font-size: .9rem; cursor: pointer; }
+.tape-deck button:hover { color: var(--accent); }
+.tape-track { flex: 1; min-width: 0; display: flex; align-items: center; height: 44px; padding-inline: 6px; cursor: pointer; touch-action: none; }
+.tape-bar { position: relative; width: 100%; height: 3px; background: var(--rule); border-radius: 2px; }
+.tape-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--accent); border-radius: 2px; pointer-events: none; }
+.tape-head { position: absolute; top: 50%; left: 0; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 0 3px var(--paper); pointer-events: none; }
+.tape-ticks span { position: absolute; top: 8px; width: 1px; height: 5px; background: var(--rule); pointer-events: none; }
 .route-caption { margin: 0; }
 .run-stats { min-width: 0; }
 .label { margin: 0 0 4px; color: var(--ink-2); font-size: .9rem; }
@@ -197,13 +245,12 @@ main > section > .wrap > p:last-child { margin-bottom: 0; } /* a closing paragra
 @keyframes ticker { to { transform: translateX(calc(-1 * var(--w, 50%))); } }
 
 /* Footer */
-footer { padding: 72px 0 40px; }
+footer { padding: 72px 0 72px; }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: baseline; gap: 12px 40px; }
 footer ul { display: flex; flex-wrap: wrap; gap: 0 22px; margin: 0; padding: 0; list-style: none; font-size: .95rem; }
+footer a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
+footer a:hover { color: var(--accent); }
 .email { margin: 0; font-size: .95rem; }
-footer button { min-height: 44px; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
-footer button:hover { color: var(--accent); }
-footer button[disabled] { cursor: default; }
 
 /* One reveal per section, orchestrated: heading first, then each block. site.js adds .in. */
 .reveal-ready [data-reveal] > :first-child { clip-path: inset(0 0 100% 0); transition: clip-path 600ms cubic-bezier(.2, .7, .2, 1); }
@@ -218,7 +265,6 @@ footer button[disabled] { cursor: default; }
   .strip img { height: 240px; }
 }
 @media (max-width: 620px) {
-  .nav ul { gap: 0 16px; font-size: .9rem; }
   .hobbies, .pair { grid-template-columns: minmax(0, 1fr); }
   .ph-side { width: 46%; margin-left: 18px; }
   .essay h4 { font-size: 1.3rem; } /* the heading above it sits at its 1.6rem floor here */
@@ -243,6 +289,8 @@ footer button[disabled] { cursor: default; }
   .ticker-track { animation: none; white-space: normal; padding-inline: max(var(--pad), calc((100% - 1120px) / 2 + var(--pad))); }
   .ticker-track span + span { display: none; }
   .strip { transform: none !important; }
+  .tape-deck { display: none; }
+  .hub h1, .hub-label, .hub-list a { animation: none; }
 }
 
 /* The footer's Pause motion button: the same rest state as the OS setting, so nothing animates on the press itself */
@@ -252,3 +300,5 @@ footer button[disabled] { cursor: default; }
 :root[data-motion="off"] .ticker-track { animation: none; white-space: normal; padding-inline: max(var(--pad), calc((100% - 1120px) / 2 + var(--pad))); }
 :root[data-motion="off"] .ticker-track span + span { display: none; }
 :root[data-motion="off"] .strip { transform: none !important; }
+:root[data-motion="off"] .tape-deck { display: none; }
+:root[data-motion="off"] .hub h1, :root[data-motion="off"] .hub-label, :root[data-motion="off"] .hub-list a { animation: none; }

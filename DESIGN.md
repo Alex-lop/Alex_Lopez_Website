@@ -79,8 +79,39 @@ centred except the ticker.
 
 ## 3. Wireframes
 
+Call, later (Sep 21): the landing page is no longer the long scroll. It follows
+[skula.me](https://skula.me/) — a centered italic greeting and two labeled lists — and each former
+section is a hash destination with a `‹ index` back link. Palette, type, the `|` field, and inner
+page layout stay ours. The long-scroll wireframes below still describe each inner page.
+
+Hub, desktop and phone (the rail is `min(460px, 88vw)`, vertically centered):
+
+```
+ | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+ | |         Hi, I’m Alex,          | | | | | | | | | | | | | | | | | | | | |
+ | |  I keep a human in the loop.   | | | | | | | | | | | | | | | | | | | | |
+ | |                                | | | | | | | | | | | | | | | | | | | | |
+ | |  work     | about              | | | | | | | | | | | | | | | | | | | | |
+ | |           | graphene           | | | | | | | | | | | | | | | | | | | | |
+ | |           | also built         | | | | | | | | | | | | | | | | | | | | |
+ | |           | experience         | | | | | | | | | | | | | | | | | | | | |
+ | |           | outside            | | | | | | | | | | | | | | | | | | | | |
+ | |           | running            | | | | | | | | | | | | | | | | | | | | |
+ | |  signals  | github             | | | | | | | | | | | | | | | | | | | | |
+ | |           | linkedin           | | | | | | | | | | | | | | | | | | | | |
+ | |           | youtube            | | | | | | | | | | | | | | | | | | | | |
+ | |           | resume             | | | | | | | | | | | | | | | | | | | | |
+ | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+                                                    Pause motion (fixed, corner)
+```
+
+Inner page chrome: `‹ index` fixed top-left, same content as the matching block in the long-scroll
+wireframe, Pause motion still in the corner. `#projects` is Graphene (and the essay); `#also` is
+Nemisis, RegLineage, IMC.
+
 Desktop (1280 wide). The `|` field is behind everything; sections are transparent except the two
-blocks marked "solid".
+blocks marked "solid". This is one inner page at a time now; the old single-page stack is the
+no-JS fallback.
 
 ```
  Alex Lopez                          Work   Projects   Outside   Running   Resume   GitHub
@@ -169,8 +200,8 @@ blocks marked "solid".
  | | │ ⌞                              ⌟ │   synced 2 hours ago."                  | | | |
  | | └──────────────────────────────────┘   [ last 8 weeks sparkline, 50 line ]   | | | |
  | | 2.31 mi   17:52   7:41 /mi   readout    [1 mi 7:38][2 mi 7:41][3 mi ...]     | | | |
- | | Latest run, Sep 16, Boston, MA. Hover    (the last two appear once synced)   | | | |
- | | or drag the route to scrub.                                                  | | | |
+ | | Latest run, Sep 16, Boston, MA. Drag    (the last two appear once synced)   | | | |
+ | | the tape to rewind.                                                          | | | |
  | | ═══ this week 14.2 mi · latest 6.03 mi Wed · lifted before every run · synced 2h ago ═══
  | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
  | | lopez.alexan@northeastern.edu    GitHub  LinkedIn  YouTube  Strava  Chess.com  Resume
@@ -235,17 +266,18 @@ flipping the OS setting takes effect without a reload.
 | `\|` field: idle wave    | for 20s after the last pointer or scroll input, on fine-pointer devices only | ≈ 3° drift, 20s period across the field; then the loop stops and the field is still until the next input |
 | `\|` field: comb         | the route trace's runner dot           | ticks near the dot lean along the route's local bearing while it passes; one live comb point, expiring 800ms after the last update |
 | section reveal           | section enters 80% of the viewport     | the heading wipes in behind a clip edge (`clip-path` inset from the bottom → 0, 600ms), then its first block rises 8px and fades in, 120ms later. Once. Only those two elements; everything else in the section renders at rest |
+| hub rise                 | first paint of the home view           | greeting, then labels, then list items, staggered 40–580ms, 820ms ease-out, opacity + 12px (the hub's one reveal; inner pages keep the clip wipe). Off under reduced motion |
 | week odometer            | the Running stats enter view           | three fixed digit columns roll to their values, 900ms, once (again only if the fetched value differs from the seed) |
-| route trace              | Running section on screen              | start dot pulses ≈ 1.5s; the dot runs the route in 120s following the real time profile when streams exist; mile markers drop as passed; 8s hold at the finish; restart from the start point; pauses off screen and when the tab is hidden, on an accumulated clock so it never jumps |
-| route scrub              | hover or drag on the route canvas      | the dot snaps to the nearest route point and the readout shows that point's distance, elapsed, pace, HR and elevation; on release the clock is reseated there and the run continues |
+| route trace              | Running section on screen              | start dot pulses ≈ 1.5s; the dot runs the route in 120s following the real time profile when streams exist; mile markers drop as passed; 8s hold at the finish; restart from the start point; pauses off screen and when the tab is hidden, on an accumulated clock so it never jumps. The canvas ignores the pointer, so looking at the map cannot steal the runner |
+| route tape               | Start, Pause/Play, drag or arrow the track under the map | the playhead follows the runner; drag (or arrow keys on the focused track) rewinds and the readout shows that point's distance, elapsed, pace, HR and elevation; Start jumps to the beginning and plays; Pause freezes the runner where it is; on release the clock is reseated there and the run continues unless Pause is down. Reduced motion hides Start/Pause; the track still previews while dragged |
 | split strip              | the runner passes a mile               | the matching card gets the accent inset; the strip nudges horizontally to keep it in view unless the reader touched the strip in the last 1.5s |
 | photo strip (Outside)    | page scroll through the section (desktop, fine pointer) | the strip starts on the content column and is translated by exactly its overflow times the section's scroll progress, so the last photo ends flush with the column's right edge. The photos are 250px tall, so at 1280 and wider the overflow (93px) is smaller than the column's gutter and no photo ever leaves the column; a narrower fine-pointer window slides further and the first photo can leave; a strip that fits does not move; on phones it is a native swipe scroller and the scroll handler is not attached |
 | ticker band              | always, once on the page               | one line, CSS marquee, ≈ 45s per loop; pauses on hover and while off screen |
 | pause motion             | the footer's Pause motion button       | every row above takes its reduced-motion state until Resume motion; the OS setting does the same and each script listens for both. The page's own pause (WCAG 2.2.2) for the marquee, the trace and the field |
 
 Reduced motion, per item: field drawn once and static; reveals off; odometer shows its value;
-route drawn complete with all markers and the finish readout (scrub still works, it is
-user-driven); photo strip static; ticker becomes a static, wrapping line of the same text.
+route drawn complete with all markers and the finish readout (the tape still previews while
+dragged, it is user-driven); photo strip static; ticker becomes a static, wrapping line of the same text.
 
 The field runs one `requestAnimationFrame` loop with a mode: active while a pointer moved, a
 scroll is settling, a wake or comb point is alive, or the idle window is open; the idle window
@@ -294,11 +326,15 @@ No stock, no generated art, no drawn characters.
 
 ## 6. Structure, hooks and contracts
 
-Single page, in this order, with these ids: `top` (the hero, a `<header>` inside `<main>`, so an
-anchor target and not a landmark), then one named `region` landmark each for `about`, `projects`
-(Graphene, the essay, then "Also built"; labelled "Projects" because it holds two h2s), `work`
-(Experience and the Record list), `outside`, `running`; footer last. Nav: Work · Projects · Outside · Running · Resume · GitHub, plus the skip
-link to `#main`.
+Single page in the source, one view at a time in the window. Hub (`#top` / `#` / empty hash) then
+the destinations `about`, `projects` (Graphene and the essay; `#graphene` is an alias), `also`
+(Nemisis, RegLineage, IMC), `work`, `outside`, `running`. A head script writes `data-view` before
+first paint so the hub does not flash. Inner pages: `‹ index` back to the hub. Nav is the hub
+lists; the old top bar is gone. Footer (email + links) on inner pages only. Pause motion is a
+fixed corner control on every view.
+
+Ids `{top, about, projects, also, work, outside, running, main}`; one `h1` on the hub and one on
+each inner page.
 
 Files:
 
@@ -314,7 +350,8 @@ Files:
 | hook                                   | used by    | meaning                                                               |
 | -------------------------------------- | ---------- | --------------------------------------------------------------------- |
 | `<canvas id="field" aria-hidden>`      | field.js   | fixed, full viewport, `z-index: 0`, `pointer-events: none`            |
-| `<canvas id="route" role="slider" aria-label aria-valuemin aria-valuemax aria-valuenow aria-valuetext tabindex="0" data-route data-miles data-pace data-elev data-date data-place data-time>` | route.js | seeded latest run. `data-time` is `round(miles × pace)`, the only elapsed figure the seed can honestly carry. `pointer-events: auto`, `touch-action: pan-y`. It is focusable for the keyboard scrub, so it cannot be `aria-hidden`; it is a `role="slider"` (`aria-valuemin/max/now/valuetext`), the arrow keys move it, and its value text is the readout, written when the reader moves it or the run is at rest so a focused screen reader is not read a new number every second; keyboard focus pins the trace where it is until blur, so the arrows step from the value that was read (a click lifts the pin, so pointer users keep the running trace). The sr-only line carries the summary |
+| `<canvas id="route" aria-hidden data-route data-miles data-pace data-elev data-date data-place data-time>` | route.js | seeded latest run. `data-time` is `round(miles × pace)`, the only elapsed figure the seed can honestly carry. `pointer-events: none`: the canvas is the picture, not a control. The sr-only line carries the summary |
+| `[data-tape]` with `.tape-track[role="slider"]`, `[data-tape-start]`, `[data-tape-play]`, `[data-tape-bar]`, `[data-tape-fill]`, `[data-tape-head]`, `[data-tape-ticks]` | route.js | the rewind control under the readout. The track is the slider (`aria-valuemin/max/now/valuetext`, `tabindex="0"`); arrow keys move it; its value text is the readout, written when the reader moves it or the run is at rest. Keyboard focus pins the trace until blur. Start / Pause are hidden under reduced motion |
 | `[data-route-readout]` with `[data-ro="dist"]`, `[data-ro="time"]`, `[data-ro="pace"]`, `[data-ro="extra"]` | route.js | the counting readout under the panel (aria-hidden; the sr-only line carries the summary) |
 | `[data-run="week.miles"]` etc.         | site.js    | text swaps from JSON, same keys as before plus the new ones below     |
 | `[data-odo]` with three `.d` columns   | site.js    | the week odometer, columns shipped in the HTML: tens (blank under 10), ones, tenths; the decimal point is static text. `aria-label` carries the value; the columns are aria-hidden |
@@ -352,14 +389,15 @@ Index spaces: the polyline (≤ 800 points, cumulative chord length normalised t
 by binary search of `streams.time`; both are then O(1) per frame. Chord length approximates arc
 length within a few percent at this resolution, which is accepted. Mile markers print the split
 only when `latest.splits` exists; otherwise "1 mi" alone. The trace clock is an accumulator
-(`elapsed += min(now − last, 50)`) reset on every resume, so pausing never teleports the dot. Scrub:
-hover moves the dot to the nearest point and shows its numbers; on a phone a drag scrubs only once
-it is clearly horizontal (|dx| > 10 and |dx| > |dy|), so vertical swipes scroll the page; the canvas
-is focusable and the left/right arrow keys step the dot along the route (shift for bigger steps),
-Home and End jump to the start and the finish,
-so the scrub has a keyboard path. The split strip is focusable too and scrolls with the arrow keys
-as a native scroller. Mile
-labels are painted over a small `--paper` rectangle so they never sit on live ticks.
+(`elapsed += min(now − last, 50)`) reset on every resume, so pausing never teleports the dot. The
+canvas ignores the pointer (`pointer-events: none`) so looking at the map cannot steal the runner.
+The tape under the readout is the scrubber: Start rewinds and plays, Pause/Play freeze or continue,
+and dragging the track (or the left/right arrows once it has focus; shift for bigger steps; Home
+and End jump to the start and the finish) seats the runner by fraction of route length. On release
+the 120s clock is reseated there and the run continues unless Pause is down. A pointer on the
+track does not pin the trace; keyboard focus does, until blur. The split strip is focusable too
+and scrolls with the arrow keys as a native scroller. Mile labels are painted over a small
+`--paper` rectangle so they never sit on live ticks.
 
 `js/site.js` fetches `data/strava.json` with `cache: 'no-cache'`; on failure the seeded markup
 stands. It never writes a value the JSON does not contain. It adds the `reveal-ready` class that
@@ -457,7 +495,7 @@ sync is a small diff.
 
 ### Test contract (`tests/site_check.py`)
 
-Ids `{top, about, projects, work, outside, running, main}`; one `h1`; alt, width and height on
+Ids `{top, about, projects, also, work, outside, running, main}`; one `h1` on the hub and on each inner page; alt, width and height on
 every `<img>`; external links `target="_blank" rel="noopener noreferrer"`; no `mailto:`; no phone
 number; the three script names; the canvases collected by id, `#route` carrying `data-route` and
 `#field` carrying `aria-hidden`; `prefers-reduced-motion` in the CSS and in each script; the
@@ -537,8 +575,8 @@ was fixed, and the ones below are what survived):
   there. It now fires only if the observer never reported.
 - The ticker's loop width was measured in the fallback font; it is re-measured once the faces load.
   The loaded video replaces its button instead of nesting inside it.
-- The route canvas is a slider to assistive tech (arrow keys move it, the value text is the readout)
-  instead of an image whose label promised numbers the readout hid. About, Experience, Outside and
+- The route tape is a slider to assistive tech (arrow keys move it, the value text is the readout)
+  instead of an image whose label promised numbers the readout hid. The canvas is `aria-hidden`. About, Experience, Outside and
   Running are named regions and Projects is labelled. Empty figcaptions, a duplicate
   `aria-disabled`, the invisible `.source` underline, the 1.3:1 goal line and the 4.2:1 terminal
   prompt are fixed. A Pause motion button in the footer is the page's own pause for the marquee,
@@ -553,8 +591,9 @@ was fixed, and the ones below are what survived):
   of the point when the current week is near zero); the essay measure is 630px (≈ 74 characters);
   the route is drawn from the column's left edge rather than centred in its canvas; the strip's
   photos are 250px tall so the strip's overflow fits its gutter at 1280 and wider.
-- After the fixes were reviewed again: the slider pins the trace while it holds keyboard focus so
-  the arrows step from the value that was read; the Pause motion button has its own CSS rest state
+- After the fixes were reviewed again: the tape pins the trace while it holds keyboard focus so
+  the arrows step from the value that was read; a pointer on the tape does not pin, so dragging
+  never fights the running trace; the Pause motion button has its own CSS rest state
   (no reveal burst on the press), its label is its state and it is disabled under the OS setting;
   Resume motion puts the strip back where the scroll left it; a same-route fetch re-announces the
   mile so the split card lights under reduced motion too; the paused ticker sits on the column.
@@ -570,6 +609,11 @@ was fixed, and the ones below are what survived):
   summary-only run has no moving time, and a week under an hour reads "28m", not "0h 28m".
 - Left as decided: the countdown stays (Alex confirmed the race; distance and goal time are still
   his to add) and the mile labels on the canvas keep "1 mi · 7:38".
+- Call, later: hovering the route mixed the cursor with the 120s trace (the runner jumped to the
+  nearest point as you moved across the map). The canvas now ignores the pointer. Rewind lives on a
+  tape under the readout — Start, Pause/Play, and a 3px track with an accent playhead and mile
+  ticks, same language as the week progress track and the footer buttons. Drag the tape or arrow it;
+  looking at the map no longer does anything to the runner.
 
 ## 9. Measurements
 
@@ -592,7 +636,7 @@ live in the session scratchpad, not the repo.
 | OS dark mode                                  | with `prefers-color-scheme: dark` emulated the page stays `#f5f5f0` / `#171613`, the panels `#ebeae2`; `color-scheme` computes to `light` |
 | reduced motion (Chrome, WebKit, Firefox)      | field draws one static frame, ticker static, every section revealed, readout and `aria-valuetext` show the finish values ("6.03 mi, 46:44, 7:45 /mi") |
 | Pause motion                                  | one click: `data-motion="off"`, the label "Resume motion", field static, ticker stopped, wrapping and on the column, trace at its finish, every section revealed with no transition running on the press; a second click restores all of it, the strip included; under the OS setting the button reads "Resume motion" and is disabled |
-| keyboard                                      | skip link first, then nav, hero buttons, links in page order; 2px accent ring on `:focus-visible`; twenty ArrowRight presses on the route move the readout 0.00 → 0.60 mi and the slider's value with it; focus 8 s into the run pins the trace (value 0.32 mi, still 0.32 after 6 s), one press steps it 0.03 mi, blur lets it run on, and a mouse click then leave keeps it running |
+| keyboard                                      | skip link first, then nav, hero buttons, links in page order; 2px accent ring on `:focus-visible`; twenty ArrowRight presses on the tape move the readout 0.00 → 0.60 mi and the slider's value with it; focus 8 s into the run pins the trace (value 0.32 mi, still 0.32 after 6 s), one press steps it 0.03 mi, blur lets it run on, and a pointer drag on the tape then release keeps it running |
 | Safari and Firefox                            | Playwright WebKit and Firefox at 1280 and 390: no errors, all five fonts loaded, essay in Plex Serif, trace running, odometer set, ticker running, strip transform on desktop only (`translateX(-93px)` at the section's end) |
 | tests                                         | `python3 tests/site_check.py` passes (16 ids, 23 links, 7 images, 17 local assets; the seeded route and the JSON route start at the fixed origin) and runs `--self-check` (offline, also on Python 3.9, 3.13 and 3.14) |
 

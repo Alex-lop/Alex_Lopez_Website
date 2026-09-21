@@ -277,4 +277,35 @@
 
     if (l.polyline && window.__route) window.__route(l);
   }).catch(function () { /* the seeded markup stands */ });
+
+  var titles = {
+    home: 'Alex Lopez',
+    about: 'About — Alex Lopez',
+    projects: 'Graphene — Alex Lopez',
+    also: 'Also built — Alex Lopez',
+    work: 'Experience — Alex Lopez',
+    outside: 'Outside — Alex Lopez',
+    running: 'Running — Alex Lopez'
+  };
+  function onView(moveFocus) {
+    var v = doc.documentElement.dataset.view || 'home';
+    if (titles[v]) doc.title = titles[v];
+    var root = v === 'home' ? doc.getElementById('top') : doc.getElementById(v);
+    var rev = root && root.querySelector('[data-reveal]');
+    if (rev) rev.classList.add('in');
+    if (moveFocus && v !== 'home') {
+      scrollTo(0, 0);
+      var heading = root && root.querySelector('h1');
+      if (heading) {
+        heading.setAttribute('tabindex', '-1');
+        heading.focus({ preventScroll: true });
+      }
+    } else if (moveFocus) {
+      scrollTo(0, 0);
+    }
+    if (v === 'outside' && stripFrame) stripFrame();
+    if (v === 'running') { rollOdo(); marquee(); }
+  }
+  addEventListener('hashchange', function () { onView(true); });
+  onView(location.hash.length > 1);
 })();

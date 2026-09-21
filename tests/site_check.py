@@ -39,8 +39,8 @@ class SiteParser(HTMLParser):
 site = SiteParser()
 site.feed(HTML)
 
-assert {"top", "about", "projects", "work", "outside", "running", "main"} <= site.ids, sorted(site.ids)
-assert site.h1 == 1, f"Expected one h1, found {site.h1}"
+assert {"top", "about", "projects", "also", "work", "outside", "running", "main"} <= site.ids, sorted(site.ids)
+assert site.h1 == 7, f"Expected one h1 on the hub and each page, found {site.h1}"
 for img in site.images:
     assert "alt" in img and img.get("width") and img.get("height"), f"img needs alt, width, height: {img}"
 for a in site.anchors:
@@ -61,7 +61,9 @@ for url in (
 ):
     assert url in HTML, f"Missing link: {url}"
 assert "mailto:" not in HTML and "203-954" not in HTML
-assert "↗" not in HTML, "the arrow-on-every-link tell is back"
+assert "class=\"hub\"" in HTML and "‹ index" in HTML
+assert "dataset.view" in HTML
+assert "html[data-view]" in CSS
 
 for name in SCRIPTS:
     assert f'src="js/{name}"' in HTML, f"js/{name} not loaded"
@@ -70,9 +72,12 @@ assert "run-field.js" not in HTML, "run-field.js was replaced by field.js"
 canvas = {c["id"]: c for c in site.canvases if c.get("id")}
 route = canvas["route"]
 assert len(route.get("data-route", "")) > 20, "canvas needs a seeded data-route"
-for attr in ("data-miles", "data-pace", "data-time", "tabindex"):
+for attr in ("data-miles", "data-pace", "data-time"):
     assert route.get(attr), f"#route needs {attr}"
+assert route.get("aria-hidden") == "true", "#route is drawn only; the tape is the control"
 assert canvas["field"].get("aria-hidden") == "true", "#field must be hidden from the a11y tree"
+assert 'data-tape' in HTML and 'data-tape-start' in HTML and 'data-tape-play' in HTML
+assert 'role="slider"' in HTML and 'Drag the tape to rewind' in HTML
 
 assert "prefers-reduced-motion" in CSS
 for name, src in SCRIPTS.items():

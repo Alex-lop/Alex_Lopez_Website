@@ -58,6 +58,8 @@ Everything I wrote or changed is in `COPY_REVIEW.md`. The ones I'd read first:
 - The hanging last line "When is the last time that I…" — finish it when you want to; it is
   styled as a deliberate ending until then.
 - The four About sentences, especially the last one.
+- Hub greeting "Hi, I’m Alex, I keep a human in the loop." — Skula's sentence shape, from the About
+  line about keeping a human in the loop. "Helloooo world" came off the landing to make room.
 - The Nemisis proof-strip rows that were cut for space (listed in `COPY_REVIEW.md`).
 - The placeholder captions in the essay.
 
