@@ -18,48 +18,63 @@
 <link rel="preload" href="assets/fonts/IBMPlexSans-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/IBMPlexSans-600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
+<script>
+(function () {
+  var alias = { graphene: 'projects', top: 'home', '': 'home' };
+  var known = { home: 1, about: 1, projects: 1, also: 1, work: 1, outside: 1, running: 1 };
+  function apply() {
+    var v = alias[location.hash.slice(1)] || location.hash.slice(1);
+    document.documentElement.dataset.view = known[v] ? v : 'home';
+  }
+  apply();
+  addEventListener('hashchange', apply);
+})();
+</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <canvas id="field" aria-hidden="true"></canvas>
-
-<nav class="nav" aria-label="Primary">
-  <div class="wrap">
-    <a class="wordmark" href="#top">Alex Lopez</a>
-    <ul>
-      <li><a href="#work">Work</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#outside">Outside</a></li>
-      <li><a href="#running">Running</a></li>
-      <li><a href="assets/Alex_Lopez_Resume.pdf" target="_blank" rel="noopener noreferrer">Resume</a></li>
-      <li><a href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-    </ul>
-  </div>
-</nav>
+<a class="back" href="#top">‹ index</a>
 
 <main id="main">
-  <header class="hero" id="top">
-    <div class="wrap" data-reveal>
-      <p class="hello">Helloooo world</p>
-      <h1>Alex Lopez</h1>
-      <p class="lede">Third year at Northeastern, CS and Math. Tools that check what AI-written code actually does, and a first marathon in training.</p>
-      <p class="actions">
-        <a class="btn" href="assets/Alex_Lopez_Resume.pdf" target="_blank" rel="noopener noreferrer">Resume</a>
-        <a class="btn btn-quiet" href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">GitHub</a>
-      </p>
+  <header class="hub" id="top">
+    <div class="hub-rail">
+      <h1>Hi, I’m Alex,<br> I keep a human in the loop.</h1>
+      <div class="lists">
+        <section class="hub-sec">
+          <p class="hub-label">work</p>
+          <div class="hub-list">
+            <a href="#about">about</a>
+            <a href="#projects">graphene</a>
+            <a href="#also">also built</a>
+            <a href="#work">experience</a>
+            <a href="#outside">outside</a>
+            <a href="#running">running</a>
+          </div>
+        </section>
+        <section class="hub-sec">
+          <p class="hub-label">signals</p>
+          <div class="hub-list">
+            <a href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">github</a>
+            <a href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener noreferrer">linkedin</a>
+            <a href="https://www.youtube.com/@alex17-OX" target="_blank" rel="noopener noreferrer">youtube</a>
+            <a href="assets/Alex_Lopez_Resume.pdf" target="_blank" rel="noopener noreferrer">resume</a>
+          </div>
+        </section>
+      </div>
     </div>
   </header>
 
-  <section id="about" aria-labelledby="h-about">
+  <section class="page" id="about" aria-labelledby="h-about">
     <div class="wrap" data-reveal>
-      <h2 id="h-about">About</h2>
+      <h1 id="h-about">About</h1>
       <p class="prose">I'm Alex, a third year at Northeastern studying CS and Math. Most of what I build is about keeping a human in the loop when AI agents write code: Graphene, Nemisis, RegLineage. During the year I TA databases and discrete math and sit on the SHPE board. The rest of the time I'm running, golfing, or losing at chess.</p>
     </div>
   </section>
 
-  <section id="projects" aria-label="Projects">
+  <section class="page" id="projects" aria-label="Projects">
     <div class="wrap" data-reveal>
-      <h2>Graphene</h2>
+      <h1>Graphene</h1>
       <p class="tagline">Publication control for parallel coding agents</p>
       <div class="feature">
         <div class="feature-media">
@@ -79,7 +94,7 @@
         </div>
       </div>
 
-      <h3 class="essay-heading">Why I built it</h3>
+      <h2 class="essay-heading">Why I built it</h2>
       <div class="essay">
         <h4>You'll never need to write CSS again</h4>
         <figure class="ph ph-side">
@@ -139,8 +154,12 @@
         <p class="hang">When is the last time that I…</p>
       </div>
       <p class="bridge">Graphene runs on the same reflex. Let the agents write. Keep a human at the decision, holding evidence, allowed to say no.</p>
+    </div>
+  </section>
 
-      <h2 class="also-heading">Also built</h2>
+  <section class="page" id="also" aria-labelledby="h-also">
+    <div class="wrap" data-reveal>
+      <h1 id="h-also">Also built</h1>
       <article class="nemisis" aria-labelledby="p-nemisis">
         <div class="nemisis-meta">
           <h3 id="p-nemisis">Nemisis</h3>
@@ -191,9 +210,9 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
     </div>
   </section>
 
-  <section id="work" aria-labelledby="h-work">
+  <section class="page" id="work" aria-labelledby="h-work">
     <div class="wrap" data-reveal>
-      <h2 id="h-work">Experience</h2>
+      <h1 id="h-work">Experience</h1>
       <div class="ground">
       <div class="roles">
         <article class="role">
@@ -249,9 +268,9 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
     </div>
   </section>
 
-  <section id="outside" aria-labelledby="h-outside">
+  <section class="page" id="outside" aria-labelledby="h-outside">
     <div class="wrap" data-reveal>
-      <h2 id="h-outside">Outside the terminal</h2>
+      <h1 id="h-outside">Outside the terminal</h1>
       <div class="hobbies">
         <div>
           <h3>Running</h3>
@@ -279,15 +298,28 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
     </div>
   </section>
 
-  <section id="running" aria-labelledby="h-running">
+  <section class="page" id="running" aria-labelledby="h-running">
     <div class="wrap" data-reveal>
-      <h2 id="h-running">Running</h2>
+      <h1 id="h-running">Running</h1>
       <div class="run">
         <div class="route-panel">
-          <canvas id="route" role="slider" aria-label="Position along the latest run" aria-valuemin="0" aria-valuemax="6.03" aria-valuenow="0" aria-valuetext="0.00 mi, 0:00" tabindex="0" data-route="_cj_G~djpLQt@Q^QLi@RYP_@d@c@|@KNSHGCKSEc@Ca@AyAKeA_@{AS]aCyCWk@i@oCe@}C[_Aq@iAi@g@y@_@W_@EOKg@Q_B?eEKcEKW_Ay@[_@UMWGI?a@OU?c@HQC[@cAUq@Kq@?[Fk@Na@l@c@`@QR[r@Md@KfACh@Fd@?^T`AP\d@f@X^h@d@Z`@VVdAr@dAZTDd@Bf@LP?NC^F|@E|@Of@ETQNYBa@O{@Cg@?y@DuACaBMyBAMBEFCh@@`BI\BPBp@T|@j@j@j@b@v@z@xDFh@h@~BVxARr@f@xAJj@JVv@zAPTbAbANLNDfAfAR`@N~@E~AG^Wj@Ol@uA|C_@t@YZOHYDeACOMKo@EmBC_@Gg@[sAIUS[cAyAq@y@]o@Kc@QwAYuAQmAU{@a@{@i@o@OQSOe@QSQQYKa@Ga@KqA@kBBu@CkCEe@S_@K]EWKOMOOIa@e@KGu@Ui@Ei@FOAQBi@EqAWk@Cu@J_@Pc@l@c@`@c@v@Mb@M|@C\@|@Fv@Hd@FTRZh@n@bA|@Z`@nAbA^LjAXn@Jr@H|@Aj@G`@I^Ed@OPS@GBg@Eg@G}@FcCA_AQiDBMDC`A@t@EVBj@Hp@Rn@Xf@`@^b@^r@Nn@l@lCXrBRn@\dB`@hAPt@Fb@L`@f@|@p@~@RNNPVRVJf@^p@dANdA?PMb@]~@e@|@Op@Sl@ILQJa@Ri@b@w@nAOPODE?GCKUE]C}BC[a@iBSg@QYkAwAy@iAKa@Q{@K}@Om@QyAWaA[s@i@y@a@a@s@_@QMUe@UeBQm@AsABqACgBIuAIWEa@EKk@a@[a@QMUKq@IY?q@Fo@CwA[o@?c@Fm@NY^o@l@W^Qd@GTObAEt@@d@H|@FVN^LRJFX^j@j@bAlAf@`@zAj@xAVl@Dn@@r@Cv@Or@EPGJGHU@OAQKm@C_@AaC@Y@eBEaAMgADMJEf@Br@Cj@@p@F^LTLr@b@j@f@Zb@Vh@V`Af@dDDR" data-miles="6.03" data-pace="465" data-elev="115" data-date="2026-09-16" data-place="Boston, MA" data-time="2804"></canvas>
+          <canvas id="route" aria-hidden="true" data-route="_cj_G~djpLQt@Q^QLi@RYP_@d@c@|@KNSHGCKSEc@Ca@AyAKeA_@{AS]aCyCWk@i@oCe@}C[_Aq@iAi@g@y@_@W_@EOKg@Q_B?eEKcEKW_Ay@[_@UMWGI?a@OU?c@HQC[@cAUq@Kq@?[Fk@Na@l@c@`@QR[r@Md@KfACh@Fd@?^T`AP\d@f@X^h@d@Z`@VVdAr@dAZTDd@Bf@LP?NC^F|@E|@Of@ETQNYBa@O{@Cg@?y@DuACaBMyBAMBEFCh@@`BI\BPBp@T|@j@j@j@b@v@z@xDFh@h@~BVxARr@f@xAJj@JVv@zAPTbAbANLNDfAfAR`@N~@E~AG^Wj@Ol@uA|C_@t@YZOHYDeACOMKo@EmBC_@Gg@[sAIUS[cAyAq@y@]o@Kc@QwAYuAQmAU{@a@{@i@o@OQSOe@QSQQYKa@Ga@KqA@kBBu@CkCEe@S_@K]EWKOMOOIa@e@KGu@Ui@Ei@FOAQBi@EqAWk@Cu@J_@Pc@l@c@`@c@v@Mb@M|@C\@|@Fv@Hd@FTRZh@n@bA|@Z`@nAbA^LjAXn@Jr@H|@Aj@G`@I^Ed@OPS@GBg@Eg@G}@FcCA_AQiDBMDC`A@t@EVBj@Hp@Rn@Xf@`@^b@^r@Nn@l@lCXrBRn@\dB`@hAPt@Fb@L`@f@|@p@~@RNNPVRVJf@^p@dANdA?PMb@]~@e@|@Op@Sl@ILQJa@Ri@b@w@nAOPODE?GCKUE]C}BC[a@iBSg@QYkAwAy@iAKa@Q{@K}@Om@QyAWaA[s@i@y@a@a@s@_@QMUe@UeBQm@AsABqACgBIuAIWEa@EKk@a@[a@QMUKq@IY?q@Fo@CwA[o@?c@Fm@NY^o@l@W^Qd@GTObAEt@@d@H|@FVN^LRJFX^j@j@bAlAf@`@zAj@xAVl@Dn@@r@Cv@Or@EPGJGHU@OAQKm@C_@AaC@Y@eBEaAMgADMJEf@Br@Cj@@p@F^LTLr@b@j@f@Zb@Vh@V`Af@dDDR" data-miles="6.03" data-pace="465" data-elev="115" data-date="2026-09-16" data-place="Boston, MA" data-time="2804"></canvas>
           <p class="route-readout" data-route-readout aria-hidden="true"><span data-ro="dist"></span><span data-ro="time"></span><span data-ro="pace"></span><span data-ro="extra"></span></p>
+          <div class="tape" data-tape>
+            <div class="tape-deck">
+              <button type="button" data-tape-start>Start</button>
+              <button type="button" data-tape-play>Pause</button>
+            </div>
+            <div class="tape-track" role="slider" aria-label="Position along the latest run" aria-valuemin="0" aria-valuemax="6.03" aria-valuenow="0" aria-valuetext="0.00 mi, 0:00" tabindex="0">
+              <div class="tape-bar" data-tape-bar>
+                <div class="tape-fill" data-tape-fill></div>
+                <div class="tape-head" data-tape-head></div>
+                <div class="tape-ticks" data-tape-ticks aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
           <p class="sr-only">Latest run, drawn as a route on the canvas: <span data-run="latest.line">Sep 16, 6.03 miles at 7:45 per mile, 115 feet of climbing, Boston, MA.</span></p>
-          <p class="small route-caption">Latest run, <span data-run="latest.when">Sep 16, Boston, MA</span>. Hover, drag, or use the arrow keys on the route to scrub.</p>
+          <p class="small route-caption">Latest run, <span data-run="latest.when">Sep 16, Boston, MA</span>. Drag the tape to rewind.</p>
         </div>
         <div class="run-stats">
           <p class="label">This week</p>
@@ -322,10 +354,10 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
       <li><a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Strava</a></li>
       <li><a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener noreferrer">Chess.com</a></li>
       <li><a href="assets/Alex_Lopez_Resume.pdf" target="_blank" rel="noopener noreferrer">Resume</a></li>
-      <li><button type="button" data-motion-toggle>Pause motion</button></li>
     </ul>
   </div>
 </footer>
+<button type="button" class="motion-dock" data-motion-toggle>Pause motion</button>
 
 <script src="js/field.js" defer></script>
 <script src="js/route.js" defer></script>

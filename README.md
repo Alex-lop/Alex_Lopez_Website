@@ -1,13 +1,15 @@
 # Alex_Lopez_Website
 
-Personal site: one static page, no build step, no framework, no dependencies. GitHub Pages serves
-`main` from the repo root, so a push to `main` is a deploy. Plain HTML, CSS and three vanilla JS
-files; every path is relative.
+Personal site: a static hub plus inner pages, no build step, no framework, no dependencies. GitHub
+Pages serves `main` from the repo root, so a push to `main` is a deploy. Plain HTML, CSS and three
+vanilla JS files; every path is relative. The landing page is a Skula-style rail (greeting, then
+`work` and `signals`); each section is a hash destination (`#about`, `#projects`, `#also`, `#work`,
+`#outside`, `#running`) with a `‹ index` back link.
 
 ## Layout
 
 ```
-index.html                         the whole page
+index.html                         hub + every inner page (shown one at a time)
 styles.css                         all of the CSS
 js/field.js                        the | field: the canvas of vertical ticks behind everything
 js/route.js                        the route trace in Running
@@ -27,7 +29,7 @@ TODO_ALEX.md                       what still needs Alex: secrets, images, copy 
 ## The Running section
 
 It reads `data/strava.json`: the week odometer against the 50-mile goal and its progress track, the
-route trace of the latest run with mile markers and scrubbing, the mile-split strip, the last eight
+route trace of the latest run with mile markers and a tape to rewind, the mile-split strip, the last eight
 weeks as a sparkline, the ticker band, "synced N hours ago", and the countdown to Oct 10.
 
 Every number is also seeded in the HTML with the value the JSON held at commit time. `js/site.js`

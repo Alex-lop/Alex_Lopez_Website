@@ -1,6 +1,7 @@
 /* The route trace: frame corners and a pulsing start dot, then a runner dot walking the latest
-   run's polyline over 120s, line drawing behind it, mile markers, a counting readout, and
-   hover/drag/arrow scrubbing. Decoder lifted from js/run-field.js at 1669e62. */
+   run's polyline over 120s, line drawing behind it, mile markers, a counting readout, and a tape
+   under the map to pause, rewind, and scrub. The canvas itself ignores the pointer. Decoder
+   lifted from js/run-field.js at 1669e62. */
 (function () {
   'use strict';
   var canvas = document.getElementById('route');
@@ -10,6 +11,14 @@
 
   var box = document.querySelector('[data-route-readout]'), ro = {};
   ['dist', 'time', 'pace', 'extra'].forEach(function (k) { ro[k] = box && box.querySelector('[data-ro="' + k + '"]'); });
+  var tape = document.querySelector('[data-tape]');
+  var slider = tape && tape.querySelector('[role="slider"]');
+  var bar = tape && tape.querySelector('[data-tape-bar]');
+  var fill = tape && tape.querySelector('[data-tape-fill]');
+  var head = tape && tape.querySelector('[data-tape-head]');
+  var tickBox = tape && tape.querySelector('[data-tape-ticks]');
+  var startBtn = tape && tape.querySelector('[data-tape-start]');
+  var playBtn = tape && tape.querySelector('[data-tape-play]');
   var css = getComputedStyle(document.documentElement);
   function token(n, f) { return (css.getPropertyValue(n) || f).trim(); }
   var INK = token('--ink', '#171613'), ACCENT = token('--accent', '#1a5fff'), PAPER = token('--paper', '#f5f5f0');
@@ -20,7 +29,7 @@
   var R = null, S = null, W = 0, H = 0, g = null, rect = null;
   var phase = 'start', pulseT = 0, elapsed = 0, holdT = 0, last = 0, raf = 0, drawnAt = 0, combAt = 0;
   var onScreen = false, hidden = document.hidden, reduce = motionOff(), lastMile = -1;
-  var hover = false, drag = false, origin = null, keyUntil = 0, scrubF = 0, shownF = 0;
+  var drag = false, userPaused = false, pointerFocus = false, keyUntil = 0, scrubF = 0, shownF = 0;
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function mmss(s) {
@@ -64,7 +73,7 @@
   function setRoute(meta) {
     if (!meta || !meta.polyline) return;
     /* same route, new keys: merge so a fetch that lacks a seeded key (moving_time_s) keeps it */
-    if (R && R.meta.polyline === meta.polyline) { R.meta = Object.assign({}, R.meta, meta); setStreams(); attr('aria-valuemax', miles().toFixed(2)); lastMile = -1; repaint(); return; }  /* -1: the repaint re-announces the mile now that the split cards exist */
+    if (R && R.meta.polyline === meta.polyline) { R.meta = Object.assign({}, R.meta, meta); setStreams(); attr('aria-valuemax', miles().toFixed(2)); buildTicks(); lastMile = -1; repaint(); return; }  /* -1: the repaint re-announces the mile now that the split cards exist */
     var p = decodePolyline(meta.polyline), i;
     if (p.length < 2) return;
     var c = Math.cos(p[0][0] * Math.PI / 180);
@@ -80,7 +89,7 @@
     for (i = 0; i < cum.length; i++) cum[i] /= t || 1;
     R = { u: u, w: (x1 - x0) / s, h: (y1 - y0) / s, cum: cum, meta: meta };
     attr('aria-valuemax', miles().toFixed(2));
-    setStreams(); layout(); reset(); sync(); repaint();
+    setStreams(); buildTicks(); layout(); reset(); sync(); repaint();
   }
   function setStreams() {
     var s = R && R.meta.streams;
@@ -136,9 +145,29 @@
     ctx.fillStyle = INK; ctx.fillText(text, lx, ly);
   }
   function set(el, txt) { if (el && el.textContent !== txt) el.textContent = txt; }
-  function attr(n, v) { if (canvas.getAttribute(n) !== v) canvas.setAttribute(n, v); }
+  function attr(n, v) { if (slider && slider.getAttribute(n) !== v) slider.setAttribute(n, v); }
+  function paintTape(f) {
+    var pct = (clamp(f, 0, 1) * 100).toFixed(2) + '%';
+    if (fill) fill.style.width = pct;
+    if (head) head.style.left = pct;
+  }
+  function buildTicks() {
+    if (!tickBox || !R) return;
+    tickBox.textContent = '';
+    var n = Math.floor(miles());
+    for (var k = 1; k <= n; k++) {
+      var s = document.createElement('span');
+      s.style.left = (k / (miles() || 1) * 100) + '%';
+      tickBox.appendChild(s);
+    }
+  }
+  function setPlayLabel() {
+    var deck = tape && tape.querySelector('.tape-deck');
+    if (deck) deck.hidden = reduce;
+    if (playBtn) playBtn.textContent = userPaused || reduce ? 'Play' : 'Pause';
+  }
 
-  /* The canvas is a slider to assistive tech. Its value only moves when the reader moves it or the
+  /* The tape is a slider to assistive tech. Its value only moves when the reader moves it or the
      run is at rest, so a focused screen reader is not read a new number every second of the trace. */
   function readout(f, tau, aria) {
     var dist = (f * miles()).toFixed(2) + ' mi', time = mmss(tau), pace = '', extra = '';
@@ -176,7 +205,8 @@
       label(m.x, m.y, k + ' mi' + (sp && sp.pace_sec_per_mi ? ' · ' + mmss(sp.pace_sec_per_mi) : ''));
     }
     dot(head.x, head.y, 4);
-    readout(f, tau, scrubbing() || phase !== 'run' || reduce);
+    paintTape(f);
+    readout(f, tau, scrubbing() || userPaused || phase !== 'run' || reduce);
     emit(mi, f, tau, false);
     if (!reduce && (head.dx || head.dy)) comb(head);
   }
@@ -187,6 +217,7 @@
     corners();
     dot(px(0), py(0), 4 + 1.5 * (1 - Math.cos(now / PULSE * Math.PI * 2))); /* 4 -> 7px, 1.5s */
     shownF = 0;
+    paintTape(0);
     readout(0, 0, true);
   }
 
@@ -205,12 +236,16 @@
     document.dispatchEvent(new CustomEvent('route:at', { detail: { mile: f, fraction: fraction, t: t, reset: !!reset } }));
   }
 
-  function scrubbing() { return hover || drag || performance.now() < keyUntil; }
+  function scrubbing() { return drag || performance.now() < keyUntil; }
   function reset() { phase = 'start'; pulseT = elapsed = holdT = 0; emit(0, 0, 0, true); }
-  function release(f) { /* reseat the 120s clock where the scrub left the dot */
+  function seat(f) { /* reseat the 120s clock where the tape left the dot */
     elapsed = clamp(tauOf(f) / total(), 0, 1) * RUN;
     phase = elapsed >= RUN ? 'hold' : 'run';
-    holdT = 0; last = performance.now();
+    holdT = 0;
+  }
+  function release(f) {
+    seat(f);
+    last = performance.now();
   }
 
   function frame(now) {
@@ -242,73 +277,105 @@
     if (!g) return;
     rect = canvas.getBoundingClientRect();
     if (scrubbing()) paint(scrubF);
+    else if (userPaused) paint(shownF);
     else if (reduce) paint(1);
     else if (phase === 'start') paintStart(performance.now());
     else paint(phase === 'run' ? fracOf(elapsed / RUN * total()) : 1);
   }
   function sync() {
-    if (onScreen && !hidden && !reduce) {
+    if (onScreen && !hidden && !reduce && !userPaused) {
       if (!raf && R) { last = drawnAt = performance.now(); raf = requestAnimationFrame(frame); }
     } else if (raf) { cancelAnimationFrame(raf); raf = 0; repaint(); }
+    setPlayLabel();
   }
 
-  /* Scrub: nearest polyline point by squared distance. <= 800 points, cheap at 30fps. */
-  function scrubTo(clientX, clientY) {
-    if (!R || !g) return;
-    rect = canvas.getBoundingClientRect();
-    var x = (clientX - rect.left) * (W / rect.width), y = (clientY - rect.top) * (H / rect.height);
-    var best = 0, bd = Infinity;
-    for (var i = 0; i < R.u.length; i++) {
-      var dx = px(i) - x, dy = py(i) - y, d = dx * dx + dy * dy;
-      if (d < bd) { bd = d; best = i; }
+  /* The tape is the only scrubber. The canvas ignores the pointer so looking at the map
+     cannot steal the runner. Drag the track, or arrow it once it has focus. */
+  function fracFromX(clientX) {
+    var el = bar || slider;
+    if (!el) return 0;
+    var r = el.getBoundingClientRect();
+    return clamp((clientX - r.left) / (r.width || 1), 0, 1);
+  }
+  function goStart() {
+    userPaused = false;
+    keyUntil = 0;
+    drag = false;
+    reset();
+    last = performance.now();
+    sync();
+    repaint();
+  }
+  function togglePlay() {
+    if (reduce || !R) return;
+    userPaused = !userPaused;
+    if (userPaused) {
+      if (phase === 'start') { phase = 'run'; elapsed = 0; pulseT = PULSE; }
+      scrubF = shownF;
+      keyUntil = 0;
+    } else {
+      release(shownF);
     }
-    scrubF = R.cum[best];
-    if (phase === 'start') { phase = 'run'; pulseT = PULSE; }
-    paint(scrubF);
+    sync();
+    if (userPaused && !raf) repaint();
   }
-  function endScrub() {
-    if (!hover && !drag) return;
-    hover = drag = false; origin = null;
-    release(scrubF);
-    if (!raf) repaint();
-  }
-  canvas.addEventListener('pointerdown', function (e) { /* never preventDefault on touch */
-    if (e.pointerType === 'touch') { origin = { x: e.clientX, y: e.clientY, id: e.pointerId }; return; }
-    hover = true; scrubTo(e.clientX, e.clientY);
-  });
-  canvas.addEventListener('pointermove', function (e) {
-    if (e.pointerType !== 'touch') { hover = true; return scrubTo(e.clientX, e.clientY); }
-    if (drag) return scrubTo(e.clientX, e.clientY);
-    if (!origin) return;
-    var dx = e.clientX - origin.x, dy = e.clientY - origin.y;
-    if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) { /* clearly horizontal: it's a scrub */
+  if (slider) {
+    slider.addEventListener('pointerdown', function (e) {
+      if (e.button) return;
+      pointerFocus = true;
       drag = true;
-      try { canvas.setPointerCapture(origin.id); } catch (err) { /* a nicety */ }
-      scrubTo(e.clientX, e.clientY);
+      scrubF = fracFromX(e.clientX);
+      if (phase === 'start') { phase = 'run'; pulseT = PULSE; }
+      try { slider.setPointerCapture(e.pointerId); } catch (err) { /* a nicety */ }
+      paint(scrubF);
+    });
+    slider.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      scrubF = fracFromX(e.clientX);
+      paint(scrubF);
+    });
+    function endDrag() {
+      if (!drag) return;
+      drag = false;
+      release(scrubF);
+      if (!raf) repaint();
     }
-  });
-  canvas.addEventListener('pointerleave', endScrub);
-  canvas.addEventListener('pointerup', function () { origin = null; endScrub(); });
-  canvas.addEventListener('pointercancel', function () { origin = null; endScrub(); });
-  /* Keyboard focus pins the trace where it is, so the value a reader hears is the one the arrows step
-     from; blur lets the run go on from there. A pointer focuses the canvas too (tabindex), so click,
-     which follows focus for mouse and touch alike, lifts the pin again. */
-  canvas.addEventListener('focus', function () { if (!R || !g) return; scrubF = shownF; keyUntil = Infinity; readout(shownF, tauOf(shownF), true); });
-  canvas.addEventListener('blur', function () { if (keyUntil === Infinity) { keyUntil = 0; release(scrubF); if (!raf) repaint(); } });
-  canvas.addEventListener('click', function () { if (keyUntil === Infinity) keyUntil = 0; });
-  canvas.addEventListener('keydown', function (e) {
-    var step = e.shiftKey ? 1 / 20 : 1 / 200, f;
-    if (e.key === 'ArrowLeft') f = shownF - step;
-    else if (e.key === 'ArrowRight') f = shownF + step;
-    else if (e.key === 'Home') f = 0;
-    else if (e.key === 'End') f = 1;
-    else return;
-    e.preventDefault();
-    scrubF = clamp(f, 0, 1);
-    if (keyUntil !== Infinity) keyUntil = performance.now() + 1500;
-    if (phase === 'start') { phase = 'run'; pulseT = PULSE; }
-    if (R && g) { rect = canvas.getBoundingClientRect(); paint(scrubF); }
-  });
+    slider.addEventListener('pointerup', endDrag);
+    slider.addEventListener('pointercancel', endDrag);
+    slider.addEventListener('lostpointercapture', endDrag);
+    /* Keyboard focus pins the trace so the arrows step from the value that was read. A pointer
+       focuses the slider too (tabindex), so pointerdown sets pointerFocus and skips the pin. */
+    slider.addEventListener('focus', function () {
+      if (pointerFocus) { pointerFocus = false; return; }
+      if (!R || !g) return;
+      scrubF = shownF;
+      keyUntil = Infinity;
+      readout(shownF, tauOf(shownF), true);
+    });
+    slider.addEventListener('blur', function () {
+      if (keyUntil === Infinity) {
+        keyUntil = 0;
+        if (!userPaused) release(scrubF);
+        if (!raf) repaint();
+      }
+    });
+    slider.addEventListener('keydown', function (e) {
+      var step = e.shiftKey ? 1 / 20 : 1 / 200, f;
+      if (e.key === 'ArrowLeft') f = shownF - step;
+      else if (e.key === 'ArrowRight') f = shownF + step;
+      else if (e.key === 'Home') f = 0;
+      else if (e.key === 'End') f = 1;
+      else return;
+      e.preventDefault();
+      scrubF = clamp(f, 0, 1);
+      if (keyUntil !== Infinity) keyUntil = performance.now() + 1500;
+      if (phase === 'start') { phase = 'run'; pulseT = PULSE; }
+      if (R && g) { rect = canvas.getBoundingClientRect(); paint(scrubF); }
+      if (userPaused) seat(scrubF);
+    });
+  }
+  if (startBtn) startBtn.addEventListener('click', goStart);
+  if (playBtn) playBtn.addEventListener('click', togglePlay);
 
   if (window.ResizeObserver) new ResizeObserver(function () { layout(); repaint(); }).observe(canvas);
   else window.addEventListener('resize', function () { layout(); repaint(); });
