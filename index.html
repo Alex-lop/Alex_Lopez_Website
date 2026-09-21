@@ -232,10 +232,18 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
           <p class="run-note">Half marathon in 1:32, a first marathon in training.</p>
           <!-- ALEX: confirm the distance (half marathon?) and a goal time for Hartford; add them to this line once confirmed. -->
           <p class="countdown" data-countdown="2026-10-10"><b data-days>23</b> days to Eversource Hartford, Oct 10.</p>
-          <figure class="weeks" data-weeks hidden>
-            <figcaption>Last 8 weeks, with the 50-mile line</figcaption>
-            <svg viewBox="0 0 320 80" width="320" height="80" role="img" aria-label="Miles per week for the last 8 weeks"></svg>
-          </figure>
+          <div class="avg-week" data-avg data-avg-from="2026-09-14">
+            <p class="label">Avg miles per week</p>
+            <p class="avg-readout"><span class="avg-num" data-avg-num>27.0</span><span class="of" data-avg-since>since Sep 14</span></p>
+            <div class="avg-plot" data-avg-plot hidden>
+              <div class="avg-goal" data-avg-goal aria-hidden="true"></div>
+              <div class="avg-mean" data-avg-mean aria-hidden="true"><span data-avg-mean-label>27.0</span></div>
+              <div class="avg-bars" data-avg-bars role="listbox" tabindex="0" aria-label="Miles each week. The average starts Sep 14."></div>
+            </div>
+            <p class="avg-axis" data-avg-axis hidden aria-hidden="true"><span></span><span></span></p>
+            <p class="avg-caption" data-avg-caption>1 week in · last week 27.0 mi · this week just opened</p>
+            <p class="sr-only" data-avg-summary>Averaging 27.0 miles per week since Sep 14.</p>
+          </div>
           <div class="splits" data-splits hidden tabindex="0" role="region" aria-label="Mile splits of the latest run"></div>
           <p class="feeling"><em data-run="feeling">Legs were flat Monday, then the six on Wednesday clicked. Relative effort 103 and I still wanted another mile.</em></p>
           <p class="source">Numbers from <a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Strava</a>, <span data-synced data-run="synced">synced Sep 16, 2026</span>. The note is written by hand.</p>

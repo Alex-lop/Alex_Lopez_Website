@@ -28,6 +28,7 @@ ORIGIN = (42.0, -71.0)   # the published route is a shape at this point, not a p
 RUN_TYPES = ("Run", "TrailRun")
 ATHLETE = "141554769"
 STREAM_KEYS = "time,distance,velocity_smooth,altitude,heartrate"
+AVG_FROM = date(2026, 9, 14)  # training-block average on the page; keep every week from here
 
 
 def api(url, token=None, form=None):
@@ -176,9 +177,13 @@ def stream_block(raw, n=300):
 
 
 def week_rows(runs, monday, n=8):
-    """The last n Monday-start weeks, oldest first; the last row is the live week."""
+    """Monday-start weeks, oldest first; the last row is the live week. At least the last n
+    weeks, and every week since AVG_FROM so the training-block average does not fall off."""
+    oldest = monday - timedelta(days=7 * (n - 1))
+    if monday >= AVG_FROM:
+        oldest = min(oldest, AVG_FROM)
     rows = []
-    for k in range(n - 1, -1, -1):
+    for k in range((monday - oldest).days // 7, -1, -1):
         ws = monday - timedelta(days=7 * k)
         lo, hi = ws.isoformat(), (ws + timedelta(days=7)).isoformat()
         wk = [a for a in runs if lo <= a["start_date_local"][:10] < hi]
@@ -261,6 +266,7 @@ def build(acts, monday, old, detail=None, streams=None, stats=None, today=None):
     elif old_latest:
         out["latest"] = old_latest
     out["weeks"] = week_rows(runs, monday)
+    out["avg_from"] = AVG_FROM.isoformat()
     ytd, allt = ((stats or {}).get(k) or {} for k in ("ytd_run_totals", "all_run_totals"))
     mi = lambda t: round(t["distance"] / MI, 1) if t.get("distance") is not None else None
     out["totals"] = {
@@ -416,6 +422,10 @@ def self_check():
     assert len(weeks) == 8 and weeks[0]["week_start"] == "2026-07-27" and weeks[-1]["week_start"] == "2026-09-14", weeks
     assert (weeks[-1]["miles"], weeks[-1]["runs"]) == (14.2, 3) and weeks[-2]["miles"] == 4.0, weeks[-2:]
     assert not any(r["miles"] == 9.0 for r in weeks), weeks
+    assert out["avg_from"] == "2026-09-14"
+    # past the 8-week lookback, still keep every week since AVG_FROM
+    later = build(acts, date(2026, 11, 16), old)["weeks"]
+    assert later[0]["week_start"] == "2026-09-14" and later[-1]["week_start"] == "2026-11-16", later[0]
 
     # achievements: today and the 29 days before it, so the 4.0 last week counts and the 9.0 in July does not
     assert out["achievements"] == {"prs_30d": 3, "achievements_30d": 3}, out["achievements"]
