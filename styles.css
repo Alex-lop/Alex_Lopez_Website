@@ -134,6 +134,8 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
 @media (max-width: 620px) { .feature-body { font-size: 18px; } }
 .feature-body p { margin: 0 0 18px; max-width: none; }
 .feature-body p:last-child { margin-bottom: 0; }
+.shots { display: grid; gap: 22px; margin-top: 8px; }
+.shots .shot-note { margin: 0; max-width: 62ch; font: 400 .95rem/1.55 var(--sans); color: var(--ink-2); }
 .photo figcaption { margin-top: 8px; font: 400 .85rem/1.45 var(--sans); color: var(--ink-2); }
 
 /* Also built */
@@ -237,21 +239,48 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
 .feeling { max-width: 46ch; margin: 0 0 12px; }
 .source { margin: 0 0 6px; color: var(--ink-2); font-size: .9rem; }
 
-/* The ticker band, once on the page */
-.ticker { margin: 56px 0 0; padding: 12px 0; background: var(--paper-2); overflow: hidden; white-space: nowrap; font-size: .9rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
-.ticker:hover .ticker-track, .ticker.paused .ticker-track { animation-play-state: paused; }
-.ticker-track { display: inline-flex; margin: 0; }
-.ticker-track.go { animation: ticker var(--ticker-s, 45s) linear infinite; }
-.ticker-track span { padding-right: 56px; }
-@keyframes ticker { to { transform: translateX(calc(-1 * var(--w, 50%))); } }
-
 /* Footer */
 footer { padding: 72px 0 72px; }
-footer .wrap { display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: baseline; gap: 12px 40px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: center; gap: 12px 40px; }
 footer ul { display: flex; flex-wrap: wrap; gap: 0 22px; margin: 0; padding: 0; list-style: none; font-size: .95rem; }
 footer a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
-footer a:hover { color: var(--accent); }
+footer a:hover, .email a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .email { margin: 0; font-size: .95rem; }
+.email a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
+
+/* Outbound links: the one blue, plus a small mark so GitHub, Strava, mail, and the rest read as links. */
+a[href^="https:"],
+a[href^="mailto:"],
+a[href$=".pdf"] {
+  color: var(--accent);
+  text-decoration-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+a[href^="https:"]:hover,
+a[href^="mailto:"]:hover,
+a[href$=".pdf"]:hover { color: color-mix(in srgb, var(--accent) 72%, #000); }
+a[href^="https:"]::before,
+a[href^="mailto:"]::before,
+a[href$=".pdf"]::before {
+  content: "";
+  display: inline-block;
+  width: .92em;
+  height: .92em;
+  margin-right: .38em;
+  flex: none;
+  vertical-align: -0.12em;
+  background: currentColor;
+  -webkit-mask: var(--mark) center / contain no-repeat;
+  mask: var(--mark) center / contain no-repeat;
+}
+.hub-list a[href^="https:"]::before { width: .78em; height: .78em; margin-right: .34em; vertical-align: -0.06em; }
+a[href^="https:"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42L17.59 5H14V3zM5 5h6v2H7v10h10v-4h2v6H5V5z'/%3E%3C/svg%3E"); }
+a[href*="github.com"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.7 7.7 0 0 1 8 4.77c.68.003 1.36.092 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z'/%3E%3C/svg%3E"); }
+a[href*="linkedin.com"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.73V1.73C24 .77 23.21 0 22.23 0z'/%3E%3C/svg%3E"); }
+a[href*="youtube.com"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19 31.7 31.7 0 0 0 0 12a31.7 31.7 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14A31.7 31.7 0 0 0 24 12a31.7 31.7 0 0 0-.5-5.81zM9.75 15.57V8.43L15.84 12l-6.09 3.57z'/%3E%3C/svg%3E"); }
+a[href*="strava.com"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169'/%3E%3C/svg%3E"); }
+a[href*="chess.com"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='5.2' r='2.55' fill='black'/%3E%3Cpath fill='black' d='M10.15 7.7h3.7c.55 1.15.9 1.95.9 2.7 0 .5-.22.9-.55 1.2l1.7 4.65H8.1l1.7-4.65c-.33-.3-.55-.7-.55-1.2 0-.75.35-1.55.9-2.7zM8.1 17.55h7.8v1.45H8.1zm-1.25 2.35h10.3V21.6H6.85z'/%3E%3C/svg%3E"); }
+a[href^="mailto:"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z'/%3E%3C/svg%3E"); }
+a[href$=".pdf"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z'/%3E%3C/svg%3E"); }
 
 /* One reveal per section, orchestrated: heading first, then each block. site.js adds .in. */
 .reveal-ready [data-reveal] > :first-child { clip-path: inset(0 0 100% 0); transition: clip-path 600ms cubic-bezier(.2, .7, .2, 1); }
@@ -281,8 +310,6 @@ footer a:hover { color: var(--accent); }
   .reveal-ready [data-reveal] > :first-child { clip-path: none; transition: none; }
   .reveal-ready [data-reveal] > :nth-child(2) { opacity: 1; transform: none; transition: none; }
   .odo .d span, .track::-webkit-progress-value, .avg-fill, .avg-mean, .avg-val { transition: none; }
-  .ticker-track { animation: none; white-space: normal; padding-inline: max(var(--pad), calc((100% - 1120px) / 2 + var(--pad))); }
-  .ticker-track span + span { display: none; }
   .tape-deck { display: none; }
   .hub h1, .hub-label, .hub-list a { animation: none; }
 }
@@ -291,7 +318,5 @@ footer a:hover { color: var(--accent); }
 :root[data-motion="off"] [data-reveal] > :first-child { clip-path: none; transition: none; }
 :root[data-motion="off"] [data-reveal] > :nth-child(2) { opacity: 1; transform: none; transition: none; }
 :root[data-motion="off"] .odo .d span, :root[data-motion="off"] .track::-webkit-progress-value, :root[data-motion="off"] .avg-fill, :root[data-motion="off"] .avg-mean, :root[data-motion="off"] .avg-val { transition: none; }
-:root[data-motion="off"] .ticker-track { animation: none; white-space: normal; padding-inline: max(var(--pad), calc((100% - 1120px) / 2 + var(--pad))); }
-:root[data-motion="off"] .ticker-track span + span { display: none; }
 :root[data-motion="off"] .tape-deck { display: none; }
 :root[data-motion="off"] .hub h1, :root[data-motion="off"] .hub-label, :root[data-motion="off"] .hub-list a { animation: none; }
