@@ -335,31 +335,6 @@
     });
   }
 
-  /* ticker: clone the segment past two viewports, scroll it at ~40px/s */
-  var track = doc.querySelector('.ticker-track'), seg = doc.querySelector('[data-ticker]');
-
-  function marquee() {
-    if (!track || !seg) return;
-    while (track.children.length > 1) track.removeChild(track.lastElementChild);
-    track.classList.remove('go');
-    if (reduce) return;
-    var w = seg.offsetWidth;
-    if (!w) return;
-    for (var i = 0; i < 20 && track.scrollWidth < innerWidth * 2 + w; i++) {
-      var c = seg.cloneNode(true);
-      c.removeAttribute('data-ticker');
-      track.appendChild(c);
-    }
-    track.style.setProperty('--w', w + 'px');
-    track.style.setProperty('--ticker-s', w / 40 + 's');
-    track.classList.add('go');
-  }
-
-  var band = doc.querySelector('.ticker');
-  if (band && IO) new IO(function (es) { band.classList.toggle('paused', !es[0].isIntersecting); }).observe(band);
-  var rt;
-  addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(marquee, 200); });
-
   /* race countdown */
   var cd = doc.querySelector('[data-countdown]');
   if (cd) {
@@ -402,7 +377,6 @@
       if (avgNum && isFinite(avgGoalVal)) { avgShown = avgGoalVal; avgNum.textContent = avgGoalVal.toFixed(1); setMean(avgGoalVal); }
     } else if (stripFrame) stripFrame();
     if (toggle) { toggle.textContent = reduce ? 'Resume motion' : 'Pause motion'; toggle.disabled = mq.matches; }
-    marquee();
   }
   mq.addEventListener('change', applyMotion);
   doc.addEventListener('motion:change', applyMotion);
@@ -412,7 +386,6 @@
   });
 
   applyMotion();
-  if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(marquee);  // --w must be a real-font width
 
   fetch('data/strava.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
     var w = d.week || {}, l = d.latest || {}, synced = d.generated_at ? ago(d.generated_at) : '';
@@ -441,16 +414,6 @@
 
     drawAvg(d.weeks, d.week_start, d.avg_from);
     buildSplits(l.splits);
-
-    if (seg) {
-      var lifts = d.totals && d.totals.lifts_before_runs_this_week, bits = [];
-      if (num(w.miles)) bits.push('this week ' + w.miles.toFixed(1) + ' mi');
-      if (blockAvgVal) bits.push('avg ' + blockAvgVal.toFixed(1) + ' mi/wk');
-      if (l.miles && l.date) bits.push('latest ' + (+l.miles).toFixed(2) + ' mi ' + day(l.date, { weekday: 'short' }));
-      if (num(lifts) && w.runs > 0 && lifts > 0) bits.push(lifts === w.runs ? 'lifted before every run' : 'lifted before ' + lifts + ' of ' + w.runs + ' runs');
-      if (synced) bits.push(synced);
-      if (bits.length) { seg.textContent = bits.join(' · '); marquee(); }
-    }
 
     var stale = doc.querySelector('[data-run-stale]');
     if (stale && d.generated_at && (Date.now() - Date.parse(d.generated_at)) / 864e5 > 10) {
@@ -489,7 +452,7 @@
     } else if (moveFocus) {
       scrollTo(0, 0);
     }
-    if (v === 'outside') { rollOdo(); growAvg(); marquee(); if (stripFrame) stripFrame(); }
+    if (v === 'outside') { rollOdo(); growAvg(); if (stripFrame) stripFrame(); }
   }
   addEventListener('hashchange', function () { onView(true); });
   onView(location.hash.length > 1);
