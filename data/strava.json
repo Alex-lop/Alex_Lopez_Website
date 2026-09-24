@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-09-23T21:28:12Z",
+  "generated_at": "2026-09-24T21:28:46Z",
   "week_start": "2026-09-21",
   "week": {
-    "runs": 2,
-    "miles": 8.7,
-    "pace_sec_per_mi": 446,
-    "elev_ft": 210,
-    "moving_time_s": 3889,
+    "runs": 3,
+    "miles": 14.8,
+    "pace_sec_per_mi": 452,
+    "elev_ft": 390,
+    "moving_time_s": 6679,
     "days": [
       6.01,
       2.71,
       0.0,
-      0.0,
+      6.05,
       0.0,
       0.0,
       0.0
@@ -34,15 +34,15 @@
     {"week_start":"2026-08-31","miles":7.5,"runs":2,"moving_time_s":3546},
     {"week_start":"2026-09-07","miles":13.3,"runs":5,"moving_time_s":7005},
     {"week_start":"2026-09-14","miles":27.0,"runs":6,"moving_time_s":12285},
-    {"week_start":"2026-09-21","miles":8.7,"runs":2,"moving_time_s":3889}
+    {"week_start":"2026-09-21","miles":14.8,"runs":3,"moving_time_s":6679}
   ],
   "avg_from": "2026-09-14",
   "totals": {
-    "ytd_runs": 141,
-    "ytd_miles": 441.6,
-    "all_runs": 302,
-    "all_miles": 878.1,
-    "lifts_before_runs_this_week": 2
+    "ytd_runs": 142,
+    "ytd_miles": 447.7,
+    "all_runs": 303,
+    "all_miles": 884.2,
+    "lifts_before_runs_this_week": 3
   },
   "achievements": {
     "prs_30d": 0,
