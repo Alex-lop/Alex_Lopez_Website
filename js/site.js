@@ -290,6 +290,41 @@
     ao.observe(avgPlot);
   }
 
+  /* last five Monday weeks, newest at the right. This week is the accent bar. */
+  var milesBars = doc.querySelector('[data-miles-bars]');
+  var milesPlot = milesBars && milesBars.querySelector('[data-miles-plot]');
+  var milesLabel = milesBars && milesBars.querySelector('[data-miles-label]');
+  var milesSum = milesBars && milesBars.querySelector('[data-miles-summary]');
+
+  function drawMilesBars(weeks, liveStart) {
+    if (!milesPlot || !weeks || !weeks.length) return;
+    var rows = weeks.slice(-5), top = 0, bits = [];
+    rows.forEach(function (w) { top = Math.max(top, +w.miles || 0); });
+    if (!top) top = 1;
+    milesPlot.textContent = '';
+    rows.forEach(function (w) {
+      var miles = +w.miles || 0, live = w.week_start === liveStart;
+      var col = doc.createElement('div'), val = doc.createElement('span');
+      var track = doc.createElement('span'), fill = doc.createElement('span'), lab = doc.createElement('span');
+      col.className = 'miles-col' + (live ? ' live' : '');
+      val.className = 'miles-val';
+      val.textContent = miles.toFixed(1);
+      track.className = 'miles-track';
+      fill.className = 'miles-fill';
+      fill.style.setProperty('--h', (miles / top * 100) + '%');
+      lab.className = 'miles-lab';
+      lab.textContent = live ? 'now' : day(w.week_start, { month: 'short', day: 'numeric' });
+      track.appendChild(fill);
+      col.appendChild(val);
+      col.appendChild(track);
+      col.appendChild(lab);
+      milesPlot.appendChild(col);
+      bits.push((live ? 'This week' : day(w.week_start)) + ', ' + miles.toFixed(1) + ' miles');
+    });
+    if (milesLabel) milesLabel.textContent = 'Last ' + rows.length + (rows.length === 1 ? ' week' : ' weeks');
+    if (milesSum) milesSum.textContent = bits.join('. ') + '.';
+  }
+
   var splits = doc.querySelector('[data-splits]'), touched = 0, selfScroll = false;
 
   function buildSplits(list) {
@@ -433,6 +468,7 @@
     }
 
     drawAvg(d.weeks, d.week_start, d.avg_from);
+    drawMilesBars(d.weeks, d.week_start);
     buildSplits(l.splits);
 
     var stale = doc.querySelector('[data-run-stale]');
