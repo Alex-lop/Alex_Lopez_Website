@@ -184,10 +184,10 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
 .odo .d span i { display: block; height: 1em; font-style: normal; }
 .odo .d.blank { width: 0; }
 .of { font-size: 1.15rem; color: var(--ink-2); }
-.track { display: block; width: 100%; max-width: 440px; height: 3px; margin: 0 0 22px; border: 0; background: var(--rule); border-radius: 2px; overflow: hidden; -webkit-appearance: none; appearance: none; color: var(--accent); }
-.track::-webkit-progress-bar { background: var(--rule); }
-.track::-webkit-progress-value { background: var(--accent); transition: width 900ms cubic-bezier(.2, .7, .2, 1); }
-.track::-moz-progress-bar { background: var(--accent); }
+.track { display: block; width: 100%; max-width: 440px; height: 8px; margin: 4px 0 22px; border: 0; background: var(--paper-2); border-radius: 4px; overflow: hidden; -webkit-appearance: none; appearance: none; color: var(--accent); }
+.track::-webkit-progress-bar { background: var(--paper-2); border-radius: 4px; }
+.track::-webkit-progress-value { background: var(--accent); border-radius: 4px; transition: width 900ms cubic-bezier(.2, .7, .2, 1); }
+.track::-moz-progress-bar { background: var(--accent); border-radius: 4px; }
 .week-line { margin: 0 0 14px; color: var(--ink-2); font-size: .95rem; font-variant-numeric: tabular-nums; }
 .run-note { margin: 0 0 14px; }
 .countdown { margin: 0 0 22px; font-size: .92rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
