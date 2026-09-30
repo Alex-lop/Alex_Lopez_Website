@@ -12,6 +12,11 @@
   function mmss(s) { s = Math.round(s); return (s / 60 | 0) + ':' + String(s % 60).padStart(2, '0'); }
   function hm(s) { var m = Math.round(s / 60), h = Math.floor(m / 60); return h ? h + 'h ' + String(m % 60).padStart(2, '0') + 'm' : m + 'm'; }
   function day(iso, opts) { var d = new Date(iso + 'T12:00:00'); return isNaN(d) ? iso : d.toLocaleDateString('en-US', opts || { month: 'short', day: 'numeric' }); }
+  function mdy(iso) {
+    var d = new Date(iso + 'T12:00:00');
+    if (isNaN(d)) return iso;
+    return String(d.getMonth() + 1).padStart(2, '0') + '/' + String(d.getDate()).padStart(2, '0') + '/' + d.getFullYear();
+  }
   function ago(iso) {
     var s = (Date.now() - Date.parse(iso)) / 1e3, n, u;
     if (!isFinite(s)) return '';
@@ -405,10 +410,13 @@
     Object.keys(out).forEach(function (k) {
       if (out[k]) all('[data-run="' + k + '"]').forEach(function (el) { el.textContent = out[k]; });
     });
-    var notesEl = doc.querySelector('[data-run="latest.notes"]');
+    var notesEl = doc.querySelector('[data-run-notes]');
     if (notesEl) {
       var notes = (l.description || '').trim();
-      notesEl.textContent = notes;
+      var body = notesEl.querySelector('[data-run="latest.notes"]');
+      var from = notesEl.querySelector('[data-run="latest.notes-from"]');
+      if (body) body.textContent = notes;
+      if (from) from.textContent = notes && l.date ? 'from ' + mdy(l.date) : '';
       notesEl.hidden = !notes;
     }
 

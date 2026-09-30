@@ -15,7 +15,7 @@
   --ink-2: #55554f;
   --rule: #d8d7ce;
   --accent: #1a5fff;
-  --run: #d4651a;
+  --run: #fc4c02;
   --sans: "Plex Sans", "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --serif: "Plex Serif", "IBM Plex Serif", Georgia, "Times New Roman", serif;
   --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -154,7 +154,9 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
 .hobby img[src$="golf-swing.jpg"] { object-position: 30% center; }
 .hobby img[src$="luna-small.jpg"] { object-position: 50% 20%; }
 .run-title { margin: 22px 0 8px; color: var(--run); font-weight: 600; font-size: clamp(1.35rem, 2.4vw, 1.75rem); letter-spacing: -.015em; }
-.run-notes { margin: 0; max-width: 46ch; white-space: pre-line; }
+.run-notes { margin: 0; max-width: 46ch; }
+.run-from { margin: 0 0 6px; color: var(--ink-2); font-size: .9rem; }
+.run-notes [data-run="latest.notes"] { margin: 0; white-space: pre-line; }
 
 /* Running, first on the hobbies page: odometer on the left, route on the right */
 .run { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px 56px; align-items: start; }
