@@ -53,10 +53,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; line-height: 1.1; text-wrap: balan
 .page h1 { margin: 0 0 24px; font-size: clamp(1.75rem, 3.4vw, 2.4rem); letter-spacing: -.015em; }
 h2 { margin: 0 0 24px; font-size: clamp(1.75rem, 3.4vw, 2.4rem); letter-spacing: -.015em; }
 h3 { margin: 0 0 6px; font-size: 1.25rem; letter-spacing: -.01em; }
-.prose, .feature-body p, .nemisis-body p, .also p, .hobby p, .run-note { max-width: var(--measure); }
-#work .prose { margin-bottom: 28px; }
+.prose, .feature-body p, .hobby p, .run-note { max-width: var(--measure); }
 .tagline { margin: -12px 0 28px; font-size: 1.15rem; max-width: 50ch; }
-.tagline-small { margin: 0 0 8px; max-width: 32ch; }
 
 /* Hub: Skula's rail — centered italic greeting, labeled lists sharing one | */
 .hub { min-height: 100dvh; display: flex; align-items: safe center; justify-content: center; padding: 6vh var(--pad) 72px; }
@@ -82,7 +80,6 @@ h3 { margin: 0 0 6px; font-size: 1.25rem; letter-spacing: -.01em; }
 /* One destination at a time once the head script has set data-view. Without JS the hub sits above the long page. */
 html[data-view] .page { display: none; }
 html[data-view="projects"] #projects,
-html[data-view="also"] #also,
 html[data-view="work"] #work,
 html[data-view="outside"] #outside { display: block; }
 html[data-view]:not([data-view="home"]) .hub { display: none; }
@@ -93,7 +90,7 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
 .back:hover, .back:focus-visible { color: var(--accent); }
 
 .page { padding-top: clamp(88px, 14vh, 140px); }
-#golf, #nemisis, #reglineage, #imc { scroll-margin-top: 72px; }
+#golf { scroll-margin-top: 72px; }
 .page > .wrap > p:last-child { margin-bottom: 0; }
 
 .motion-dock { position: fixed; z-index: 20; right: var(--pad); bottom: 12px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink-2); font: inherit; font-size: .9rem; cursor: pointer; }
@@ -122,12 +119,6 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
   to { opacity: 1; transform: none; }
 }
 
-/* Stats: number in mono, the rest in the body face */
-.stats { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 14px; align-items: baseline; margin: 0 0 16px; padding: 0; list-style: none; }
-.stats li { display: contents; }
-.stats b { font-weight: 500; font-size: 1.2rem; line-height: 1.3; text-align: right; font-variant-numeric: tabular-nums; }
-.stats span { color: var(--ink); }
-
 /* Graphene: logo and stats, then the origin copy underneath — a blog column, not a wrap-around */
 .feature { display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; align-items: start; max-width: 42rem; }
 .wordmark-img { width: min(100%, 360px); margin: 0 0 20px; }
@@ -139,36 +130,22 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
 .shots .shot-note { margin: 0; max-width: 62ch; font: 400 .95rem/1.55 var(--sans); color: var(--ink-2); }
 .photo figcaption { margin-top: 8px; font: 400 .85rem/1.45 var(--sans); color: var(--ink-2); }
 
-/* Also built */
-.nemisis { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px 56px; align-items: start; margin: 0 0 48px; }
-.links a + a { margin-left: 18px; }
-.terminal { margin: 6px 0 18px; padding: 16px 18px; overflow-x: auto; background: var(--paper-2); border-radius: 2px; font: 400 .82rem/1.55 var(--mono); color: var(--ink); tab-size: 2; }
-.terminal .prompt { color: var(--ink-2); }
-.terminal .em { font-weight: 500; }
-.terminal .dim { color: var(--ink-2); }
-.pair { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px 56px; align-items: start; }
-
 /* Experience */
 #work .wrap > .ground { background: var(--paper); border-radius: 2px; }
-.role { margin: 0 0 36px; }
+.role { margin: 0 0 64px; }
+.role:last-child { margin-bottom: 0; }
 .role h3 { margin-bottom: 0; }
 .role-title { margin: 0; }
-.points { margin: 10px 0 0; padding-left: 1.1em; list-style-type: "- "; max-width: var(--measure); }
-.points li::marker { content: "- "; }
-.points li + li { margin-top: 4px; }
-.role-photo { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px 48px; align-items: start; }
-.role-seal { grid-template-columns: minmax(0, 1fr) 96px; }
-.role-seal img { border-radius: 50%; }
+.role .small { margin: 0; }
+.role-photo { display: flex; align-items: center; gap: clamp(24px, 4vw, 48px); }
+.role-photo > div { flex: 0 1 auto; min-width: min(100%, 18rem); }
+.role-photo .photo { flex: 0 1 380px; width: min(380px, 46%); margin: 0; max-width: none; }
+@media (max-width: 760px) {
+  .role-photo { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .role-photo .photo { width: min(100%, 26rem); }
+}
 .photo { margin: 0; }
 .photo img { width: 100%; }
-.project-still { margin: 12px 0 16px; }
-.project-still img { width: 100%; }
-.record-hopkins dd { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px 20px; align-items: start; }
-.record-hopkins .seal { width: 72px; height: auto; border-radius: 50%; }
-.record { margin: 56px 0 0; max-width: 76ch; }
-.record > div { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 4px 20px; padding: 6px 0; }
-.record dt { color: var(--ink-2); font-size: .9rem; padding-top: 3px; }
-.record dd { margin: 0; }
 
 /* Outside */
 .hobbies { display: flex; flex-direction: column; gap: 40px; margin: 64px 0 0; }
@@ -251,17 +228,14 @@ footer a:hover, .email a:hover { text-decoration: underline; text-underline-offs
 
 /* Outbound links: the one blue, plus a small mark so GitHub, Strava, mail, and the rest read as links. */
 a[href^="https:"],
-a[href^="mailto:"],
-a[href$=".pdf"] {
+a[href^="mailto:"] {
   color: var(--accent);
   text-decoration-color: color-mix(in srgb, var(--accent) 50%, transparent);
 }
 a[href^="https:"]:hover,
-a[href^="mailto:"]:hover,
-a[href$=".pdf"]:hover { color: color-mix(in srgb, var(--accent) 72%, #000); }
+a[href^="mailto:"]:hover { color: color-mix(in srgb, var(--accent) 72%, #000); }
 a[href^="https:"]::before,
-a[href^="mailto:"]::before,
-a[href$=".pdf"]::before {
+a[href^="mailto:"]::before {
   content: "";
   display: inline-block;
   width: .92em;
@@ -281,7 +255,6 @@ a[href*="youtube.com"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://ww
 a[href*="strava.com"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169'/%3E%3C/svg%3E"); }
 a[href*="chess.com"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='5.2' r='2.55' fill='black'/%3E%3Cpath fill='black' d='M10.15 7.7h3.7c.55 1.15.9 1.95.9 2.7 0 .5-.22.9-.55 1.2l1.7 4.65H8.1l1.7-4.65c-.33-.3-.55-.7-.55-1.2 0-.75.35-1.55.9-2.7zM8.1 17.55h7.8v1.45H8.1zm-1.25 2.35h10.3V21.6H6.85z'/%3E%3C/svg%3E"); }
 a[href^="mailto:"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z'/%3E%3C/svg%3E"); }
-a[href$=".pdf"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z'/%3E%3C/svg%3E"); }
 
 /* One reveal per section, orchestrated: heading first, then each block. site.js adds .in. */
 .reveal-ready [data-reveal] > :first-child { clip-path: inset(0 0 100% 0); transition: clip-path 600ms cubic-bezier(.2, .7, .2, 1); }
@@ -290,18 +263,13 @@ a[href$=".pdf"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
 .reveal-ready [data-reveal].in > :nth-child(2) { opacity: 1; transform: none; }
 
 @media (max-width: 900px) {
-  .nemisis, .run { grid-template-columns: minmax(0, 1fr); }
-  .role-photo { grid-template-columns: minmax(0, 1fr); }
+  .run { grid-template-columns: minmax(0, 1fr); }
   .photo { max-width: 420px; }
-  .role-seal .photo { max-width: 96px; }
   .hobby { grid-template-columns: minmax(0, 1fr); }
   .hobby .photo { max-width: 320px; }
   .hobby .photo img { height: 220px; }
 }
 @media (max-width: 620px) {
-  .pair { grid-template-columns: minmax(0, 1fr); }
-  .record > div { grid-template-columns: minmax(0, 1fr); gap: 0; padding: 8px 0; }
-  .record-hopkins dd { grid-template-columns: minmax(0, 1fr) 64px; }
   .split { width: 120px; }
   footer .wrap { display: block; }
   footer ul { margin-top: 8px; }

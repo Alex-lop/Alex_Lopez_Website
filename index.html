@@ -20,8 +20,8 @@
 <link rel="stylesheet" href="styles.css">
 <script>
 (function () {
-  var alias = { graphene: 'projects', top: 'home', '': 'home', about: 'work', nemisis: 'also', reglineage: 'also', imc: 'also', hobbies: 'outside', running: 'outside', golf: 'outside' };
-  var known = { home: 1, projects: 1, also: 1, work: 1, outside: 1 };
+  var alias = { graphene: 'projects', top: 'home', '': 'home', about: 'work', also: 'projects', nemisis: 'projects', reglineage: 'projects', imc: 'projects', hobbies: 'outside', running: 'outside', golf: 'outside' };
+  var known = { home: 1, projects: 1, work: 1, outside: 1 };
   function apply() {
     var v = alias[location.hash.slice(1)] || location.hash.slice(1);
     document.documentElement.dataset.view = known[v] ? v : 'home';
@@ -45,7 +45,6 @@
           <p class="hub-label">projects</p>
           <div class="hub-list">
             <a href="#projects">graphene</a>
-            <a href="#also">other projects</a>
           </div>
         </section>
         <section class="hub-sec">
@@ -101,123 +100,37 @@
     </div>
   </section>
 
-  <section class="page" id="also" aria-labelledby="h-also">
-    <div class="wrap" data-reveal>
-      <h1 id="h-also">Also built</h1>
-      <article class="nemisis" id="nemisis" aria-labelledby="p-nemisis">
-        <div class="nemisis-meta">
-          <h3 id="p-nemisis">Nemisis</h3>
-          <p class="tagline-small">Crash-safety verification for AI-written retry patches</p>
-          <figure class="photo project-still">
-            <img src="assets/nemisis-banner-dark.png" width="2400" height="1000" loading="lazy" alt="Nemisis wordmark on a dark frame with a kill-marker timeline">
-          </figure>
-          <p class="small">August – September 2026. Python 3.12+, uv, pydantic, MCP SDK, pytest. v0.2.0 on PyPI, Docker 77 MB, Apache-2.0.</p>
-          <ul class="stats">
-            <li><b>634</b><span>tests on CPython 3.12 – 3.14</span></li>
-            <li><b>600 / 600</b><span>nightly red-team agreement</span></li>
-            <li><b>14</b><span>turns for a fresh agent to prove its own fix</span></li>
-          </ul>
-          <p class="links"><a href="https://github.com/Alex-lop/Nemisis" target="_blank" rel="noopener noreferrer">GitHub</a> <a href="https://alex-lop.github.io/Nemisis/" target="_blank" rel="noopener noreferrer">Live page</a></p>
-        </div>
-        <div class="nemisis-body">
-          <p>A payment webhook credits an order twice when the worker dies mid-handler. An ordinary test cannot catch that: it calls the handler once, with nothing going wrong. The agent's patch ships green and still double-charges.</p>
-          <p>CrashCheck runs the patched handler in a real worker and SIGKILLs it the moment the effect is on disk. A fresh worker starts, the event is redelivered, and an independent read says what survived. The model never judges. 600 of 600 generated handlers agreed with an independent oracle. Not proven: anything outside two scenarios, one handler shape, SQLite and POSIX SIGKILL.</p>
-<pre class="terminal" role="region" aria-label="Real output of nemisis check" tabindex="0"><code><span class="prompt">$</span> uv run nemisis check --base fixture:sqlite-credit-v1/buggy \
-    --candidate fixture:sqlite-credit-v1/misleading-green --mode local
-verdict: <span class="em">PATCH_FAILED_STILL_REPRODUCES</span>
-timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em">$50.00</span>
-<span class="dim">exit code 1</span></code></pre>
-        </div>
-      </article>
-
-      <div class="pair">
-        <article class="also" id="reglineage" aria-labelledby="p-reglineage">
-          <h3 id="p-reglineage">RegLineage</h3>
-          <p class="small">July – August 2026. Python 3.11, DataHub, DuckDB, FastAPI, MCP SDK, Docker.</p>
-          <p>Revocable data access for AI agents. Analyses run under an immutable lease; when DataHub governance changes, only the intersecting lease suspends. Twenty-one MCP tools can request approval; none can grant it.</p>
-          <ul class="stats">
-            <li><b>2,964,606</b><span>governed rows</span></li>
-            <li><b>24 of 24</b><span>adversarial cases</span></li>
-            <li><b>30 of 30</b><span>event-to-enforcement runs, 0 violations</span></li>
-            <li><b>420</b><span>tests</span></li>
-          </ul>
-          <p><a href="https://github.com/Alex-lop/RegLineage" target="_blank" rel="noopener noreferrer">RegLineage on GitHub</a></p>
-        </article>
-        <article class="also" id="imc" aria-labelledby="p-imc">
-          <h3 id="p-imc">IMC Prosperity 3</h3>
-          <figure class="photo project-still">
-            <img src="assets/projects/imc-prosperity-3.webp" width="1280" height="720" loading="lazy" alt="IMC Prosperity 3, a global trading challenge">
-          </figure>
-          <p class="small">March – April 2025. Python, NumPy, Pandas.</p>
-          <p>A global algorithmic trading competition. With teammates I built Python strategies for market making, scalping, locational arbitrage, and mean reversion. The competition code is private, so the placing is the artifact.</p>
-          <ul class="stats">
-            <li><b>912</b><span>of about 13,000 teams</span></li>
-          </ul>
-        </article>
-      </div>
-    </div>
-  </section>
-
   <section class="page" id="work" aria-labelledby="h-work">
     <div class="wrap" data-reveal>
       <h1 id="h-work">XP: experience</h1>
-      <p class="prose">I'm Alex, a third year at Northeastern studying CS and Math. Most of what I build is about keeping a human in the loop when AI agents write code: Graphene, Nemisis, RegLineage. During the year I TA databases and discrete math and sit on the SHPE board. The rest of the time I'm running, golfing, or losing at chess.</p>
       <div class="ground">
       <div class="roles">
         <article class="role">
           <h3>Expandya</h3>
           <p class="role-title">Software Engineering Intern</p>
           <p class="small">June 2026 – September 2026, Westport, CT</p>
-          <ul class="points">
-            <li>Tuned Python and C++ data systems for e-commerce clients: indexing, query caching, profiling on datasets over 3M rows</li>
-            <li>Built and improved client sites for organic and AI-assisted search: crawlability, indexing, site architecture, metadata, performance</li>
-          </ul>
         </article>
-        <article class="role role-photo role-seal">
-          <div>
-            <h3>Northeastern University</h3>
-            <p class="role-title">Teaching Assistant</p>
-            <p class="small">September 2025 – Present, Boston, MA</p>
-            <ul class="points">
-              <li>CS 3200 Introduction to Databases and CS 1800 Discrete Structures: weekly office hours, grading, project debugging</li>
-              <li>Most of it is helping students new to CS build confidence</li>
-            </ul>
-          </div>
-          <figure class="photo">
-            <img src="assets/northeastern.png" width="447" height="447" loading="lazy" alt="The Northeastern University seal">
-          </figure>
+        <article class="role">
+          <h3>Northeastern University</h3>
+          <p class="role-title">Teaching Assistant</p>
+          <p class="small">September 2025 – Present, Boston, MA</p>
         </article>
         <article class="role role-photo">
           <div>
             <h3>O'Hern Lab, Yale University</h3>
             <p class="role-title">Computational Biology Research Assistant</p>
-            <p class="small">June 2023 – September 2023, New Haven, CT</p>
-            <ul class="points">
-              <li>Built a pipeline turning raw AlphaFold and NetSurfP folding simulations into structured datasets</li>
-              <li>Optimized Python on Yale HPC clusters to classify 10,000+ oncogenic variants, flagging mutations that alter folding in ways plausibly linked to cancer</li>
-            </ul>
+            <p class="small">June – September 2023 and 2024, New Haven, CT</p>
           </div>
           <figure class="photo">
             <img src="assets/me-presenting.jpg" width="900" height="599" loading="lazy" alt="Alex Lopez beside his research poster at Yale's computational biology poster session">
-            <figcaption>New Haven, 2023</figcaption>
           </figure>
         </article>
         <article class="role">
           <h3>Society of Hispanic Professional Engineers</h3>
           <p class="role-title">Undergraduate Ambassador</p>
           <p class="small">September 2025 – Present, Boston, MA</p>
-          <ul class="points">
-            <li>On the board, planning and promoting first-year events</li>
-          </ul>
         </article>
       </div>
-      <dl class="record">
-        <div><dt>Degree</dt><dd>Northeastern University, Khoury College. Combined BSE in Computer Science and Mathematics, AI concentration. GPA 3.71, major 3.84. Expected May 2028.</dd></div>
-        <div><dt>Coursework</dt><dd>Group Theory, Number Theory, Differential Geometry, Numerical Methods for Differential Equations, Advanced Probability and Statistics, Data Structures and Algorithms.</dd></div>
-        <div><dt>Stack</dt><dd>Python, Java, JavaScript, OCaml, Kotlin, C. PyTorch, React, SQL, AWS, Pandas, MATLAB, GraphQL.</dd></div>
-        <div class="record-hopkins"><dt>Before</dt><dd><span>Hopkins School, New Haven, CT, 2024. Wrestling captain, Editor at Large of The Razor, Science Olympiad.</span><img class="seal" src="assets/hopkinslll.jpg" width="316" height="316" loading="lazy" alt="The Hopkins School seal, founded 1660"></dd></div>
-        <div><dt>Now</dt><dd>TA for CS 3200 and CS 1800, on the SHPE board, building toward a first marathon.</dd></div>
-      </dl>
       </div>
     </div>
   </section>
@@ -232,7 +145,7 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
           <p class="label">This week</p>
           <p class="odo-line"><span class="odo" data-odo="14.2" role="img" aria-label="14.2 miles"><span class="d" aria-hidden="true"><span style="--n: 1"><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span></span><span class="d" aria-hidden="true"><span style="--n: 4"><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span></span><span class="dot" aria-hidden="true">.</span><span class="d" aria-hidden="true"><span style="--n: 2"><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span></span></span><span class="of">/ 50 mi</span></p>
           <progress class="track" data-week-goal max="50" value="14.2" aria-label="Miles this week toward 50">14.2 of 50 miles this week</progress>
-          <p class="run-note">Since HS, absolutley loved running. I honestly look forward to my runs the entire day (wasn't always the case), but there's somethign so nice about just letting your mind go off for a just live in the moment.</p>
+          <p class="run-note">Honestly the one thing I look foward to the most in my day, which would shock me couple years back. It's really the one time of day where I can just relax my mind and enjoy myself alongside my time weightlifting. Hopefully gonna qualify for Boston 2028!!!</p>
           <p><a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Check out my Strava</a></p>
           <div class="splits" data-splits hidden tabindex="0" role="region" aria-label="Mile splits of the latest run"></div>
         </div>
@@ -271,7 +184,7 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
         <article class="hobby">
           <div>
             <h3>Chess</h3>
-            <p>7 years in playing chess and I still blunder every other move, but add me — always down to get a quick game in.</p>
+            <p>7 years in playing chess and I still blunder every other move, but add me! Always down to get a quick game in.</p>
             <p><a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener noreferrer">Add me on Chess.com</a></p>
           </div>
           <figure class="photo">
@@ -294,14 +207,8 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
 
 <footer>
   <div class="wrap">
-    <p class="email"><a href="mailto:lopez.alexan@northeastern.edu">lopez.alexan@northeastern.edu</a></p>
     <ul>
       <li><a href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-      <li><a href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-      <li><a href="https://www.youtube.com/@alex17-OX" target="_blank" rel="noopener noreferrer">YouTube</a></li>
-      <li><a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Strava</a></li>
-      <li><a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener noreferrer">Chess.com</a></li>
-      <li><a href="assets/Alex_Lopez_Resume.pdf" target="_blank" rel="noopener noreferrer">Resume</a></li>
     </ul>
   </div>
 </footer>

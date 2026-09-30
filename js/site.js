@@ -434,11 +434,10 @@
   var titles = {
     home: 'Alex Lopez',
     projects: 'Graphene — Alex Lopez',
-    also: 'Also built — Alex Lopez',
     work: 'XP: experience — Alex Lopez',
     outside: 'Outside — Alex Lopez'
   };
-  var pin = { nemisis: 'nemisis', reglineage: 'reglineage', imc: 'imc', running: 'running', golf: 'golf' };
+  var pin = { running: 'running', golf: 'golf' };
   function onView(moveFocus) {
     var v = doc.documentElement.dataset.view || 'home';
     var hash = location.hash.slice(1);

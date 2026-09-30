@@ -39,8 +39,8 @@ class SiteParser(HTMLParser):
 site = SiteParser()
 site.feed(HTML)
 
-assert {"top", "projects", "also", "work", "outside", "running", "main", "nemisis", "reglineage", "imc"} <= site.ids, sorted(site.ids)
-assert site.h1 == 5, f"Expected one h1 on the hub and each page, found {site.h1}"
+assert {"top", "projects", "work", "outside", "running", "main"} <= site.ids, sorted(site.ids)
+assert site.h1 == 4, f"Expected one h1 on the hub and each page, found {site.h1}"
 for img in site.images:
     assert "alt" in img and img.get("width") and img.get("height"), f"img needs alt, width, height: {img}"
 for a in site.anchors:
@@ -53,8 +53,7 @@ for a in site.anchors:
 for asset in site.assets:
     assert (ROOT / asset).is_file(), f"Missing local asset: {asset}"
 for url in (
-    "https://github.com/Alex-lop/Nemisis", "https://alex-lop.github.io/Nemisis/",
-    "https://github.com/Alex-lop/Graphene", "https://github.com/Alex-lop/RegLineage",
+    "https://github.com/Alex-lop/Graphene",
     "https://linkedin.com/in/lopezalexan/", "https://www.youtube.com/@alex17-OX",
     "https://www.strava.com/athletes/141554769", "https://www.chess.com/member/cheboialex",
     "assets/Alex_Lopez_Resume.pdf",
