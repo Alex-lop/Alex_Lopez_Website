@@ -131,12 +131,43 @@ def kind(a):
 
 # ---------------------------------------------------------------- pieces
 
+def has_line(m):
+    return bool(m and (m.get("summary_polyline") or m.get("polyline")))
+
+
 def pick_latest(acts):
-    """The hero draws a route, so `latest` is the newest run that has a public one; read_all also
-    returns private activities and those never leave this script."""
-    runs = [a for a in acts if kind(a) in RUN_TYPES and a.get("distance", 0) > 0]
-    public = [a for a in runs if a.get("visibility") == "everyone" and (a.get("map") or {}).get("summary_polyline")]
-    return max(public, key=lambda a: a["start_date_local"], default=None)
+    """Newest run the hero can draw. Visibility is not a filter: route_out publishes the line
+    shifted onto ORIGIN, so a private or followers-only run leaves this script as a shape, not a
+    place. The activity list often omits summary_polyline for those; resolve_latest copies the
+    detail line onto the row first."""
+    found = None
+    for a in acts:
+        if kind(a) not in RUN_TYPES or not a.get("distance") or not has_line(a.get("map")):
+            continue
+        if found is None or a["start_date_local"] > found["start_date_local"]:
+            found = a
+    return found
+
+
+def resolve_latest(acts, fetch_detail, limit=12):
+    """(activity, detail) for the newest run with a route, or (None, None).
+
+    Walks newest first. A list row with a summary polyline is enough. A blank summary — what
+    Strava returns for a lot of private runs — still qualifies when the detail call has a line;
+    that line is copied onto the row so pick_latest sees the same activity. `fetch_detail` is
+    called only until one route is found, and at most `limit` times."""
+    runs = [a for a in acts if kind(a) in RUN_TYPES and a.get("distance", 0) > 0 and a.get("start_date_local")]
+    runs.sort(key=lambda a: a["start_date_local"], reverse=True)
+    for a in runs[:limit]:
+        if (a.get("map") or {}).get("summary_polyline"):
+            return a, fetch_detail(a)
+        detail = fetch_detail(a)
+        m = (detail or {}).get("map") or {}
+        poly = m.get("polyline") or m.get("summary_polyline")
+        if poly:
+            a.setdefault("map", {})["polyline"] = poly
+            return a, detail
+    return None, None
 
 
 def split_rows(splits):
@@ -242,7 +273,7 @@ def build(acts, monday, old, detail=None, streams=None, stats=None, today=None):
             "miles": round(latest["distance"] / MI, 2),
             "pace_sec_per_mi": round(latest["moving_time"] / (latest["distance"] / MI)),
             "elev_ft": round(latest["total_elevation_gain"] * FT),
-            "polyline": route_out(latest["map"]["summary_polyline"]),
+            "polyline": route_out((latest.get("map") or {}).get("summary_polyline") or (latest.get("map") or {}).get("polyline") or ""),
         }
         if detail:
             poly = (detail.get("map") or {}).get("polyline")
@@ -373,6 +404,8 @@ def rotate(new_token):
 def self_check():
     pts = [(42.34 + i * 2e-4, -71.09 - i * 3e-4) for i in range(1200)]   # a straight line from 42.34 N, ~29 m per step
     short = encode_polyline(pts[:40])
+    private_pts = [(42.50 + i * 2e-4, -71.20 - i * 1e-4) for i in range(40)]
+    private_poly = encode_polyline(private_pts)
     lift = {"type": "WeightTraining", "distance": 0, "moving_time": 1149, "total_elevation_gain": 0,
             "start_date_local": "2026-09-16T16:32:43Z"}
     early_lift = {"sport_type": "WeightTraining", "distance": 0, "moving_time": 900, "total_elevation_gain": 0,
@@ -383,7 +416,7 @@ def self_check():
         {"sport_type": "TrailRun", "type": "Run", "distance": 4.34 * MI, "moving_time": 1863, "total_elevation_gain": 23.0, "achievement_count": 2,
          "start_date_local": "2026-09-15T17:18:31Z", "name": "b", "visibility": "everyone", "map": {}},
         {"type": "Run", "distance": 6.03 * MI, "moving_time": 2804, "total_elevation_gain": 35.0, "pr_count": 2,
-         "start_date_local": "2026-09-16T17:00:42Z", "name": "c", "visibility": "only_me", "map": {"summary_polyline": "secret"}},
+         "start_date_local": "2026-09-16T17:00:42Z", "name": "c", "visibility": "only_me", "map": {"summary_polyline": private_poly}},
         lift,
         early_lift,
         {"type": "Run", "distance": 0, "moving_time": 30, "total_elevation_gain": 0, "name": "false start",
@@ -401,13 +434,44 @@ def self_check():
     w = out["week"]
     assert (w["runs"], w["miles"], w["elev_ft"], w["moving_time_s"]) == (3, 14.2, 266, 6306), w
     assert 440 <= w["pace_sec_per_mi"] <= 450 and w["days"][3:] == [0, 0, 0, 0] and w["days"][2] == 6.03, w
-    assert out["latest"]["date"] == "2026-09-14", out["latest"]
+    # the newer private run wins; the published points are the shifted shape, not the real track
+    assert out["latest"]["date"] == "2026-09-16" and out["latest"]["name"] == "c", out["latest"]
     dec = decode_polyline(out["latest"]["polyline"])
     assert len(dec) == 40 and dec[0] == ORIGIN, dec[:2]
-    assert all(abs((p[0] - ORIGIN[0]) - (q[0] - pts[0][0])) < 2e-5 and abs((p[1] - ORIGIN[1]) - (q[1] - pts[0][1])) < 2e-5
-               for p, q in zip(dec, pts)), "the shape is intact"
-    assert min(metres(p, pts[0]) for p in dec) > 30000, "no published point is anywhere near the run"
+    assert all(abs((p[0] - ORIGIN[0]) - (q[0] - private_pts[0][0])) < 2e-5 and abs((p[1] - ORIGIN[1]) - (q[1] - private_pts[0][1])) < 2e-5
+               for p, q in zip(dec, private_pts)), "the shape is intact"
+    assert min(metres(p, private_pts[0]) for p in dec) > 30000, "no published point is anywhere near the run"
     assert build([lift], monday, old)["latest"] == old["latest"]
+
+    # a private run whose list row has no summary still becomes latest once the detail has a line
+    hidden = {
+        "id": 42, "type": "Run", "distance": 4.01 * MI, "moving_time": 1600, "total_elevation_gain": 10,
+        "start_date_local": "2026-09-29T07:12:00", "name": "today", "visibility": "only_me",
+        "map": {"summary_polyline": None},
+    }
+    seen = []
+
+    def fetch(a):
+        seen.append(a["name"])
+        if a["name"] == "today":
+            return {"id": 42, "name": "today", "map": {"polyline": private_poly}}
+        return None
+
+    cand, detail_hidden = resolve_latest([hidden] + acts, fetch)
+    assert cand["name"] == "today" and cand["map"]["polyline"] == private_poly and seen == ["today"], seen
+    assert build([hidden] + acts, date(2026, 9, 28), old, detail_hidden)["latest"]["date"] == "2026-09-29"
+
+    # no GPS on the newest run: skip it and draw the previous one that has a line
+    gym = {"id": 7, "type": "Run", "distance": 3 * MI, "moving_time": 1200, "total_elevation_gain": 0,
+           "start_date_local": "2026-09-30T06:00:00", "name": "treadmill", "visibility": "only_me", "map": {}}
+    seen.clear()
+
+    def fetch_gym(a):
+        seen.append(a["name"])
+        return {"map": {}} if a["name"] == "treadmill" else None
+
+    cand, _ = resolve_latest([gym, acts[0]], fetch_gym)
+    assert cand["name"] == "a" and seen == ["treadmill", "a"], seen
     assert out["feeling"] == "keep me" and out["pr"] == {"half_marathon": "1:32"}
     empty = build([], date(2026, 9, 21), old)["week"]
     assert empty["runs"] == 0 and empty["pace_sec_per_mi"] is None and empty["days"] == [0] * 7
@@ -550,12 +614,21 @@ def main():
             break
         page += 1
 
-    cand = pick_latest(acts)
-    detail = streams = None
+    def fetch_detail(a):
+        if not a.get("id"):
+            return None
+        return api_opt(f"https://www.strava.com/api/v3/activities/{a['id']}", access)
+
+    cand, detail = resolve_latest(acts, fetch_detail)
+    streams = None
     if cand:
-        detail = api_opt(f"https://www.strava.com/api/v3/activities/{cand['id']}", access)
-        streams = api_opt(
-            f"https://www.strava.com/api/v3/activities/{cand['id']}/streams?keys={STREAM_KEYS}&key_by_type=true", access)
+        src = "summary" if (cand.get("map") or {}).get("summary_polyline") else "detail"
+        print(f"latest {cand['start_date_local'][:10]} visibility={cand.get('visibility') or 'unset'} via {src}")
+        if cand.get("id"):
+            streams = api_opt(
+                f"https://www.strava.com/api/v3/activities/{cand['id']}/streams?keys={STREAM_KEYS}&key_by_type=true", access)
+    else:
+        print("no run in the window has a route; keeping the previous latest")
     stats = api_opt(f"https://www.strava.com/api/v3/athletes/{ATHLETE}/stats", access)
 
     new = build(acts, monday, old, detail, streams, stats, today)
