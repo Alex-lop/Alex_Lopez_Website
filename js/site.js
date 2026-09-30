@@ -290,25 +290,46 @@
     ao.observe(avgPlot);
   }
 
-  /* last five Monday weeks, newest at the right. This week is the accent bar. */
+  /* last five Monday weeks. One bar stays selected: blue fill, lifted. This week starts selected. */
   var milesBars = doc.querySelector('[data-miles-bars]');
   var milesPlot = milesBars && milesBars.querySelector('[data-miles-plot]');
   var milesLabel = milesBars && milesBars.querySelector('[data-miles-label]');
-  var milesSum = milesBars && milesBars.querySelector('[data-miles-summary]');
+  var milesCap = milesBars && milesBars.querySelector('[data-miles-caption]');
+
+  function milesLine(col) {
+    var miles = col.getAttribute('data-miles'), runs = +col.getAttribute('data-runs') || 0;
+    var runBit = runs ? ' · ' + runs + ' run' + (runs === 1 ? '' : 's') : '';
+    if (col.classList.contains('live')) return 'This week · ' + miles + ' mi so far' + runBit;
+    return (col.getAttribute('data-range') || '') + ' · ' + miles + ' mi' + runBit;
+  }
+
+  function selectMiles(col) {
+    if (!col || !milesPlot) return;
+    all('.miles-col', milesPlot).forEach(function (c) {
+      c.setAttribute('aria-pressed', c === col ? 'true' : 'false');
+    });
+    if (milesCap) milesCap.textContent = milesLine(col);
+  }
 
   function drawMilesBars(weeks, liveStart) {
     if (!milesPlot || !weeks || !weeks.length) return;
-    var rows = weeks.slice(-5), top = 0, bits = [];
+    var rows = weeks.slice(-5), top = 0, pick = null;
     rows.forEach(function (w) { top = Math.max(top, +w.miles || 0); });
     if (!top) top = 1;
     milesPlot.textContent = '';
     rows.forEach(function (w) {
-      var miles = +w.miles || 0, live = w.week_start === liveStart;
-      var col = doc.createElement('div'), val = doc.createElement('span');
+      var miles = +w.miles || 0, runs = +w.runs || 0, live = w.week_start === liveStart, shown = miles.toFixed(1);
+      var col = doc.createElement('button'), val = doc.createElement('span');
       var track = doc.createElement('span'), fill = doc.createElement('span'), lab = doc.createElement('span');
+      col.type = 'button';
       col.className = 'miles-col' + (live ? ' live' : '');
+      col.setAttribute('data-miles', shown);
+      col.setAttribute('data-runs', String(runs));
+      col.setAttribute('data-range', weekRange(w.week_start));
+      col.setAttribute('aria-pressed', 'false');
+      col.setAttribute('aria-label', (live ? 'This week' : day(w.week_start)) + ', ' + shown + ' miles' + (runs ? ', ' + runs + ' run' + (runs === 1 ? '' : 's') : ''));
       val.className = 'miles-val';
-      val.textContent = miles.toFixed(1);
+      val.textContent = shown;
       track.className = 'miles-track';
       fill.className = 'miles-fill';
       fill.style.setProperty('--h', (miles / top * 100) + '%');
@@ -319,10 +340,28 @@
       col.appendChild(track);
       col.appendChild(lab);
       milesPlot.appendChild(col);
-      bits.push((live ? 'This week' : day(w.week_start)) + ', ' + miles.toFixed(1) + ' miles');
+      if (live) pick = col;
     });
     if (milesLabel) milesLabel.textContent = 'Last ' + rows.length + (rows.length === 1 ? ' week' : ' weeks');
-    if (milesSum) milesSum.textContent = bits.join('. ') + '.';
+    selectMiles(pick || milesPlot.lastElementChild);
+  }
+
+  if (milesPlot) {
+    milesPlot.addEventListener('click', function (e) {
+      var col = e.target.closest && e.target.closest('.miles-col');
+      if (col) selectMiles(col);
+    });
+    milesPlot.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      var cols = all('.miles-col', milesPlot), i, cur = 0, next;
+      if (!cols.length) return;
+      for (i = 0; i < cols.length; i++) if (cols[i].getAttribute('aria-pressed') === 'true') cur = i;
+      next = e.key === 'ArrowRight' ? Math.min(cols.length - 1, cur + 1) : Math.max(0, cur - 1);
+      if (next === cur) return;
+      e.preventDefault();
+      selectMiles(cols[next]);
+      cols[next].focus();
+    });
   }
 
   var splits = doc.querySelector('[data-splits]'), touched = 0, selfScroll = false;
