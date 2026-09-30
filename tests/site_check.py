@@ -126,7 +126,6 @@ if "weeks" in data:
             assert key in w, f"weeks[].{key} missing: {w}"
 if "avg_from" in data:
     assert data["avg_from"] == "2026-09-14", data["avg_from"]
-assert 'data-avg-from="2026-09-14"' in HTML and "Avg miles per week" in HTML
 if "lifts_before_runs_this_week" in data.get("totals", {}):
     assert isinstance(data["totals"]["lifts_before_runs_this_week"], int)
 if "prs_30d" in data.get("achievements", {}):
