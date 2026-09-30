@@ -291,6 +291,9 @@ def build(acts, monday, old, detail=None, streams=None, stats=None, today=None):
                 "calories": detail.get("calories"),
                 "splits": split_rows(detail.get("splits_standard")),
             })
+            desc = detail.get("description")
+            if isinstance(desc, str) and desc.strip():
+                out["latest"]["description"] = desc.strip()
         block = stream_block(streams)
         if block:
             out["latest"]["streams"] = block
@@ -503,6 +506,7 @@ def self_check():
     detail = {
         "id": 16111222333, "name": "Afternoon Run", "moving_time": 2857, "elapsed_time": 2901,
         "has_heartrate": True, "average_heartrate": 158.4, "max_heartrate": 179.0,
+        "description": "  Easy out and back.\nLegs came around after mile two.  ",
         "average_cadence": 84.2, "suffer_score": 103, "calories": 712.0,
         "map": {"polyline": encode_polyline(pts)},
         "splits_standard": [
@@ -523,6 +527,7 @@ def self_check():
     out = build(acts, monday, old, detail, raw, stats)
     lat = out["latest"]
     assert (lat["id"], lat["name"], lat["moving_time_s"], lat["elapsed_time_s"]) == (16111222333, "Afternoon Run", 2857, 2901), lat
+    assert lat["description"] == "Easy out and back.\nLegs came around after mile two.", lat["description"]
     assert (lat["avg_hr"], lat["max_hr"], lat["cadence"], lat["suffer_score"], lat["calories"]) == (158, 179, 84.2, 103, 712.0), lat
     dec = decode_polyline(lat["polyline"])
     assert len(dec) == 800 and dec[0] == ORIGIN and metres(dec[-1], pts[-1]) > 30000, (len(dec), dec[0])
