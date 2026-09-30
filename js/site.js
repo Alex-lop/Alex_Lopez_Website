@@ -424,7 +424,12 @@
       miles = w.miles;
       paintOdo(miles);  // the observer rolls it from zero on first view
       var bar = doc.querySelector('[data-week-goal]');
-      if (bar) { bar.value = w.miles; bar.textContent = w.miles.toFixed(1) + ' of 50 miles this week'; }
+      if (bar) {
+        bar.max = 67;
+        bar.value = w.miles;
+        bar.setAttribute('aria-label', 'Miles this week toward 67');
+        bar.textContent = w.miles.toFixed(1) + ' of 67 miles this week';
+      }
     }
 
     drawAvg(d.weeks, d.week_start, d.avg_from);
