@@ -39,8 +39,8 @@ class SiteParser(HTMLParser):
 site = SiteParser()
 site.feed(HTML)
 
-assert {"top", "projects", "also", "work", "outside", "running", "main", "nemisis", "reglineage", "imc"} <= site.ids, sorted(site.ids)
-assert site.h1 == 5, f"Expected one h1 on the hub and each page, found {site.h1}"
+assert {"top", "projects", "work", "outside", "running", "main"} <= site.ids, sorted(site.ids)
+assert site.h1 == 4, f"Expected one h1 on the hub and each page, found {site.h1}"
 for img in site.images:
     assert "alt" in img and img.get("width") and img.get("height"), f"img needs alt, width, height: {img}"
 for a in site.anchors:
@@ -53,8 +53,7 @@ for a in site.anchors:
 for asset in site.assets:
     assert (ROOT / asset).is_file(), f"Missing local asset: {asset}"
 for url in (
-    "https://github.com/Alex-lop/Nemisis", "https://alex-lop.github.io/Nemisis/",
-    "https://github.com/Alex-lop/Graphene", "https://github.com/Alex-lop/RegLineage",
+    "https://github.com/Alex-lop/Graphene",
     "https://linkedin.com/in/lopezalexan/", "https://www.youtube.com/@alex17-OX",
     "https://www.strava.com/athletes/141554769", "https://www.chess.com/member/cheboialex",
     "assets/Alex_Lopez_Resume.pdf",
@@ -77,7 +76,7 @@ for attr in ("data-miles", "data-pace", "data-time"):
 assert route.get("aria-hidden") == "true", "#route is drawn only; the tape is the control"
 assert canvas["field"].get("aria-hidden") == "true", "#field must be hidden from the a11y tree"
 assert 'data-tape' in HTML and 'data-tape-start' in HTML and 'data-tape-play' in HTML
-assert 'role="slider"' in HTML and 'Drag the tape to rewind' in HTML
+assert 'role="slider"' in HTML
 
 assert "prefers-reduced-motion" in CSS
 for name, src in SCRIPTS.items():
@@ -126,7 +125,6 @@ if "weeks" in data:
             assert key in w, f"weeks[].{key} missing: {w}"
 if "avg_from" in data:
     assert data["avg_from"] == "2026-09-14", data["avg_from"]
-assert 'data-avg-from="2026-09-14"' in HTML and "Avg miles per week" in HTML
 if "lifts_before_runs_this_week" in data.get("totals", {}):
     assert isinstance(data["totals"]["lifts_before_runs_this_week"], int)
 if "prs_30d" in data.get("achievements", {}):

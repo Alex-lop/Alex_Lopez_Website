@@ -70,10 +70,11 @@ and achievements in the last 30 days), and the hand-edited `feeling` and `pr`. U
 and seconds; `null` means Strava has no value. The detail and stream calls are optional, so their
 keys are simply absent when Strava refuses them. Full shape: DESIGN.md section 6.
 
-Only public activities with a polyline are used as `latest`, and the route is written as a shape
-moved to a fixed origin (42.0 N, 71.0 W): Strava's privacy zones hide the door from other viewers,
-not from the owner's own token, and the page only draws the shape. The file never says where a run
-was; `place` is its own string.
+`latest` is the newest run that has a polyline, including private ones. The list call often leaves
+`summary_polyline` empty for those, so the sync reads the detail before keeping the previous route.
+The line is written as a shape moved to a fixed origin (42.0 N, 71.0 W): Strava's privacy zones
+hide the door from other viewers, not from the owner's own token, and the page only draws the
+shape. The file never says where a run was; `place` is its own string.
 
 ## Checks
 

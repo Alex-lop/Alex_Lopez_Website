@@ -20,8 +20,8 @@
 <link rel="stylesheet" href="styles.css">
 <script>
 (function () {
-  var alias = { graphene: 'projects', top: 'home', '': 'home', about: 'work', nemisis: 'also', reglineage: 'also', imc: 'also', hobbies: 'outside', running: 'outside', golf: 'outside' };
-  var known = { home: 1, projects: 1, also: 1, work: 1, outside: 1 };
+  var alias = { graphene: 'projects', top: 'home', '': 'home', about: 'work', also: 'projects', nemisis: 'projects', reglineage: 'projects', imc: 'projects', hobbies: 'outside', running: 'outside', golf: 'outside' };
+  var known = { home: 1, projects: 1, work: 1, outside: 1 };
   function apply() {
     var v = alias[location.hash.slice(1)] || location.hash.slice(1);
     document.documentElement.dataset.view = known[v] ? v : 'home';
@@ -45,7 +45,6 @@
           <p class="hub-label">projects</p>
           <div class="hub-list">
             <a href="#projects">graphene</a>
-            <a href="#also">other projects</a>
           </div>
         </section>
         <section class="hub-sec">
@@ -101,123 +100,37 @@
     </div>
   </section>
 
-  <section class="page" id="also" aria-labelledby="h-also">
-    <div class="wrap" data-reveal>
-      <h1 id="h-also">Also built</h1>
-      <article class="nemisis" id="nemisis" aria-labelledby="p-nemisis">
-        <div class="nemisis-meta">
-          <h3 id="p-nemisis">Nemisis</h3>
-          <p class="tagline-small">Crash-safety verification for AI-written retry patches</p>
-          <figure class="photo project-still">
-            <img src="assets/nemisis-banner-dark.png" width="2400" height="1000" loading="lazy" alt="Nemisis wordmark on a dark frame with a kill-marker timeline">
-          </figure>
-          <p class="small">August – September 2026. Python 3.12+, uv, pydantic, MCP SDK, pytest. v0.2.0 on PyPI, Docker 77 MB, Apache-2.0.</p>
-          <ul class="stats">
-            <li><b>634</b><span>tests on CPython 3.12 – 3.14</span></li>
-            <li><b>600 / 600</b><span>nightly red-team agreement</span></li>
-            <li><b>14</b><span>turns for a fresh agent to prove its own fix</span></li>
-          </ul>
-          <p class="links"><a href="https://github.com/Alex-lop/Nemisis" target="_blank" rel="noopener noreferrer">GitHub</a> <a href="https://alex-lop.github.io/Nemisis/" target="_blank" rel="noopener noreferrer">Live page</a></p>
-        </div>
-        <div class="nemisis-body">
-          <p>A payment webhook credits an order twice when the worker dies mid-handler. An ordinary test cannot catch that: it calls the handler once, with nothing going wrong. The agent's patch ships green and still double-charges.</p>
-          <p>CrashCheck runs the patched handler in a real worker and SIGKILLs it the moment the effect is on disk. A fresh worker starts, the event is redelivered, and an independent read says what survived. The model never judges. 600 of 600 generated handlers agreed with an independent oracle. Not proven: anything outside two scenarios, one handler shape, SQLite and POSIX SIGKILL.</p>
-<pre class="terminal" role="region" aria-label="Real output of nemisis check" tabindex="0"><code><span class="prompt">$</span> uv run nemisis check --base fixture:sqlite-credit-v1/buggy \
-    --candidate fixture:sqlite-credit-v1/misleading-green --mode local
-verdict: <span class="em">PATCH_FAILED_STILL_REPRODUCES</span>
-timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em">$50.00</span>
-<span class="dim">exit code 1</span></code></pre>
-        </div>
-      </article>
-
-      <div class="pair">
-        <article class="also" id="reglineage" aria-labelledby="p-reglineage">
-          <h3 id="p-reglineage">RegLineage</h3>
-          <p class="small">July – August 2026. Python 3.11, DataHub, DuckDB, FastAPI, MCP SDK, Docker.</p>
-          <p>Revocable data access for AI agents. Analyses run under an immutable lease; when DataHub governance changes, only the intersecting lease suspends. Twenty-one MCP tools can request approval; none can grant it.</p>
-          <ul class="stats">
-            <li><b>2,964,606</b><span>governed rows</span></li>
-            <li><b>24 of 24</b><span>adversarial cases</span></li>
-            <li><b>30 of 30</b><span>event-to-enforcement runs, 0 violations</span></li>
-            <li><b>420</b><span>tests</span></li>
-          </ul>
-          <p><a href="https://github.com/Alex-lop/RegLineage" target="_blank" rel="noopener noreferrer">RegLineage on GitHub</a></p>
-        </article>
-        <article class="also" id="imc" aria-labelledby="p-imc">
-          <h3 id="p-imc">IMC Prosperity 3</h3>
-          <figure class="photo project-still">
-            <img src="assets/projects/imc-prosperity-3.webp" width="1280" height="720" loading="lazy" alt="IMC Prosperity 3, a global trading challenge">
-          </figure>
-          <p class="small">March – April 2025. Python, NumPy, Pandas.</p>
-          <p>A global algorithmic trading competition. With teammates I built Python strategies for market making, scalping, locational arbitrage, and mean reversion. The competition code is private, so the placing is the artifact.</p>
-          <ul class="stats">
-            <li><b>912</b><span>of about 13,000 teams</span></li>
-          </ul>
-        </article>
-      </div>
-    </div>
-  </section>
-
   <section class="page" id="work" aria-labelledby="h-work">
     <div class="wrap" data-reveal>
       <h1 id="h-work">XP: experience</h1>
-      <p class="prose">I'm Alex, a third year at Northeastern studying CS and Math. Most of what I build is about keeping a human in the loop when AI agents write code: Graphene, Nemisis, RegLineage. During the year I TA databases and discrete math and sit on the SHPE board. The rest of the time I'm running, golfing, or losing at chess.</p>
       <div class="ground">
       <div class="roles">
         <article class="role">
           <h3>Expandya</h3>
           <p class="role-title">Software Engineering Intern</p>
           <p class="small">June 2026 – September 2026, Westport, CT</p>
-          <ul class="points">
-            <li>Tuned Python and C++ data systems for e-commerce clients: indexing, query caching, profiling on datasets over 3M rows</li>
-            <li>Built and improved client sites for organic and AI-assisted search: crawlability, indexing, site architecture, metadata, performance</li>
-          </ul>
         </article>
-        <article class="role role-photo role-seal">
-          <div>
-            <h3>Northeastern University</h3>
-            <p class="role-title">Teaching Assistant</p>
-            <p class="small">September 2025 – Present, Boston, MA</p>
-            <ul class="points">
-              <li>CS 3200 Introduction to Databases and CS 1800 Discrete Structures: weekly office hours, grading, project debugging</li>
-              <li>Most of it is helping students new to CS build confidence</li>
-            </ul>
-          </div>
-          <figure class="photo">
-            <img src="assets/northeastern.png" width="447" height="447" loading="lazy" alt="The Northeastern University seal">
-          </figure>
+        <article class="role">
+          <h3>Northeastern University</h3>
+          <p class="role-title">Teaching Assistant</p>
+          <p class="small">September 2025 – Present, Boston, MA</p>
         </article>
         <article class="role role-photo">
           <div>
             <h3>O'Hern Lab, Yale University</h3>
             <p class="role-title">Computational Biology Research Assistant</p>
-            <p class="small">June 2023 – September 2023, New Haven, CT</p>
-            <ul class="points">
-              <li>Built a pipeline turning raw AlphaFold and NetSurfP folding simulations into structured datasets</li>
-              <li>Optimized Python on Yale HPC clusters to classify 10,000+ oncogenic variants, flagging mutations that alter folding in ways plausibly linked to cancer</li>
-            </ul>
+            <p class="small">June – September 2023 and 2024, New Haven, CT</p>
           </div>
           <figure class="photo">
             <img src="assets/me-presenting.jpg" width="900" height="599" loading="lazy" alt="Alex Lopez beside his research poster at Yale's computational biology poster session">
-            <figcaption>New Haven, 2023</figcaption>
           </figure>
         </article>
         <article class="role">
           <h3>Society of Hispanic Professional Engineers</h3>
           <p class="role-title">Undergraduate Ambassador</p>
           <p class="small">September 2025 – Present, Boston, MA</p>
-          <ul class="points">
-            <li>On the board, planning and promoting first-year events</li>
-          </ul>
         </article>
       </div>
-      <dl class="record">
-        <div><dt>Degree</dt><dd>Northeastern University, Khoury College. Combined BSE in Computer Science and Mathematics, AI concentration. GPA 3.71, major 3.84. Expected May 2028.</dd></div>
-        <div><dt>Coursework</dt><dd>Group Theory, Number Theory, Differential Geometry, Numerical Methods for Differential Equations, Advanced Probability and Statistics, Data Structures and Algorithms.</dd></div>
-        <div><dt>Stack</dt><dd>Python, Java, JavaScript, OCaml, Kotlin, C. PyTorch, React, SQL, AWS, Pandas, MATLAB, GraphQL.</dd></div>
-        <div class="record-hopkins"><dt>Before</dt><dd><span>Hopkins School, New Haven, CT, 2024. Wrestling captain, Editor at Large of The Razor, Science Olympiad.</span><img class="seal" src="assets/hopkinslll.jpg" width="316" height="316" loading="lazy" alt="The Hopkins School seal, founded 1660"></dd></div>
-        <div><dt>Now</dt><dd>TA for CS 3200 and CS 1800, on the SHPE board, building toward a first marathon.</dd></div>
-      </dl>
       </div>
     </div>
   </section>
@@ -232,25 +145,9 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
           <p class="label">This week</p>
           <p class="odo-line"><span class="odo" data-odo="14.2" role="img" aria-label="14.2 miles"><span class="d" aria-hidden="true"><span style="--n: 1"><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span></span><span class="d" aria-hidden="true"><span style="--n: 4"><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span></span><span class="dot" aria-hidden="true">.</span><span class="d" aria-hidden="true"><span style="--n: 2"><i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span></span></span><span class="of">/ 50 mi</span></p>
           <progress class="track" data-week-goal max="50" value="14.2" aria-label="Miles this week toward 50">14.2 of 50 miles this week</progress>
-          <p class="week-line"><span data-run="week.runs">3</span> runs, <span data-run="week.pace">7:25</span> per mile, <span data-run="week.elev">266</span> ft of climbing, <span data-run="week.time">1h 45m</span> moving.</p>
-          <p class="run-note">Since HS, absolutley loved running. I honestly look forward to my runs the entire day (wasn't always the case), but there's somethign so nice about just letting your mind go off for a just live in the moment.</p>
+          <p class="run-note">Honestly the one thing I look foward to the most in my day, which would shock me couple years back. It's really the one time of day where I can just relax my mind and enjoy myself alongside my time weightlifting. Hopefully gonna qualify for Boston 2028!!!</p>
           <p><a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Check out my Strava</a></p>
-          <div class="avg-week" data-avg data-avg-from="2026-09-14">
-            <p class="label">Avg miles per week</p>
-            <p class="avg-readout"><span class="avg-num" data-avg-num>27.0</span><span class="of" data-avg-since>since Sep 14</span></p>
-            <div class="avg-plot" data-avg-plot hidden>
-              <div class="avg-goal" data-avg-goal aria-hidden="true"></div>
-              <div class="avg-mean" data-avg-mean aria-hidden="true"><span data-avg-mean-label>27.0</span></div>
-              <div class="avg-bars" data-avg-bars role="listbox" tabindex="0" aria-label="Miles each week. The average starts Sep 14."></div>
-            </div>
-            <p class="avg-axis" data-avg-axis hidden aria-hidden="true"><span></span><span></span></p>
-            <p class="avg-caption" data-avg-caption>1 week in · last week 27.0 mi · this week just opened</p>
-            <p class="sr-only" data-avg-summary>Averaging 27.0 miles per week since Sep 14.</p>
-          </div>
           <div class="splits" data-splits hidden tabindex="0" role="region" aria-label="Mile splits of the latest run"></div>
-          <p class="feeling"><em data-run="feeling">Legs were flat Monday, then the six on Wednesday clicked. Relative effort 103 and I still wanted another mile.</em></p>
-          <p class="source">Numbers from <a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Strava</a>, <span data-synced data-run="synced">synced Sep 16, 2026</span>. The note is written by hand.</p>
-          <p class="source" data-run-stale hidden></p>
         </div>
         <div class="route-panel">
           <canvas id="route" aria-hidden="true" data-route="_cj_G~djpLQt@Q^QLi@RYP_@d@c@|@KNSHGCKSEc@Ca@AyAKeA_@{AS]aCyCWk@i@oCe@}C[_Aq@iAi@g@y@_@W_@EOKg@Q_B?eEKcEKW_Ay@[_@UMWGI?a@OU?c@HQC[@cAUq@Kq@?[Fk@Na@l@c@`@QR[r@Md@KfACh@Fd@?^T`AP\d@f@X^h@d@Z`@VVdAr@dAZTDd@Bf@LP?NC^F|@E|@Of@ETQNYBa@O{@Cg@?y@DuACaBMyBAMBEFCh@@`BI\BPBp@T|@j@j@j@b@v@z@xDFh@h@~BVxARr@f@xAJj@JVv@zAPTbAbANLNDfAfAR`@N~@E~AG^Wj@Ol@uA|C_@t@YZOHYDeACOMKo@EmBC_@Gg@[sAIUS[cAyAq@y@]o@Kc@QwAYuAQmAU{@a@{@i@o@OQSOe@QSQQYKa@Ga@KqA@kBBu@CkCEe@S_@K]EWKOMOOIa@e@KGu@Ui@Ei@FOAQBi@EqAWk@Cu@J_@Pc@l@c@`@c@v@Mb@M|@C\@|@Fv@Hd@FTRZh@n@bA|@Z`@nAbA^LjAXn@Jr@H|@Aj@G`@I^Ed@OPS@GBg@Eg@G}@FcCA_AQiDBMDC`A@t@EVBj@Hp@Rn@Xf@`@^b@^r@Nn@l@lCXrBRn@\dB`@hAPt@Fb@L`@f@|@p@~@RNNPVRVJf@^p@dANdA?PMb@]~@e@|@Op@Sl@ILQJa@Ri@b@w@nAOPODE?GCKUE]C}BC[a@iBSg@QYkAwAy@iAKa@Q{@K}@Om@QyAWaA[s@i@y@a@a@s@_@QMUe@UeBQm@AsABqACgBIuAIWEa@EKk@a@[a@QMUKq@IY?q@Fo@CwA[o@?c@Fm@NY^o@l@W^Qd@GTObAEt@@d@H|@FVN^LRJFX^j@j@bAlAf@`@zAj@xAVl@Dn@@r@Cv@Or@EPGJGHU@OAQKm@C_@AaC@Y@eBEaAMgADMJEf@Br@Cj@@p@F^LTLr@b@j@f@Zb@Vh@V`Af@dDDR" data-miles="6.03" data-pace="465" data-elev="115" data-date="2026-09-16" data-place="Boston, MA" data-time="2804"></canvas>
@@ -269,11 +166,8 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
             </div>
           </div>
           <p class="sr-only">Latest run, drawn as a route on the canvas: <span data-run="latest.line">Sep 16, 6.03 miles at 7:45 per mile, 115 feet of climbing, Boston, MA.</span></p>
-          <p class="small route-caption">Latest run, <span data-run="latest.when">Sep 16, Boston, MA</span>. Drag the tape to rewind.</p>
-          <figure class="photo run-photo">
-            <img src="assets/running-team.jpg" width="800" height="600" loading="lazy" alt="Alex and six teammates after a race, most still wearing their bibs, under the trees">
-            <figcaption>Boston, 2026</figcaption>
-          </figure>
+          <h3 class="run-title" data-run="latest.name">Afternoon Run</h3>
+          <p class="run-notes" data-run="latest.notes" hidden></p>
         </div>
       </article>
 
@@ -290,7 +184,7 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
         <article class="hobby">
           <div>
             <h3>Chess</h3>
-            <p>7 years in playing chess and I still blunder every other move, but add me — always down to get a quick game in.</p>
+            <p>7 years in playing chess and I still blunder every other move, but add me! Always down to get a quick game in.</p>
             <p><a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener noreferrer">Add me on Chess.com</a></p>
           </div>
           <figure class="photo">
@@ -313,14 +207,8 @@ timeline: $25.00 durable -&gt; SIGKILL -&gt; fresh worker -&gt; <span class="em"
 
 <footer>
   <div class="wrap">
-    <p class="email"><a href="mailto:lopez.alexan@northeastern.edu">lopez.alexan@northeastern.edu</a></p>
     <ul>
       <li><a href="https://github.com/Alex-lop" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-      <li><a href="https://linkedin.com/in/lopezalexan/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-      <li><a href="https://www.youtube.com/@alex17-OX" target="_blank" rel="noopener noreferrer">YouTube</a></li>
-      <li><a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Strava</a></li>
-      <li><a href="https://www.chess.com/member/cheboialex" target="_blank" rel="noopener noreferrer">Chess.com</a></li>
-      <li><a href="assets/Alex_Lopez_Resume.pdf" target="_blank" rel="noopener noreferrer">Resume</a></li>
     </ul>
   </div>
 </footer>

@@ -458,8 +458,10 @@ mid-run. The page only draws the shape (route.js normalises it to unit space; `p
 string), so the file never says where a run was; the seeded route in `index.html` and the
 committed JSON were moved the same way. Moving 42.34 N to 42.0 N changes the drawn aspect by 0.5%. The encoder diffs against
 the previously rounded integer (not the float) and is proven offline against the decoder's own test
-vector plus a round-trip check. Only public activities with a polyline qualify as `latest`; the sync
-narrows what Strava returns and never widens it. `totals.lifts_before_runs_this_week` counts the
+vector plus a round-trip check. `latest` is the newest run with a polyline, including private and
+followers-only activities: the list call often omits `summary_polyline` for those, so the sync
+asks the detail endpoint before giving up. The published line is still the shifted shape, and a
+run with no line is skipped. The sync never writes the real coordinates. `totals.lifts_before_runs_this_week` counts the
 week's runs that started within two hours after a WeightTraining, the same unit as `week.runs`. Stream arrays are written compactly so a
 sync is a small diff.
 
