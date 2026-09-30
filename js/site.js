@@ -399,11 +399,18 @@
       'feeling': d.feeling || '',
       'latest.line': l.miles ? day(l.date) + ', ' + (+l.miles).toFixed(2) + ' miles at ' + mmss(l.pace_sec_per_mi) + ' per mile, ' + l.elev_ft + ' feet of climbing, ' + l.place + '.' : '',
       'latest.when': l.date && l.place ? day(l.date) + ', ' + l.place : '',
+      'latest.name': l.name || '',
       'synced': synced
     };
     Object.keys(out).forEach(function (k) {
       if (out[k]) all('[data-run="' + k + '"]').forEach(function (el) { el.textContent = out[k]; });
     });
+    var notesEl = doc.querySelector('[data-run="latest.notes"]');
+    if (notesEl) {
+      var notes = (l.description || '').trim();
+      notesEl.textContent = notes;
+      notesEl.hidden = !notes;
+    }
 
     if (num(w.miles)) {
       miles = w.miles;
