@@ -306,7 +306,7 @@ Keep:
 | `assets/golf-swing.jpg`                         | Outside, beside Golf          | none yet; place and year asked for in TODO_ALEX.md |
 | `assets/chess.jpg`                              | Outside, beside Chess         | none; it is an illustration, so no place or year |
 | `assets/luna-small.jpg`                         | Outside, beside Luna          | (alt text only; heading carries "Chief Code Reviewer") |
-| `assets/projects/graphene-mission-control.webp` | Graphene, sized to its column | (alt text only; it has a transparent background so it sits on the paper) |
+| `assets/projects/graphene-lockup.svg` | Graphene, sized to its column | (alt text only; it has a transparent background so it sits on the paper) |
 | `assets/nemisis-banner-dark.png`                | Also built, Nemisis still     | (alt text only)           |
 | `assets/projects/imc-prosperity-3.webp`         | Also built, IMC still         | (alt text only)           |
 | `assets/Alex_Lopez_Resume.pdf`                  | nav, hero, footer             |                           |
