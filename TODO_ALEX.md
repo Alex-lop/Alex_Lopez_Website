@@ -14,7 +14,7 @@ to `main`, cron `17 */3 * * *` plus `workflow_dispatch` keep it fresh.
 ## 2. Graphene photos and videos (later)
 
 The essay placeholders, horse Tinder, Terrance videos, and desk photo are off the page until you
-have them. Graphene currently shows only the wordmark (`assets/projects/graphene-mission-control.webp`).
+have them. Graphene currently shows only the logo (`assets/projects/graphene-lockup.svg`).
 When you are ready, drop files in `assets/` and we can put a short photo/video row back under the
 two paragraphs. Nothing is blocking on this.
 
