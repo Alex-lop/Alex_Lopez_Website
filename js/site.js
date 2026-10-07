@@ -549,6 +549,11 @@
       if (pace && l.pace_sec_per_mi) pace.textContent = mmss(l.pace_sec_per_mi) + ' /mi';
       var secs = l.moving_time_s || (l.miles && l.pace_sec_per_mi ? Math.round(+l.miles * l.pace_sec_per_mi) : 0);
       if (time && secs) time.textContent = clock(secs);
+      var slats = mill && mill.querySelector('.mill-slats');
+      if (slats && l.pace_sec_per_mi) {
+        var dur = Math.min(1.2, Math.max(0.42, 0.7 * (l.pace_sec_per_mi / 480)));
+        slats.style.setProperty('--mill-dur', dur.toFixed(2) + 's');
+      }
     } else if (l.polyline && window.__route) window.__route(l);
   }).catch(function () { /* the seeded markup stands */ });
 
