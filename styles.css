@@ -163,6 +163,20 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
 .run h2 { margin: 0 0 14px; font-size: clamp(1.4rem, 2.4vw, 1.75rem); }
 .route-panel { min-width: 0; }
 #route { display: block; width: 100%; aspect-ratio: 4 / 3; pointer-events: none; }
+.mill { display: flex; flex-direction: column; max-width: 100%; padding: 2px 0 0; }
+.mill-date { margin: 2px 0 0; font-weight: 500; font-size: clamp(1.7rem, 3.2vw, 2.35rem); letter-spacing: -.02em; line-height: 1.05; }
+.mill-line { margin: 8px 0 0; max-width: 28ch; }
+.mill-deck { position: relative; height: 148px; margin: 22px 0 14px; background: var(--paper-2); border-radius: 2px; overflow: hidden; }
+.mill-deck::before, .mill-deck::after { content: ""; position: absolute; left: 0; right: 0; height: 2px; background: var(--ink); opacity: .28; z-index: 1; }
+.mill-deck::before { top: 0; }
+.mill-deck::after { bottom: 0; }
+.mill-slats { position: absolute; top: 0; bottom: 0; left: -28px; right: -28px; background: repeating-linear-gradient(90deg, transparent 0 20px, color-mix(in srgb, var(--ink) 22%, transparent) 20px 21px); }
+.mill-dot { position: absolute; z-index: 2; left: 22%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 0 4px var(--paper-2); }
+.mill-readout { display: flex; flex-wrap: wrap; gap: 4px 22px; margin: 0; font-size: .92rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: no-preference) {
+  .mill-slats { animation: mill-roll .7s linear infinite; }
+}
+@keyframes mill-roll { to { transform: translateX(-21px); } }
 .route-readout { display: flex; flex-wrap: wrap; gap: 4px 22px; min-height: 1.5em; margin: 10px 0 2px; font-size: .92rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .route-readout span:empty { display: none; }
 .tape { display: flex; align-items: center; gap: 16px 18px; margin: 0 0 8px; }
@@ -302,6 +316,7 @@ a[href^="mailto:"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
   .odo .d span, .track::-webkit-progress-value, .avg-fill, .avg-mean, .avg-val, .miles-col, .miles-fill { transition: none; }
   .miles-col, .miles-col:hover, .miles-col[aria-pressed="true"] { transform: none; }
   .tape-deck { display: none; }
+  .mill-slats { animation: none; }
   .hub h1, .hub-label, .hub-list a { animation: none; }
 }
 
@@ -311,4 +326,5 @@ a[href^="mailto:"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
 :root[data-motion="off"] .odo .d span, :root[data-motion="off"] .track::-webkit-progress-value, :root[data-motion="off"] .avg-fill, :root[data-motion="off"] .avg-mean, :root[data-motion="off"] .avg-val, :root[data-motion="off"] .miles-col, :root[data-motion="off"] .miles-fill { transition: none; }
 :root[data-motion="off"] .miles-col, :root[data-motion="off"] .miles-col:hover, :root[data-motion="off"] .miles-col[aria-pressed="true"] { transform: none; }
 :root[data-motion="off"] .tape-deck { display: none; }
+:root[data-motion="off"] .mill-slats { animation: none; }
 :root[data-motion="off"] .hub h1, :root[data-motion="off"] .hub-label, :root[data-motion="off"] .hub-list a { animation: none; }

@@ -12,6 +12,12 @@
   function mmss(s) { s = Math.round(s); return (s / 60 | 0) + ':' + String(s % 60).padStart(2, '0'); }
   function hm(s) { var m = Math.round(s / 60), h = Math.floor(m / 60); return h ? h + 'h ' + String(m % 60).padStart(2, '0') + 'm' : m + 'm'; }
   function day(iso, opts) { var d = new Date(iso + 'T12:00:00'); return isNaN(d) ? iso : d.toLocaleDateString('en-US', opts || { month: 'short', day: 'numeric' }); }
+  function longDay(iso) { return day(iso, { weekday: 'long', month: 'short', day: 'numeric' }); }
+  function clock(s) {
+    s = Math.max(0, Math.round(s));
+    var h = (s / 3600) | 0, m = ((s % 3600) / 60) | 0, p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return (h ? h + ':' + p(m) : m) + ':' + p(s % 60);
+  }
   function mdy(iso) {
     var d = new Date(iso + 'T12:00:00');
     if (isNaN(d)) return iso;
@@ -469,6 +475,8 @@
   fetch('data/strava.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
     var w = d.week || {}, l = d.latest || {}, synced = d.generated_at ? ago(d.generated_at) : '';
     var num = function (v) { return typeof v === 'number'; };
+    var indoor = l.indoor === 'treadmill' || l.indoor === 'virtual';
+    var treadmill = l.indoor === 'treadmill';
     var out = {
       'week.miles': num(w.miles) ? w.miles.toFixed(1) : '',
       'week.pace': w.pace_sec_per_mi ? mmss(w.pace_sec_per_mi) : '',
@@ -476,7 +484,14 @@
       'week.runs': num(w.runs) ? w.runs + '' : '',
       'week.time': w.moving_time_s ? hm(w.moving_time_s) : '',
       'feeling': d.feeling || '',
-      'latest.line': l.miles ? day(l.date) + ', ' + (+l.miles).toFixed(2) + ' miles at ' + mmss(l.pace_sec_per_mi) + ' per mile, ' + l.elev_ft + ' feet of climbing, ' + l.place + '.' : '',
+      'latest.lead': indoor
+        ? (treadmill ? 'Latest run, on the treadmill: ' : 'Latest run, indoors: ')
+        : 'Latest run, drawn as a route on the canvas: ',
+      'latest.line': l.miles
+        ? (indoor
+          ? day(l.date) + ', ' + (+l.miles).toFixed(2) + ' miles at ' + mmss(l.pace_sec_per_mi) + ' per mile.'
+          : day(l.date) + ', ' + (+l.miles).toFixed(2) + ' miles at ' + mmss(l.pace_sec_per_mi) + ' per mile, ' + l.elev_ft + ' feet of climbing, ' + l.place + '.')
+        : '',
       'latest.when': l.date && l.place ? day(l.date) + ', ' + l.place : '',
       'latest.name': l.name || '',
       'synced': synced
@@ -516,7 +531,25 @@
       stale.hidden = false;
     }
 
-    if (l.polyline && window.__route) window.__route(l);
+    var map = doc.querySelector('[data-route-map]');
+    var mill = doc.querySelector('[data-mill]');
+    if (map) map.hidden = indoor;
+    if (mill) mill.hidden = !indoor;
+    if (indoor) {
+      var kicker = doc.querySelector('[data-mill-kicker]');
+      var when = doc.querySelector('[data-mill-date]');
+      var line = doc.querySelector('[data-mill-line]');
+      var dist = doc.querySelector('[data-mill="dist"]');
+      var pace = doc.querySelector('[data-mill="pace"]');
+      var time = doc.querySelector('[data-mill="time"]');
+      if (kicker) kicker.textContent = treadmill ? 'Treadmill' : 'Indoors';
+      if (when) when.textContent = l.date ? longDay(l.date) : '';
+      if (line) line.textContent = treadmill ? 'Ran on the treadmill.' : 'Ran indoors.';
+      if (dist && l.miles) dist.textContent = (+l.miles).toFixed(2) + ' mi';
+      if (pace && l.pace_sec_per_mi) pace.textContent = mmss(l.pace_sec_per_mi) + ' /mi';
+      var secs = l.moving_time_s || (l.miles && l.pace_sec_per_mi ? Math.round(+l.miles * l.pace_sec_per_mi) : 0);
+      if (time && secs) time.textContent = clock(secs);
+    } else if (l.polyline && window.__route) window.__route(l);
   }).catch(function () { /* the seeded markup stands */ });
 
   var titles = {

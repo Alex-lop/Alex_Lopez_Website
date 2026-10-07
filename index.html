@@ -161,6 +161,7 @@
           </figure>
         </div>
         <div class="route-panel">
+          <div data-route-map>
           <canvas id="route" aria-hidden="true" data-route="_cj_G~djpLQt@Q^QLi@RYP_@d@c@|@KNSHGCKSEc@Ca@AyAKeA_@{AS]aCyCWk@i@oCe@}C[_Aq@iAi@g@y@_@W_@EOKg@Q_B?eEKcEKW_Ay@[_@UMWGI?a@OU?c@HQC[@cAUq@Kq@?[Fk@Na@l@c@`@QR[r@Md@KfACh@Fd@?^T`AP\d@f@X^h@d@Z`@VVdAr@dAZTDd@Bf@LP?NC^F|@E|@Of@ETQNYBa@O{@Cg@?y@DuACaBMyBAMBEFCh@@`BI\BPBp@T|@j@j@j@b@v@z@xDFh@h@~BVxARr@f@xAJj@JVv@zAPTbAbANLNDfAfAR`@N~@E~AG^Wj@Ol@uA|C_@t@YZOHYDeACOMKo@EmBC_@Gg@[sAIUS[cAyAq@y@]o@Kc@QwAYuAQmAU{@a@{@i@o@OQSOe@QSQQYKa@Ga@KqA@kBBu@CkCEe@S_@K]EWKOMOOIa@e@KGu@Ui@Ei@FOAQBi@EqAWk@Cu@J_@Pc@l@c@`@c@v@Mb@M|@C\@|@Fv@Hd@FTRZh@n@bA|@Z`@nAbA^LjAXn@Jr@H|@Aj@G`@I^Ed@OPS@GBg@Eg@G}@FcCA_AQiDBMDC`A@t@EVBj@Hp@Rn@Xf@`@^b@^r@Nn@l@lCXrBRn@\dB`@hAPt@Fb@L`@f@|@p@~@RNNPVRVJf@^p@dANdA?PMb@]~@e@|@Op@Sl@ILQJa@Ri@b@w@nAOPODE?GCKUE]C}BC[a@iBSg@QYkAwAy@iAKa@Q{@K}@Om@QyAWaA[s@i@y@a@a@s@_@QMUe@UeBQm@AsABqACgBIuAIWEa@EKk@a@[a@QMUKq@IY?q@Fo@CwA[o@?c@Fm@NY^o@l@W^Qd@GTObAEt@@d@H|@FVN^LRJFX^j@j@bAlAf@`@zAj@xAVl@Dn@@r@Cv@Or@EPGJGHU@OAQKm@C_@AaC@Y@eBEaAMgADMJEf@Br@Cj@@p@F^LTLr@b@j@f@Zb@Vh@V`Af@dDDR" data-miles="6.03" data-pace="465" data-elev="115" data-date="2026-09-16" data-place="Boston, MA" data-time="2804"></canvas>
           <p class="route-readout" data-route-readout aria-hidden="true"><span data-ro="dist"></span><span data-ro="time"></span><span data-ro="pace"></span><span data-ro="extra"></span></p>
           <div class="tape" data-tape>
@@ -176,7 +177,24 @@
               </div>
             </div>
           </div>
-          <p class="sr-only">Latest run, drawn as a route on the canvas: <span data-run="latest.line">Sep 16, 6.03 miles at 7:45 per mile, 115 feet of climbing, Boston, MA.</span></p>
+          </div>
+          <div class="mill" data-mill hidden>
+            <div class="mill-copy">
+              <p class="label" data-mill-kicker>Treadmill</p>
+              <p class="mill-date" data-mill-date></p>
+              <p class="mill-line" data-mill-line>Ran on the treadmill.</p>
+            </div>
+            <div class="mill-deck" aria-hidden="true">
+              <span class="mill-slats"></span>
+              <span class="mill-dot"></span>
+            </div>
+            <p class="mill-readout">
+              <span data-mill="dist"></span>
+              <span data-mill="time"></span>
+              <span data-mill="pace"></span>
+            </p>
+          </div>
+          <p class="sr-only"><span data-run="latest.lead">Latest run, drawn as a route on the canvas: </span><span data-run="latest.line">Sep 16, 6.03 miles at 7:45 per mile, 115 feet of climbing, Boston, MA.</span></p>
           <h3 class="run-title" data-run="latest.name">Afternoon Run</h3>
           <div class="run-notes" data-run-notes hidden>
             <p class="run-from" data-run="latest.notes-from"></p>

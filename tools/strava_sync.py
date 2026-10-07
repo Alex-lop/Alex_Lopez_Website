@@ -25,7 +25,7 @@ from zoneinfo import ZoneInfo
 
 MI, FT, OUT, TZ = 1609.344, 3.28084, "data/strava.json", ZoneInfo("America/New_York")
 ORIGIN = (42.0, -71.0)   # the published route is a shape at this point, not a place
-RUN_TYPES = ("Run", "TrailRun")
+RUN_TYPES = ("Run", "TrailRun", "VirtualRun")
 ATHLETE = "141554769"
 STREAM_KEYS = "time,distance,velocity_smooth,altitude,heartrate"
 AVG_FROM = date(2026, 9, 14)  # training-block average on the page; keep every week from here
@@ -135,14 +135,44 @@ def has_line(m):
     return bool(m and (m.get("summary_polyline") or m.get("polyline")))
 
 
+def indoor_kind(a):
+    """Why this run has no streets. Strava sets trainer on a treadmill (or a bike trainer).
+    A name that says treadmill covers a manual entry that forgot the flag. VirtualRun is an
+    indoor sport (Zwift and the like) and its polyline is a game map, not a road."""
+    if not a:
+        return None
+    name = (a.get("name") or "").lower()
+    if a.get("trainer") or "treadmill" in name:
+        return "treadmill"
+    if kind(a) == "VirtualRun":
+        return "virtual"
+    return None
+
+
+def stamp_indoor(a, detail):
+    """Copy the flags pick_latest reads. The list row often omits trainer; the detail has it."""
+    if not detail:
+        return a
+    if detail.get("trainer"):
+        a["trainer"] = True
+    if detail.get("sport_type"):
+        a["sport_type"] = detail["sport_type"]
+    if detail.get("name"):
+        a["name"] = detail["name"]
+    return a
+
+
 def pick_latest(acts):
-    """Newest run the hero can draw. Visibility is not a filter: route_out publishes the line
-    shifted onto ORIGIN, so a private or followers-only run leaves this script as a shape, not a
-    place. The activity list often omits summary_polyline for those; resolve_latest copies the
-    detail line onto the row first."""
+    """Newest run the hero can show. A street run needs a line. A treadmill or virtual run
+    has none, and still wins, so winter miles replace last week's map instead of leaving it up.
+    Visibility is not a filter: route_out publishes a street line shifted onto ORIGIN, so a
+    private run leaves this script as a shape, not a place. resolve_latest copies a missing
+    summary line, or the indoor flags, onto the row first."""
     found = None
     for a in acts:
-        if kind(a) not in RUN_TYPES or not a.get("distance") or not has_line(a.get("map")):
+        if kind(a) not in RUN_TYPES or not a.get("distance"):
+            continue
+        if not has_line(a.get("map")) and not indoor_kind(a):
             continue
         if found is None or a["start_date_local"] > found["start_date_local"]:
             found = a
@@ -150,18 +180,26 @@ def pick_latest(acts):
 
 
 def resolve_latest(acts, fetch_detail, limit=12):
-    """(activity, detail) for the newest run with a route, or (None, None).
+    """(activity, detail) for the newest run the page can show, or (None, None).
 
-    Walks newest first. A list row with a summary polyline is enough. A blank summary — what
-    Strava returns for a lot of private runs — still qualifies when the detail call has a line;
-    that line is copied onto the row so pick_latest sees the same activity. `fetch_detail` is
-    called only until one route is found, and at most `limit` times."""
+    Walks newest first. A treadmill or virtual run is enough on its own. Otherwise a list row
+    with a summary polyline is enough. A blank summary — what Strava returns for a lot of
+    private runs — still qualifies when the detail call has a line, or when the detail says
+    the run was indoors; that fact is copied onto the row so pick_latest sees the same
+    activity. A run with neither a line nor an indoor flag is skipped (a GPS dropout should
+    not be labeled a treadmill). `fetch_detail` is called only until one run is chosen, and
+    at most `limit` times."""
     runs = [a for a in acts if kind(a) in RUN_TYPES and a.get("distance", 0) > 0 and a.get("start_date_local")]
     runs.sort(key=lambda a: a["start_date_local"], reverse=True)
     for a in runs[:limit]:
+        if indoor_kind(a):
+            return a, fetch_detail(a)
         if (a.get("map") or {}).get("summary_polyline"):
             return a, fetch_detail(a)
         detail = fetch_detail(a)
+        stamp_indoor(a, detail)
+        if indoor_kind(a):
+            return a, detail
         m = (detail or {}).get("map") or {}
         poly = m.get("polyline") or m.get("summary_polyline")
         if poly:
@@ -265,21 +303,31 @@ def build(acts, monday, old, detail=None, streams=None, stats=None, today=None):
     latest = pick_latest(acts)
     old_latest = old.get("latest") or {}
     if latest:
+        indoor = indoor_kind(latest)
         place = ", ".join(x for x in (latest.get("location_city"), latest.get("location_state")) if x)
+        if indoor == "treadmill":
+            place = "Treadmill"
+        elif indoor == "virtual":
+            place = "Indoors"
+        else:
+            place = place or old_latest.get("place", "Boston, MA")
+        raw_line = "" if indoor else ((latest.get("map") or {}).get("summary_polyline") or (latest.get("map") or {}).get("polyline") or "")
         out["latest"] = {
             "date": latest["start_date_local"][:10],
             "name": latest.get("name", "Run"),
-            "place": place or old_latest.get("place", "Boston, MA"),
+            "place": place,
             "miles": round(latest["distance"] / MI, 2),
             "pace_sec_per_mi": round(latest["moving_time"] / (latest["distance"] / MI)),
             "elev_ft": round(latest["total_elevation_gain"] * FT),
-            "polyline": route_out((latest.get("map") or {}).get("summary_polyline") or (latest.get("map") or {}).get("polyline") or ""),
+            "polyline": route_out(raw_line),
         }
+        if indoor:
+            out["latest"]["indoor"] = indoor
         if detail:
-            poly = (detail.get("map") or {}).get("polyline")
+            poly = None if indoor else (detail.get("map") or {}).get("polyline")
             hr = detail.get("has_heartrate")
             out["latest"].update({
-                "polyline": route_out(poly) or out["latest"]["polyline"],
+                "polyline": "" if indoor else (route_out(poly) or out["latest"]["polyline"]),
                 "id": detail.get("id"),
                 "name": detail.get("name") or out["latest"]["name"],
                 "moving_time_s": detail.get("moving_time"),
@@ -464,17 +512,68 @@ def self_check():
     assert cand["name"] == "today" and cand["map"]["polyline"] == private_poly and seen == ["today"], seen
     assert build([hidden] + acts, date(2026, 9, 28), old, detail_hidden)["latest"]["date"] == "2026-09-29"
 
-    # no GPS on the newest run: skip it and draw the previous one that has a line
+    # a treadmill day becomes latest even with no GPS, and publishes no line
     gym = {"id": 7, "type": "Run", "distance": 3 * MI, "moving_time": 1200, "total_elevation_gain": 0,
-           "start_date_local": "2026-09-30T06:00:00", "name": "treadmill", "visibility": "only_me", "map": {}}
+           "start_date_local": "2026-09-30T06:00:00", "name": "Morning Treadmill", "trainer": True,
+           "visibility": "only_me", "location_city": "Boston", "location_state": "MA", "map": {}}
     seen.clear()
 
     def fetch_gym(a):
         seen.append(a["name"])
-        return {"map": {}} if a["name"] == "treadmill" else None
+        return {"id": 7, "name": "Morning Treadmill", "trainer": True, "map": {}, "moving_time": 1200,
+                "has_heartrate": True, "average_heartrate": 150.2} if a["name"] == "Morning Treadmill" else None
 
-    cand, _ = resolve_latest([gym, acts[0]], fetch_gym)
-    assert cand["name"] == "a" and seen == ["treadmill", "a"], seen
+    cand, gym_detail = resolve_latest([gym, acts[0]], fetch_gym)
+    assert cand["name"] == "Morning Treadmill" and seen == ["Morning Treadmill"], seen
+    gym_out = build([gym, acts[0]], date(2026, 9, 28), old, gym_detail)["latest"]
+    assert gym_out["indoor"] == "treadmill" and gym_out["polyline"] == "" and gym_out["place"] == "Treadmill", gym_out
+    assert gym_out["date"] == "2026-09-30" and gym_out["miles"] == 3.0 and gym_out["avg_hr"] == 150, gym_out
+    # the city on the activity is the gym, not a route, so it must not land in the file as a place
+    assert "Boston" not in gym_out["place"]
+
+    # the word treadmill on a manual entry is enough; a newer street run still beats an older one
+    named = {"type": "Run", "distance": 2 * MI, "moving_time": 1000, "total_elevation_gain": 0,
+             "start_date_local": "2026-09-15T08:00:00", "name": "Treadmill Run", "map": {}}
+    named_out = build([named, acts[2]], monday, old)["latest"]
+    assert named_out["name"] == "c" and named_out["polyline"] and "indoor" not in named_out, named_out
+    named_only = build([named], monday, old)["latest"]
+    assert named_only["indoor"] == "treadmill" and named_only["polyline"] == "" and named_only["place"] == "Treadmill"
+
+    # trainer only on the detail, and a junk GPS blob must not be published
+    quiet = {"id": 9, "type": "Run", "distance": 5 * MI, "moving_time": 2400, "total_elevation_gain": 0,
+             "start_date_local": "2026-10-06T06:30:00", "name": "Morning Run", "map": {"summary_polyline": None}}
+    seen.clear()
+
+    def fetch_quiet(a):
+        seen.append(a["name"])
+        if a["name"] == "Morning Run":
+            return {"id": 9, "name": "Morning Run", "trainer": True, "map": {"polyline": private_poly}, "moving_time": 2400}
+        return None
+
+    cand, quiet_detail = resolve_latest([quiet, acts[0]], fetch_quiet)
+    assert cand.get("trainer") is True and seen == ["Morning Run"], (cand.get("trainer"), seen)
+    quiet_out = build([quiet, acts[0]], date(2026, 10, 5), old, quiet_detail)["latest"]
+    assert quiet_out["indoor"] == "treadmill" and quiet_out["polyline"] == "" and quiet_out["miles"] == 5.0, quiet_out
+
+    # no GPS and not a treadmill: still skip it and draw the previous run that has a line
+    blank = {"id": 8, "type": "Run", "distance": 3 * MI, "moving_time": 1200, "total_elevation_gain": 12,
+             "start_date_local": "2026-09-30T06:00:00", "name": "Morning Run", "map": {}}
+    seen.clear()
+
+    def fetch_blank(a):
+        seen.append(a["name"])
+        return {"map": {}} if a["name"] == "Morning Run" else None
+
+    cand, _ = resolve_latest([blank, acts[0]], fetch_blank)
+    assert cand["name"] == "a" and seen == ["Morning Run", "a"], seen
+
+    # VirtualRun counts in the week and is shown as indoors, game map included
+    virt = {"sport_type": "VirtualRun", "distance": 4 * MI, "moving_time": 1800, "total_elevation_gain": 40,
+            "start_date_local": "2026-10-06T07:00:00", "name": "Zwift", "map": {"summary_polyline": short}}
+    virt_built = build([virt], date(2026, 10, 5), old)
+    assert virt_built["week"]["runs"] == 1 and virt_built["week"]["miles"] == 4.0, virt_built["week"]
+    assert virt_built["latest"]["indoor"] == "virtual" and virt_built["latest"]["polyline"] == ""
+    assert virt_built["latest"]["place"] == "Indoors"
     assert out["feeling"] == "keep me" and out["pr"] == {"half_marathon": "1:32"}
     empty = build([], date(2026, 9, 21), old)["week"]
     assert empty["runs"] == 0 and empty["pace_sec_per_mi"] is None and empty["days"] == [0] * 7
@@ -627,13 +726,13 @@ def main():
     cand, detail = resolve_latest(acts, fetch_detail)
     streams = None
     if cand:
-        src = "summary" if (cand.get("map") or {}).get("summary_polyline") else "detail"
+        src = indoor_kind(cand) or ("summary" if (cand.get("map") or {}).get("summary_polyline") else "detail")
         print(f"latest {cand['start_date_local'][:10]} visibility={cand.get('visibility') or 'unset'} via {src}")
         if cand.get("id"):
             streams = api_opt(
                 f"https://www.strava.com/api/v3/activities/{cand['id']}/streams?keys={STREAM_KEYS}&key_by_type=true", access)
     else:
-        print("no run in the window has a route; keeping the previous latest")
+        print("no run in the window can be shown; keeping the previous latest")
     stats = api_opt(f"https://www.strava.com/api/v3/athletes/{ATHLETE}/stats", access)
 
     new = build(acts, monday, old, detail, streams, stats, today)

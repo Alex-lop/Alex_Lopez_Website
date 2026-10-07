@@ -272,6 +272,7 @@ flipping the OS setting takes effect without a reload.
 | week odometer            | the Running stats enter view           | three fixed digit columns roll to their values, 900ms, once (again only if the fetched value differs from the seed) |
 | route trace              | Running section on screen              | start dot pulses ≈ 0.5s; the dot runs the route in 70s following the real time profile when streams exist; mile markers drop as passed; 6s hold at the finish; restart from the start point; starts on its own when Outside opens (no Start click); pauses off screen and when the tab is hidden, on an accumulated clock so it never jumps. The canvas ignores the pointer, so looking at the map cannot steal the runner |
 | route tape               | Start, Pause/Play, drag or arrow the track under the map | the playhead follows the runner; drag (or arrow keys on the focused track) rewinds and the readout shows that point's distance, elapsed, pace, HR and elevation; Start jumps to the beginning and plays; Pause freezes the runner where it is; on release the clock is reseated there and the run continues unless Pause is down. Reduced motion hides Start/Pause; the track still previews while dragged |
+| treadmill belt           | latest run is indoors (`indoor` is `treadmill` or `virtual`) | the map and tape are hidden; a panel names the day and says the run was on the treadmill (or indoors). The belt slats scroll; the dot stays put. Reduced motion and Pause motion leave the belt still |
 | split strip              | the runner passes a mile               | the matching card gets the accent inset; the strip nudges horizontally to keep it in view unless the reader touched the strip in the last 1.5s |
 | photo strip (Outside)    | page scroll through the section (desktop, fine pointer) | the strip starts on the content column and is translated by exactly its overflow times the section's scroll progress, so the last photo ends flush with the column's right edge. The photos are 250px tall, so at 1280 and wider the overflow (93px) is smaller than the column's gutter and no photo ever leaves the column; a narrower fine-pointer window slides further and the first photo can leave; a strip that fits does not move; on phones it is a native swipe scroller and the scroll handler is not attached |
 | ticker band              | always, once on the page               | one line, CSS marquee, ≈ 45s per loop; pauses on hover and while off screen |
@@ -438,6 +439,7 @@ with `allow_nan=False` so `Infinity`/`NaN` can never reach the page.
 generated_at, week_start, week{runs, miles, pace_sec_per_mi, elev_ft, moving_time_s, days[7]},
 latest{
   id, date, name, place, miles, pace_sec_per_mi, elev_ft, polyline,
+  indoor,                                                    # "treadmill" or "virtual" when there is no street to draw; omitted on a road run. polyline is then ""
   moving_time_s, elapsed_time_s,                             # new
   avg_hr, max_hr, cadence, suffer_score, calories,           # new, null when absent
   splits[{mile, miles, moving_time_s, pace_sec_per_mi, elev_change_ft, hr, partial}],   # new, from splits_standard; the trailing partial split is kept with partial: true and no pace
@@ -458,10 +460,13 @@ mid-run. The page only draws the shape (route.js normalises it to unit space; `p
 string), so the file never says where a run was; the seeded route in `index.html` and the
 committed JSON were moved the same way. Moving 42.34 N to 42.0 N changes the drawn aspect by 0.5%. The encoder diffs against
 the previously rounded integer (not the float) and is proven offline against the decoder's own test
-vector plus a round-trip check. `latest` is the newest run with a polyline, including private and
+vector plus a round-trip check. `latest` is the newest run the page can show, including private and
 followers-only activities: the list call often omits `summary_polyline` for those, so the sync
-asks the detail endpoint before giving up. The published line is still the shifted shape, and a
-run with no line is skipped. The sync never writes the real coordinates. `totals.lifts_before_runs_this_week` counts the
+asks the detail endpoint before giving up. The published line is still the shifted shape. A run
+with no line and no indoor flag is skipped (a GPS dropout is not a treadmill). A treadmill
+(`trainer`, or "treadmill" in the name) or a `VirtualRun` still becomes `latest`: `indoor` is
+`"treadmill"` or `"virtual"`, `place` is `Treadmill` or `Indoors`, and `polyline` is empty so
+the page draws a belt instead of last week's streets. The sync never writes the real coordinates. `totals.lifts_before_runs_this_week` counts the
 week's runs that started within two hours after a WeightTraining, the same unit as `week.runs`. Stream arrays are written compactly so a
 sync is a small diff.
 
@@ -493,7 +498,7 @@ sync is a small diff.
   with a partial last split and a negative elevation change; streams of 900 raw samples
   downsampled to exactly 300 with the stopped last sample → `null` pace; a 1,200-point route to
   exactly 800 starting at the origin with its shape intact and every point over 30 km from where
-  it was, and a degenerate polyline publishing nothing; `weeks` of length 8 with the
+  it was, and a degenerate polyline publishing nothing; a treadmill or virtual run becoming `latest` with `indoor` set and an empty polyline, while a GPS-less outdoor run is still skipped; `weeks` of length 8 with the
   live week last and a week-9 run excluded; `totals.lifts_before_runs_this_week` counting the
   week's runs that started within two hours after a lift, and not a run whose lift was three hours
   earlier; achievements over today and the 29 days before it, and none a month later; `sport_type` and

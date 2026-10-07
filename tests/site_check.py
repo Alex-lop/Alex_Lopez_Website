@@ -99,11 +99,17 @@ for key in ("miles", "pace_sec_per_mi", "elev_ft", "runs", "days", "moving_time_
 assert len(week["days"]) == 7 and all(d >= 0 for d in week["days"])
 assert abs(sum(week["days"]) - week["miles"]) < 0.15, "days should sum to the week's miles"
 latest = data["latest"]
-assert latest["polyline"], "route missing"
+assert 'data-route-map' in HTML and 'data-mill' in HTML and 'class="mill"' in HTML
+assert 'Ran on the treadmill.' in HTML, "the indoor panel should say the run was on the treadmill"
+assert 'mill-roll' in CSS and '.mill-slats { animation: none; }' in CSS
 sys.path.insert(0, str(ROOT / "tools"))
 from strava_sync import ORIGIN, decode_polyline  # noqa: E402
-for label, poly in (("seeded data-route", route["data-route"]), ("latest.polyline", latest["polyline"])):
-    assert decode_polyline(poly)[0] == ORIGIN, f"{label} is not published at the fixed origin, so it says where the run was"
+assert decode_polyline(route["data-route"])[0] == ORIGIN, "seeded data-route is not published at the fixed origin"
+if latest.get("indoor") in ("treadmill", "virtual"):
+    assert not latest.get("polyline"), "an indoor run must not publish a line"
+else:
+    assert latest.get("polyline"), "route missing"
+    assert decode_polyline(latest["polyline"])[0] == ORIGIN, "latest.polyline is not published at the fixed origin, so it says where the run was"
 assert isinstance(data.get("feeling"), str) and data["pr"]["half_marathon"] == "1:32"
 assert data["generated_at"].endswith("Z")
 
