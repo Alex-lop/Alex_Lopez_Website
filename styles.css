@@ -145,7 +145,6 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
 .role h3 { margin-bottom: 0; }
 .role-title { margin: 0; }
 .role .small { margin: 0; }
-.role-note { margin: 12px 0 0; max-width: var(--measure); }
 .role-photo { display: flex; align-items: center; gap: clamp(24px, 4vw, 48px); }
 .role-photo > div { flex: 0 1 auto; min-width: min(100%, 18rem); }
 .role-photo .photo { flex: 0 1 380px; width: min(380px, 46%); margin: 0; max-width: none; }
