@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HTML = (ROOT / "index.html").read_text()
 CSS = (ROOT / "styles.css").read_text()
-SCRIPTS = {n: (ROOT / "js" / n).read_text() for n in ("field.js", "route.js", "site.js")}
+SCRIPTS = {n: (ROOT / "js" / n).read_text() for n in ("field.js", "route.js", "site.js", "analysis.js")}
 
 
 class SiteParser(HTMLParser):
@@ -102,6 +102,9 @@ assert len(week["days"]) == 7 and all(d >= 0 for d in week["days"])
 assert abs(sum(week["days"]) - week["miles"]) < 0.15, "days should sum to the week's miles"
 latest = data["latest"]
 assert 'data-route-map' in HTML and 'data-mill' in HTML and 'class="mill"' in HTML
+assert 'data-analysis' in HTML and 'id="run-trace"' in HTML
+for metric in ("pace", "gap", "hr", "cadence"):
+    assert f'data-metric="{metric}"' in HTML, metric
 assert 'Ran on the treadmill.' in HTML, "the indoor panel should say the run was on the treadmill"
 assert 'mill-roll' in CSS and '.mill-slats { animation: none; }' in CSS
 sys.path.insert(0, str(ROOT / "tools"))
