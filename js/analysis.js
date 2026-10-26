@@ -262,11 +262,394 @@
       else btn.removeAttribute('title');
     });
   }
+  function sample(arr, mile) {
+    if (!arr || !data) return null;
+    var xs = data.miles, i = idxOf(xs, mile), j = Math.min(arr.length - 1, i + 1);
+    var a = arr[i], b = arr[j];
+    var span = xs[j] - xs[i];
+    var t = span > 0 ? clamp((mile - xs[i]) / span, 0, 1) : 0;
+    if (a == null || b == null) return t < 0.5 ? a : b;
+    return a + (b - a) * t;
+  }
+  function paintRead() {
+    if (!open || !data) return;
+    var mile = cursor * data.maxMile, parts = [mile.toFixed(2) + ' mi'], sig;
+    function textFor(k) {
+      if (!on[k] || !data.series[k]) return '';
+      var v = sample(data.series[k].v, mile);
+      if (k === 'pace' || k === 'gap') {
+        if (v == null || v > 900 || v < 180) return 'stopped';
+        return (k === 'gap' ? 'GAP ' : '') + mmss(v) + ' /mi';
+      }
+      if (v == null) return '';
+      if (k === 'hr') return Math.round(v) + ' bpm';
+      return Math.round(v) + ' spm';
+    }
+    ORDER.forEach(function (k) { parts.push(textFor(k)); });
+    sig = parts.join('|');
+    if (sig === readSig) return;
+    readSig = sig;
+    distBit.textContent = parts[0];
+    ORDER.forEach(function (k, i) {
+      var text = parts[i + 1];
+      bits[k].hidden = !text;
+      if (text) bits[k].textContent = text;
+    });
+  }
+  function setAria() {
+    if (!data) return;
+    var mile = cursor * data.maxMile;
+    slider.setAttribute('aria-valuemax', data.maxMile.toFixed(2));
+    slider.setAttribute('aria-valuenow', mile.toFixed(2));
+    slider.setAttribute('aria-valuetext', readSig.replace(/\|/g, ', ') || mile.toFixed(2) + ' miles');
+  }
+
+  function measure() {
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    if (w < 20 || h < 20) return false;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var bw = Math.round(w * dpr), bh = Math.round(h * dpr);
+    if (canvas.width !== bw || canvas.height !== bh) { canvas.width = bw; canvas.height = bh; }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    plot.w = w - plot.l - plot.r;
+    plot.h = h - plot.t - plot.b;
+    viewW = w;
+    viewH = h;
+    return plot.w > 10 && plot.h > 10;
+  }
+  function xOf(mile) { return plot.l + clamp(mile / (data.maxMile || 1), 0, 1) * plot.w; }
+  function yOf(series, lane, val) {
+    if (val == null || !(lane.h > 2)) return null;
+    var t = clamp((val - series.lo) / (series.hi - series.lo || 1), 0, 1);
+    if (series.invert) t = 1 - t;
+    var top = lane.y + Math.min(10, lane.h * 0.16);
+    var bot = lane.y + lane.h - Math.min(10, lane.h * 0.16);
+    return bot - t * (bot - top);
+  }
+  function targets() {
+    var active = ORDER.filter(function (k) { return on[k] && data.series[k]; });
+    var elevH = data.alt ? Math.min(plot.h * 0.32, Math.max(46, plot.h * 0.24)) : 0;
+    var gap = active.length > 1 ? 6 : 0;
+    var top = plot.t;
+    var bottom = plot.t + plot.h - elevH - (elevH ? 6 : 0);
+    var n = Math.max(1, active.length);
+    var h = (bottom - top - gap * Math.max(0, active.length - 1)) / n;
+    var y = top, next = {};
+    active.forEach(function (k) {
+      next[k] = { y: y, h: h };
+      y += h + gap;
+    });
+    ORDER.forEach(function (k) {
+      if (next[k]) return;
+      var prev = laneNow[k] || { y: (top + bottom) / 2, h: 0 };
+      next[k] = { y: prev.y + prev.h / 2, h: 0 };
+    });
+    laneTarget = next;
+    elev = { y: plot.t + plot.h - elevH, h: elevH };
+  }
+  function applyLanes(snap) {
+    ORDER.forEach(function (k) {
+      var t = laneTarget[k];
+      if (!t) return;
+      if (snap || !laneNow[k]) laneNow[k] = { y: t.y, h: t.h };
+    });
+  }
+  function tickList(max) {
+    var step = max > 8 ? 2 : max > 3.2 ? 1 : 0.5, out = [], m;
+    for (m = step; m < max - step * 0.4; m += step) out.push(Math.round(m * 10) / 10);
+    out.push(max);
+    return out;
+  }
+  function fmtMi(m) {
+    var near = Math.abs(m - Math.round(m)) < 0.025;
+    return (near ? String(Math.round(m)) : m.toFixed(1)) + ' mi';
+  }
+
+  function trace(arr, lane, series) {
+    var pen = false, i, val, x, y;
+    ctx.beginPath();
+    for (i = 0; i < data.miles.length; i++) {
+      val = arr[i];
+      /* A stop has no pace. Draw it at the bottom of the lane so the line dips
+         and recovers, instead of opening a hole. */
+      if ((val == null || !isFinite(val)) && series.invert) val = series.hi;
+      if (val == null || !isFinite(val)) { pen = false; continue; }
+      x = xOf(data.miles[i]);
+      y = yOf(series, lane, val);
+      if (y == null) { pen = false; continue; }
+      if (!pen) { ctx.moveTo(x, y); pen = true; }
+      else ctx.lineTo(x, y);
+    }
+    return pen;
+  }
+  function drawElev() {
+    var alt = data.alt;
+    if (!alt || elev.h < 8) return;
+    var vals = alt.filter(function (v) { return v != null && isFinite(v); });
+    if (vals.length < 2) return;
+    var lo0 = Math.min.apply(null, vals), hi0 = Math.max.apply(null, vals);
+    var span = Math.max(hi0 - lo0, 16), mid = (lo0 + hi0) / 2;
+    var lo = mid - span * 0.68, hi = mid + span * 0.5;
+    function yA(v) {
+      var t = clamp((v - lo) / (hi - lo || 1), 0, 1);
+      return elev.y + elev.h - t * elev.h * 0.9 - 2;
+    }
+    var base = elev.y + elev.h, hold = vals[0], i, a, x, y, started = false, lastX = plot.l;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(plot.l, elev.y, Math.max(0, plot.w * reveal), elev.h + 1);
+    ctx.clip();
+    ctx.beginPath();
+    for (i = 0; i < data.miles.length; i++) {
+      a = alt[i];
+      if (a == null) a = hold; else hold = a;
+      x = xOf(data.miles[i]);
+      y = yA(a);
+      if (!started) { ctx.moveTo(x, base); started = true; }
+      ctx.lineTo(x, y);
+      lastX = x;
+    }
+    ctx.lineTo(lastX, base);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(23, 22, 19, 0.13)';
+    ctx.fill();
+    if (reveal > 0.97) {
+      ctx.save();
+      ctx.clip();
+      ctx.fillStyle = 'rgba(23, 22, 19, 0.08)';
+      ctx.fillRect(plot.l, elev.y, Math.max(0, xOf(cursor * data.maxMile) - plot.l), elev.h + 1);
+      ctx.restore();
+    }
+    ctx.beginPath();
+    hold = vals[0];
+    penWalk(function (i) {
+      a = alt[i];
+      if (a == null) a = hold; else hold = a;
+      return [xOf(data.miles[i]), yA(a)];
+    });
+    ctx.strokeStyle = 'rgba(23, 22, 19, 0.40)';
+    ctx.lineWidth = 1.25;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    ctx.restore();
+  }
+  function penWalk(at) {
+    var pen = false, i, p;
+    for (i = 0; i < data.miles.length; i++) {
+      p = at(i);
+      if (!p) { pen = false; continue; }
+      if (!pen) { ctx.moveTo(p[0], p[1]); pen = true; }
+      else ctx.lineTo(p[0], p[1]);
+    }
+  }
+  function drawSeries() {
+    ORDER.forEach(function (k) {
+      var series = data.series[k], lane = laneNow[k];
+      if (!on[k] || !series || !lane || lane.h < 3) return;
+      var color = colors[k];
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(plot.l, lane.y, Math.max(0, plot.w * reveal), lane.h);
+      ctx.clip();
+      if (hot === k) {
+        ctx.fillStyle = withAlpha(color, 0.09);
+        ctx.fillRect(plot.l, lane.y, plot.w, lane.h);
+      }
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = color;
+      ctx.lineWidth = series.flat ? 1.4 : (hot === k ? 2.35 : 1.7);
+      ctx.globalAlpha = series.flat ? 0.8 : 1;
+      trace(series.v, lane, series);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    });
+  }
+  function drawCursor() {
+    if (reveal < 0.98) return;
+    var mile = cursor * data.maxMile;
+    var x = xOf(mile), hx = Math.round(x) + 0.5;
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(23, 22, 19, 0.38)';
+    ctx.lineWidth = 1;
+    ctx.moveTo(hx, plot.t);
+    ctx.lineTo(hx, plot.t + plot.h);
+    ctx.stroke();
+    ORDER.forEach(function (k) {
+      if (!on[k] || !data.series[k]) return;
+      var lane = laneNow[k];
+      if (!lane || lane.h < 4) return;
+      var v = sample(data.series[k].v, mile);
+      if ((v == null || v > 900) && data.series[k].invert) v = data.series[k].hi;
+      var y = yOf(data.series[k], lane, v);
+      if (y == null) return;
+      ctx.beginPath();
+      ctx.fillStyle = paper;
+      ctx.arc(x, y, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.fillStyle = colors[k];
+      ctx.arc(x, y, 3.15, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+  function drawAxis() {
+    ctx.save();
+    ctx.globalAlpha = clamp(reveal * 1.35, 0, 1);
+    ctx.fillStyle = ink2;
+    ctx.font = '400 11px "Plex Sans", system-ui, sans-serif';
+    ctx.textBaseline = 'top';
+    var ticks = tickList(data.maxMile), last = ticks.length - 1;
+    ticks.forEach(function (m, i) {
+      var x = xOf(m), end = i === last;
+      if (!end && plot.l + plot.w - x < 42) return;
+      ctx.textAlign = end ? 'right' : (x < plot.l + 28 ? 'left' : 'center');
+      ctx.fillStyle = ink2;
+      ctx.fillText(fmtMi(m), end ? plot.l + plot.w : x, plot.t + plot.h + 8);
+      ctx.fillStyle = 'rgba(23, 22, 19, 0.28)';
+      ctx.fillRect(Math.round(x), plot.t + plot.h + 1, 1, 4);
+    });
+    ctx.restore();
+  }
+  function draw() {
+    if (!data || !open || !measure()) return;
+    ctx.clearRect(0, 0, viewW, viewH);
+    drawElev();
+    drawSeries();
+    drawCursor();
+    drawAxis();
+    paintRead();
+  }
+  function kick() { if (!raf) raf = requestAnimationFrame(step); }
+  function step() {
+    raf = 0;
+    var revDone = true, laneDone = true;
+    if (Math.abs(reveal - revealTo) > 0.004) {
+      reveal += (revealTo - reveal) * (motionOff() ? 1 : 0.16);
+      revDone = false;
+    } else reveal = revealTo;
+    ORDER.forEach(function (k) {
+      var t = laneTarget[k], n = laneNow[k];
+      if (!t || !n) return;
+      if (Math.abs(t.y - n.y) < 0.35 && Math.abs(t.h - n.h) < 0.35) { n.y = t.y; n.h = t.h; return; }
+      n.y += (t.y - n.y) * 0.18;
+      n.h += (t.h - n.h) * 0.18;
+      laneDone = false;
+    });
+    draw();
+    if (!revDone || !laneDone) kick();
+  }
+  function layout(snap) {
+    if (!open || !data || !measure()) return;
+    readColors();
+    targets();
+    applyLanes(snap || motionOff());
+    if (snap || motionOff()) draw();
+    else kick();
+  }
+
+  function nudgeIntoView() {
+    if (!open) return;
+    var r = chart.getBoundingClientRect();
+    if (r.bottom > innerHeight - 8 || r.top > innerHeight - 120) {
+      chart.scrollIntoView({ behavior: motionOff() ? 'auto' : 'smooth', block: 'nearest' });
+    }
+  }
+  function armScroll() {
+    if (motionOff()) { nudgeIntoView(); return; }
+    var done = false;
+    function finish(ev) {
+      if (ev && (ev.target !== fold || ev.propertyName !== 'grid-template-rows')) return;
+      if (done || !open) return;
+      done = true;
+      fold.removeEventListener('transitionend', finish);
+      nudgeIntoView();
+    }
+    fold.addEventListener('transitionend', finish);
+    setTimeout(function () { finish(); }, 700);
+  }
+  function setOpen(yes) {
+    open = yes;
+    fold.classList.toggle('open', yes);
+    clip.inert = !yes;
+    slider.tabIndex = yes ? 0 : -1;
+    if (!yes) return;
+    if (isFinite(+window.__routeAt)) lastFrame = clamp(+window.__routeAt, 0, 1);
+    cursor = linked ? lastFrame : cursor;
+    reveal = motionOff() ? 1 : 0;
+    revealTo = 1;
+    readSig = '';
+    layout(true);
+    if (reveal !== revealTo) kick();
+    paintRead();
+    setAria();
+    armScroll();
+  }
+
+  row.addEventListener('click', function (e) {
+    var btn = e.target.closest && e.target.closest('.metric');
+    if (!btn || btn.hidden || !data) return;
+    var key = btn.getAttribute('data-metric');
+    if (!open) {
+      ORDER.forEach(function (k) { on[k] = !!(data.series[k] && data.avg[k] != null); });
+      setOpen(true);
+    } else {
+      on[key] = !on[key];
+      if (!ORDER.some(function (k) { return on[k]; })) setOpen(false);
+      else layout(false);
+    }
+    paintButtons();
+  });
+  row.addEventListener('pointerover', function (e) {
+    var btn = e.target.closest && e.target.closest('.metric');
+    var key = btn && !btn.hidden && on[btn.getAttribute('data-metric')] ? btn.getAttribute('data-metric') : '';
+    if (key === hot) return;
+    hot = key;
+    if (open) draw();
+  });
+  row.addEventListener('pointerleave', function () {
+    if (!hot) return;
+    hot = '';
+    if (open) draw();
+  });
+
+  function onMotion() {
+    if (!motionOff()) return;
+    reveal = revealTo;
+    applyLanes(true);
+    if (open) draw();
+  }
+  if (mq.addEventListener) mq.addEventListener('change', onMotion); else mq.addListener(onMotion);
+  document.addEventListener('motion:change', onMotion);
+  if (window.ResizeObserver) new ResizeObserver(function () { if (open) layout(true); }).observe(chart);
+  addEventListener('hashchange', function () {
+    if (open) requestAnimationFrame(function () { layout(true); });
+  });
+
+  readColors();
   window.__analysis = function (run) {
     var model = run && build(run);
-    if (!model) { root.hidden = true; data = null; return; }
+    if (!model) { root.hidden = true; data = null; linked = false; return; }
+    var changed = !data || model.id !== data.id;
     data = model;
+    linked = model.linked;
     root.hidden = false;
+    if (changed) {
+      if (isFinite(+window.__routeAt)) lastFrame = clamp(+window.__routeAt, 0, 1);
+      cursor = linked ? lastFrame : 0;
+      hot = '';
+      readSig = '';
+    }
+    ORDER.forEach(function (k) { if (!data.series[k]) on[k] = false; });
+    if (open && !ORDER.some(function (k) { return on[k]; })) {
+      ORDER.forEach(function (k) { on[k] = !!data.series[k]; });
+    }
     paintButtons();
+    if (!open) return;
+    if (changed && !motionOff()) { reveal = 0; revealTo = 1; }
+    layout(true);
+    if (reveal !== revealTo) kick();
+    paintRead();
   };
 })();
