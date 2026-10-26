@@ -614,6 +614,91 @@
     if (open) draw();
   });
 
+  function fracOf(e) {
+    var r = canvas.getBoundingClientRect();
+    return clamp((e.clientX - r.left - plot.l) / (plot.w || 1), 0, 1);
+  }
+  function seek(f, drag) {
+    cursor = clamp(f, 0, 1);
+    if (!linked) return;
+    document.dispatchEvent(new CustomEvent('route:seek', { detail: { fraction: cursor, drag: !!drag } }));
+  }
+  slider.addEventListener('pointerdown', function (e) {
+    if (e.button) return;
+    down = { id: e.pointerId, x: e.clientX };
+    dragging = false;
+    hover = true;
+    cursor = fracOf(e);
+    draw();
+    setAria();
+  });
+  slider.addEventListener('pointermove', function (e) {
+    if (down && e.pointerId === down.id) {
+      if (!dragging && Math.abs(e.clientX - down.x) > 3) {
+        dragging = true;
+        try { slider.setPointerCapture(e.pointerId); } catch (err) { /* a nicety */ }
+      }
+      cursor = fracOf(e);
+      if (dragging) seek(cursor, true);
+      draw();
+      setAria();
+      return;
+    }
+    if (e.pointerType === 'mouse') {
+      hover = true;
+      cursor = fracOf(e);
+      draw();
+    }
+  });
+  function endPointer(e) {
+    if (!down || (e && e.pointerId !== down.id)) return;
+    var f = e ? fracOf(e) : cursor;
+    down = null;
+    dragging = false;
+    hover = false;
+    seek(f, false);
+    draw();
+    setAria();
+  }
+  slider.addEventListener('pointerup', endPointer);
+  slider.addEventListener('pointercancel', endPointer);
+  slider.addEventListener('lostpointercapture', function (e) {
+    if (down && e.pointerId === down.id) endPointer(e);
+  });
+  slider.addEventListener('pointerleave', function () {
+    if (down || !hover) return;
+    hover = false;
+    cursor = linked ? lastFrame : cursor;
+    draw();
+  });
+  var keyTimer = 0;
+  slider.addEventListener('keydown', function (e) {
+    var step = e.shiftKey ? 0.05 : 0.01, f = cursor;
+    if (e.key === 'ArrowRight') f += step;
+    else if (e.key === 'ArrowLeft') f -= step;
+    else if (e.key === 'Home') f = 0;
+    else if (e.key === 'End') f = 1;
+    else return;
+    e.preventDefault();
+    dragging = true;
+    hover = false;
+    seek(f, true);
+    draw();
+    setAria();
+    clearTimeout(keyTimer);
+    keyTimer = setTimeout(function () { dragging = false; seek(cursor, false); }, 420);
+  });
+
+  document.addEventListener('route:frame', function (ev) {
+    var f = +((ev.detail || {}).fraction);
+    if (!isFinite(f)) return;
+    lastFrame = clamp(f, 0, 1);
+    if (!open || !linked || hover || dragging) return;
+    cursor = lastFrame;
+    if (raf) return;
+    draw();
+  });
+
   function onMotion() {
     if (!motionOff()) return;
     reveal = revealTo;
