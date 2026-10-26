@@ -220,6 +220,36 @@
             <p class="run-from" data-run="latest.notes-from"></p>
             <p data-run="latest.notes"></p>
           </div>
+          <div class="analysis" data-analysis hidden>
+            <p class="label">Along this run</p>
+            <div class="metric-row" role="group" aria-label="Pace, grade adjusted pace, heart rate, and cadence">
+              <button type="button" class="metric" data-metric="pace" aria-pressed="false" aria-expanded="false" aria-controls="run-trace">
+                <span class="metric-top"><span class="metric-k">Pace</span><span class="metric-sw" aria-hidden="true"></span></span>
+                <span class="metric-v"><span class="metric-tag">avg</span> <span data-avg="pace"></span><span class="metric-u">/mi</span></span>
+              </button>
+              <button type="button" class="metric" data-metric="gap" aria-pressed="false" aria-expanded="false" aria-controls="run-trace">
+                <span class="metric-top"><span class="metric-k"><abbr title="Grade adjusted pace">GAP</abbr></span><span class="metric-sw" aria-hidden="true"></span></span>
+                <span class="metric-v"><span class="metric-tag">avg</span> <span data-avg="gap"></span><span class="metric-u">/mi</span></span>
+              </button>
+              <button type="button" class="metric" data-metric="hr" aria-pressed="false" aria-expanded="false" aria-controls="run-trace">
+                <span class="metric-top"><span class="metric-k">Heart rate</span><span class="metric-sw" aria-hidden="true"></span></span>
+                <span class="metric-v"><span class="metric-tag">avg</span> <span data-avg="hr"></span><span class="metric-u">bpm</span></span>
+              </button>
+              <button type="button" class="metric" data-metric="cadence" aria-pressed="false" aria-expanded="false" aria-controls="run-trace">
+                <span class="metric-top"><span class="metric-k">Cadence</span><span class="metric-sw" aria-hidden="true"></span></span>
+                <span class="metric-v"><span class="metric-tag">avg</span> <span data-avg="cadence"></span><span class="metric-u">spm</span></span>
+              </button>
+            </div>
+            <div class="analysis-fold" id="run-trace" data-fold>
+              <div class="analysis-clip" data-clip inert>
+                <div class="analysis-chart" data-chart>
+                  <canvas data-plot aria-hidden="true"></canvas>
+                  <div class="analysis-slider" data-slider role="slider" tabindex="-1" aria-label="Position along this run" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0" aria-valuetext=""></div>
+                </div>
+                <p class="analysis-read" data-read></p>
+              </div>
+            </div>
+          </div>
           </div>
           </div>
         </div>
