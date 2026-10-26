@@ -29,7 +29,7 @@ MI, FT, OUT, TZ = 1609.344, 3.28084, "data/strava.json", ZoneInfo("America/New_Y
 ORIGIN = (42.0, -71.0)   # the published route is a shape at this point, not a place
 RUN_TYPES = ("Run", "TrailRun", "VirtualRun")
 ATHLETE = "141554769"
-STREAM_KEYS = "time,distance,velocity_smooth,altitude,heartrate"
+STREAM_KEYS = "time,distance,velocity_smooth,altitude,heartrate,cadence"
 RECENT_KEEP = 16  # latest plus earlier runs the page can step back through
 AVG_FROM = date(2026, 9, 14)  # training-block average on the page; keep every week from here
 
@@ -250,12 +250,13 @@ def split_rows(splits):
 
 
 def stream_block(raw, n=300):
-    """{time, miles, pace_sec_per_mi, alt_ft, hr}, uniform stride to <= n samples with
-    the last sample kept. A stream Strava did not return (no heart-rate strap, no barometer)
-    is written as a list of nulls of the same length, so every array stays index-aligned
-    with time[]."""
+    """{time, miles, pace_sec_per_mi, alt_ft, hr, cadence}, uniform stride to <= n samples with
+    the last sample kept. A stream Strava did not return (no heart-rate strap, no barometer, no
+    cadence) is written as a list of nulls of the same length, so every array stays index-aligned
+    with time[]. Cadence is one foot, in revolutions per minute, the same unit as average_cadence.
+    The page shows steps per minute by doubling it."""
     get = lambda k: ((raw or {}).get(k) or {}).get("data") or []
-    time, dist, vel, alt, hr = (get(k) for k in ("time", "distance", "velocity_smooth", "altitude", "heartrate"))
+    time, dist, vel, alt, hr, cad = (get(k) for k in ("time", "distance", "velocity_smooth", "altitude", "heartrate", "cadence"))
     if not time:
         return None
     idx = stride(range(len(time)), n)
@@ -267,6 +268,7 @@ def stream_block(raw, n=300):
         "pace_sec_per_mi": col(vel, lambda v: round(MI / v) if v and v >= 0.3 else None),
         "alt_ft": col(alt, lambda a: round(a * FT, 1)),
         "hr": col(hr, lambda h: round(h)),
+        "cadence": col(cad, lambda c: round(c) if c else None),
     }
 
 
@@ -704,6 +706,7 @@ def self_check():
     assert st["pace_sec_per_mi"][-1] is None, "a stopped sample has no pace"
     assert st["pace_sec_per_mi"][0] == round(MI / 3.5) and st["alt_ft"][0] == round(10.0 * FT, 1), st
     assert st["hr"] == [None] * len(st["time"]), "a stream Strava did not return is aligned nulls"
+    assert st["cadence"] == [None] * len(st["time"]), "cadence is aligned nulls when Strava omits it"
 
     assert out["totals"] == {"ytd_runs": 112, "ytd_miles": 750.0, "all_runs": 604, "all_miles": 4000.0,
                              "lifts_before_runs_this_week": 1}, out["totals"]
