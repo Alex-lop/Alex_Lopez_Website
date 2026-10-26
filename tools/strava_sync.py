@@ -9,6 +9,8 @@ offline asserts and touches nothing. The hand-edited keys `feeling` and `pr` are
 
 Shape and rules live in DESIGN.md §6. The token exchange and the activity list are fatal; the
 detail, streams and athlete-stats calls are optional and their keys are simply omitted on failure.
+`recent` keeps up to RECENT_KEEP showable runs, newest first, so the page can step back through
+them. A run already stored by id is reused; the newest is always fetched again.
 """
 import http.client
 import json
@@ -28,6 +30,7 @@ ORIGIN = (42.0, -71.0)   # the published route is a shape at this point, not a p
 RUN_TYPES = ("Run", "TrailRun", "VirtualRun")
 ATHLETE = "141554769"
 STREAM_KEYS = "time,distance,velocity_smooth,altitude,heartrate"
+RECENT_KEEP = 16  # latest plus earlier runs the page can step back through
 AVG_FROM = date(2026, 9, 14)  # training-block average on the page; keep every week from here
 
 
@@ -179,33 +182,54 @@ def pick_latest(acts):
     return found
 
 
-def resolve_latest(acts, fetch_detail, limit=12):
-    """(activity, detail) for the newest run the page can show, or (None, None).
+def resolve_runs(acts, fetch_detail, count=1, fetch_cap=12, reuse=None, skip_ids=None):
+    """Newest `count` showable runs as [(activity, detail), ...].
 
     Walks newest first. A treadmill or virtual run is enough on its own. Otherwise a list row
     with a summary polyline is enough. A blank summary — what Strava returns for a lot of
     private runs — still qualifies when the detail call has a line, or when the detail says
     the run was indoors; that fact is copied onto the row so pick_latest sees the same
     activity. A run with neither a line nor an indoor flag is skipped (a GPS dropout should
-    not be labeled a treadmill). `fetch_detail` is called only until one run is chosen, and
-    at most `limit` times."""
+    not be labeled a treadmill). `fetch_detail` is called while choosing, at most `fetch_cap`
+    times. An id in `reuse` is taken without a fetch (detail is None); an id in `skip_ids`
+    is left out, for a run the caller already resolved."""
+    reuse = reuse or {}
+    skip_ids = skip_ids or ()
     runs = [a for a in acts if kind(a) in RUN_TYPES and a.get("distance", 0) > 0 and a.get("start_date_local")]
     runs.sort(key=lambda a: a["start_date_local"], reverse=True)
-    for a in runs[:limit]:
-        if indoor_kind(a):
-            return a, fetch_detail(a)
-        if (a.get("map") or {}).get("summary_polyline"):
-            return a, fetch_detail(a)
+    chosen, fetches = [], 0
+    for a in runs:
+        if len(chosen) >= count:
+            break
+        rid = a.get("id")
+        if rid in skip_ids:
+            continue
+        if rid and rid in reuse:
+            chosen.append((a, None))
+            continue
+        if fetches >= fetch_cap:
+            break
+        fetches += 1
+        if indoor_kind(a) or (a.get("map") or {}).get("summary_polyline"):
+            chosen.append((a, fetch_detail(a)))
+            continue
         detail = fetch_detail(a)
         stamp_indoor(a, detail)
         if indoor_kind(a):
-            return a, detail
+            chosen.append((a, detail))
+            continue
         m = (detail or {}).get("map") or {}
         poly = m.get("polyline") or m.get("summary_polyline")
         if poly:
             a.setdefault("map", {})["polyline"] = poly
-            return a, detail
-    return None, None
+            chosen.append((a, detail))
+    return chosen
+
+
+def resolve_latest(acts, fetch_detail, limit=12):
+    """(activity, detail) for the newest run the page can show, or (None, None)."""
+    found = resolve_runs(acts, fetch_detail, count=1, fetch_cap=limit)
+    return found[0] if found else (None, None)
 
 
 def split_rows(splits):
@@ -226,9 +250,10 @@ def split_rows(splits):
 
 
 def stream_block(raw, n=300):
-    """{time, miles, pace_sec_per_mi, alt_ft, hr}, uniform stride to <= n samples with the last
-    sample kept. A stream Strava did not return (no heart-rate strap, no barometer) is written as
-    a list of nulls of the same length, so every array stays index-aligned with time[]."""
+    """{time, miles, pace_sec_per_mi, alt_ft, hr}, uniform stride to <= n samples with
+    the last sample kept. A stream Strava did not return (no heart-rate strap, no barometer)
+    is written as a list of nulls of the same length, so every array stays index-aligned
+    with time[]."""
     get = lambda k: ((raw or {}).get(k) or {}).get("data") or []
     time, dist, vel, alt, hr = (get(k) for k in ("time", "distance", "velocity_smooth", "altitude", "heartrate"))
     if not time:
@@ -263,6 +288,76 @@ def week_rows(runs, monday, n=8):
             "moving_time_s": sum(a["moving_time"] for a in wk),
         })
     return rows
+
+
+def run_record(activity, detail, streams, fallback_place="Boston, MA"):
+    """The published shape of one run. Same fields `latest` has always carried."""
+    indoor = indoor_kind(activity)
+    place = ", ".join(x for x in (activity.get("location_city"), activity.get("location_state")) if x)
+    if indoor == "treadmill":
+        place = "Treadmill"
+    elif indoor == "virtual":
+        place = "Indoors"
+    else:
+        place = place or fallback_place
+    raw_line = "" if indoor else ((activity.get("map") or {}).get("summary_polyline") or (activity.get("map") or {}).get("polyline") or "")
+    rec = {
+        "date": activity["start_date_local"][:10],
+        "name": activity.get("name", "Run"),
+        "place": place,
+        "miles": round(activity["distance"] / MI, 2),
+        "pace_sec_per_mi": round(activity["moving_time"] / (activity["distance"] / MI)),
+        "elev_ft": round(activity["total_elevation_gain"] * FT),
+        "polyline": route_out(raw_line),
+    }
+    if indoor:
+        rec["indoor"] = indoor
+    if detail:
+        poly = None if indoor else (detail.get("map") or {}).get("polyline")
+        hr = detail.get("has_heartrate")
+        rec.update({
+            "polyline": "" if indoor else ((route_out(poly) if poly else "") or rec["polyline"]),
+            "id": detail.get("id"),
+            "name": detail.get("name") or rec["name"],
+            "moving_time_s": detail.get("moving_time"),
+            "elapsed_time_s": detail.get("elapsed_time"),
+            "avg_hr": round(detail["average_heartrate"]) if hr and detail.get("average_heartrate") else None,
+            "max_hr": round(detail["max_heartrate"]) if hr and detail.get("max_heartrate") else None,
+            "cadence": detail.get("average_cadence"),
+            "suffer_score": detail.get("suffer_score"),
+            "calories": detail.get("calories"),
+            "splits": split_rows(detail.get("splits_standard")),
+        })
+        desc = detail.get("description")
+        if isinstance(desc, str) and desc.strip():
+            rec["description"] = desc.strip()
+    block = stream_block(streams)
+    if block:
+        rec["streams"] = block
+    return rec
+
+
+def same_run(a, b):
+    """True when two published rows are the same activity. An id-less seed matches a later
+    fetch of that day by date, name, and miles."""
+    if not a or not b:
+        return False
+    if a.get("id") and b.get("id"):
+        return a["id"] == b["id"]
+    return (a.get("date"), a.get("name"), a.get("miles")) == (b.get("date"), b.get("name"), b.get("miles"))
+
+
+def merge_recent(fresh, old_recent, limit=RECENT_KEEP):
+    """Newest first. `fresh` wins over a cached copy of the same run. Older cached runs the
+    activity window no longer returns stay until `limit`."""
+    out = []
+    for src in (fresh or [], old_recent or []):
+        for run in src:
+            if not run or not run.get("date") or any(same_run(run, have) for have in out):
+                continue
+            out.append(run)
+    out.sort(key=lambda r: (r.get("date") or "", r.get("id") or 0), reverse=True)
+    return out[:limit]
 
 
 def lifts_before_runs(acts, monday):
@@ -303,48 +398,7 @@ def build(acts, monday, old, detail=None, streams=None, stats=None, today=None):
     latest = pick_latest(acts)
     old_latest = old.get("latest") or {}
     if latest:
-        indoor = indoor_kind(latest)
-        place = ", ".join(x for x in (latest.get("location_city"), latest.get("location_state")) if x)
-        if indoor == "treadmill":
-            place = "Treadmill"
-        elif indoor == "virtual":
-            place = "Indoors"
-        else:
-            place = place or old_latest.get("place", "Boston, MA")
-        raw_line = "" if indoor else ((latest.get("map") or {}).get("summary_polyline") or (latest.get("map") or {}).get("polyline") or "")
-        out["latest"] = {
-            "date": latest["start_date_local"][:10],
-            "name": latest.get("name", "Run"),
-            "place": place,
-            "miles": round(latest["distance"] / MI, 2),
-            "pace_sec_per_mi": round(latest["moving_time"] / (latest["distance"] / MI)),
-            "elev_ft": round(latest["total_elevation_gain"] * FT),
-            "polyline": route_out(raw_line),
-        }
-        if indoor:
-            out["latest"]["indoor"] = indoor
-        if detail:
-            poly = None if indoor else (detail.get("map") or {}).get("polyline")
-            hr = detail.get("has_heartrate")
-            out["latest"].update({
-                "polyline": "" if indoor else (route_out(poly) or out["latest"]["polyline"]),
-                "id": detail.get("id"),
-                "name": detail.get("name") or out["latest"]["name"],
-                "moving_time_s": detail.get("moving_time"),
-                "elapsed_time_s": detail.get("elapsed_time"),
-                "avg_hr": round(detail["average_heartrate"]) if hr and detail.get("average_heartrate") else None,
-                "max_hr": round(detail["max_heartrate"]) if hr and detail.get("max_heartrate") else None,
-                "cadence": detail.get("average_cadence"),
-                "suffer_score": detail.get("suffer_score"),
-                "calories": detail.get("calories"),
-                "splits": split_rows(detail.get("splits_standard")),
-            })
-            desc = detail.get("description")
-            if isinstance(desc, str) and desc.strip():
-                out["latest"]["description"] = desc.strip()
-        block = stream_block(streams)
-        if block:
-            out["latest"]["streams"] = block
+        out["latest"] = run_record(latest, detail, streams, old_latest.get("place") or "Boston, MA")
     elif old_latest:
         out["latest"] = old_latest
     out["weeks"] = week_rows(runs, monday)
@@ -381,11 +435,18 @@ def dumps(out):
         return f"\x00{len(flat) - 1}\x00"
 
     out = json.loads(json.dumps(out, allow_nan=False))  # deep copy, and proves it serialises
-    latest = out.get("latest") or {}
-    if "streams" in latest:
-        latest["streams"] = {k: mark(v) for k, v in latest["streams"].items()}
-    if "splits" in latest:
-        latest["splits"] = [mark(s) for s in latest["splits"]]
+
+    def compact_run(run):
+        if not isinstance(run, dict):
+            return
+        if isinstance(run.get("streams"), dict):
+            run["streams"] = {k: mark(v) for k, v in run["streams"].items()}
+        if isinstance(run.get("splits"), list):
+            run["splits"] = [mark(s) for s in run["splits"]]
+
+    compact_run(out.get("latest") or {})
+    for run in out.get("recent") or []:
+        compact_run(run)
     if "weeks" in out:
         out["weeks"] = [mark(w) for w in out["weeks"]]
     s = json.dumps(out, indent=2, allow_nan=False)
@@ -658,6 +719,34 @@ def self_check():
     json.dumps(out, allow_nan=False)
     assert json.loads(dumps(out)) == out and '"time": [' in dumps(out), "compact arrays, valid JSON"
 
+    # earlier runs: newest first, a cached id is not fetched again, an older cached day survives
+    history = resolve_runs(acts, lambda a: None, count=5, fetch_cap=8)
+    assert [a["name"] for a, _ in history] == ["c", "a"], [a["name"] for a, _ in history]
+    seen.clear()
+
+    def fetch_two(a):
+        seen.append(a["name"])
+        if a["name"] == "today":
+            return {"id": 42, "name": "today", "map": {"polyline": private_poly}, "moving_time": 1600}
+        if a["name"] == "a":
+            return {"id": 1, "name": "a", "map": {"polyline": short}}
+        return {"map": {}}
+
+    cached = {42: {"id": 42, "date": "2026-09-29", "name": "today", "miles": 4.01, "polyline": "kept"}}
+    rows = resolve_runs([hidden], fetch_two, count=3, fetch_cap=5, reuse=cached)
+    assert [a["name"] for a, _ in rows] == ["today"] and rows[0][1] is None and seen == [], (rows, seen)
+    rows = resolve_runs([hidden, acts[0]], fetch_two, count=2, fetch_cap=5, reuse=cached)
+    assert [a["name"] for a, _ in rows] == ["today", "a"] and rows[0][1] is None and seen == ["a"], (rows, seen)
+
+    fresh_c = run_record(acts[2], {"id": 99, "name": "c", "map": {}}, None)
+    seed = {"date": "2026-09-16", "name": "c", "miles": fresh_c["miles"], "polyline": "old"}
+    older = {"date": "2026-08-01", "name": "old", "miles": 3.0, "polyline": "x", "id": 9}
+    merged = merge_recent([fresh_c, run_record(acts[0], None, None)], [older, seed])
+    assert [r["date"] for r in merged] == ["2026-09-16", "2026-09-14", "2026-08-01"], merged
+    assert merged[0]["id"] == 99 and len(merge_recent([fresh_c], [seed])) == 1
+    out["recent"] = [lat, {**lat, "date": "2026-09-15", "name": "b", "id": 2}]
+    assert json.loads(dumps(out)) == out and dumps(out).count('"time": [') == 3
+
     import tempfile
     prev_file, prev_rt = os.environ.get("STRAVA_REFRESH_TOKEN_FILE"), os.environ.get("STRAVA_REFRESH_TOKEN")
     os.environ["STRAVA_REFRESH_TOKEN"] = "from-env"
@@ -736,6 +825,7 @@ def main():
     stats = api_opt(f"https://www.strava.com/api/v3/athletes/{ATHLETE}/stats", access)
 
     new = build(acts, monday, old, detail, streams, stats, today)
+
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     if {k: v for k, v in old.items() if k != "generated_at"} == new:
         # quiet day: keep "synced N hours ago" honest without eight commits a day
