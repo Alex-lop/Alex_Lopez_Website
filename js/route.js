@@ -384,6 +384,24 @@
   if (startBtn) startBtn.addEventListener('click', goStart);
   if (playBtn) playBtn.addEventListener('click', togglePlay);
 
+  /* The chart under the map scrubs the same fraction the tape does. drag holds the runner still. */
+  document.addEventListener('route:seek', function (ev) {
+    if (!R) return;
+    var d = ev.detail || {}, f = clamp(+d.fraction, 0, 1);
+    if (!isFinite(+d.fraction)) return;
+    scrubF = f;
+    if (phase === 'start') { phase = 'run'; pulseT = PULSE; }
+    if (d.drag) {
+      drag = true;
+      if (!g) layout();
+      if (g) paint(f);
+      return;
+    }
+    drag = false;
+    release(f);
+    if (!raf) repaint();
+  });
+
   function outsideView() { return document.documentElement.dataset.view === 'outside'; }
   function kick() {
     if (outsideView()) layout();
