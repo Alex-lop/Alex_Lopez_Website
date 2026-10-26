@@ -103,7 +103,7 @@ assert 'data-route-map' in HTML and 'data-mill' in HTML and 'class="mill"' in HT
 assert 'Ran on the treadmill.' in HTML, "the indoor panel should say the run was on the treadmill"
 assert 'mill-roll' in CSS and '.mill-slats { animation: none; }' in CSS
 sys.path.insert(0, str(ROOT / "tools"))
-from strava_sync import ORIGIN, decode_polyline  # noqa: E402
+from strava_sync import ORIGIN, RECENT_KEEP, decode_polyline  # noqa: E402
 assert decode_polyline(route["data-route"])[0] == ORIGIN, "seeded data-route is not published at the fixed origin"
 if latest.get("indoor") in ("treadmill", "virtual"):
     assert not latest.get("polyline"), "an indoor run must not publish a line"
@@ -124,6 +124,15 @@ if "streams" in latest:
     st = latest["streams"]
     assert isinstance(st.get("time"), list) and isinstance(st.get("miles"), list), "streams need time and miles"
     assert len(st["time"]) == len(st["miles"]) <= 300, "stream arrays must align and stay under 300"
+if "recent" in data:
+    assert isinstance(data["recent"], list) and 2 <= len(data["recent"]) <= RECENT_KEEP, "recent window"
+    assert data["recent"][0]["date"] == latest["date"] == max(r["date"] for r in data["recent"])
+    for r in data["recent"]:
+        if r.get("indoor") in ("treadmill", "virtual"):
+            assert not r.get("polyline"), "an indoor run must not publish a line"
+        else:
+            assert r.get("polyline"), "cached run is missing its route"
+            assert decode_polyline(r["polyline"])[0] == ORIGIN, r.get("date")
 if "weeks" in data:
     assert isinstance(data["weeks"], list) and 2 <= len(data["weeks"]) <= 52, "weeks window"
     for w in data["weeks"]:

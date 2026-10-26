@@ -826,6 +826,31 @@ def main():
 
     new = build(acts, monday, old, detail, streams, stats, today)
 
+    reuse = {r["id"]: r for r in (old.get("recent") or []) if r.get("id")}
+    skip = {cand["id"]} if cand and cand.get("id") else set()
+    room = max(0, RECENT_KEEP - (1 if new.get("latest") else 0))
+    pairs = resolve_runs(acts, fetch_detail, count=room, fetch_cap=room + 8, reuse=reuse, skip_ids=skip)
+    fresh = [new["latest"]] if new.get("latest") else []
+    for a, det in pairs:
+        rid = a.get("id")
+        if det is None and rid in reuse:
+            fresh.append(reuse[rid])
+            continue
+        block = None
+        if rid and not indoor_kind(a):
+            block = api_opt(
+                f"https://www.strava.com/api/v3/activities/{rid}/streams?keys={STREAM_KEYS}&key_by_type=true", access)
+        rec = run_record(a, det, block, (old.get("latest") or {}).get("place") or "Boston, MA")
+        if rec and (rec.get("polyline") or rec.get("indoor")):
+            fresh.append(rec)
+    recent = merge_recent(fresh, old.get("recent"))
+    if new.get("latest"):
+        recent = [r for r in recent if not same_run(r, new["latest"])]
+        recent.insert(0, new["latest"])
+        recent = recent[:RECENT_KEEP]
+    if recent:
+        new["recent"] = recent
+
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     if {k: v for k, v in old.items() if k != "generated_at"} == new:
         # quiet day: keep "synced N hours ago" honest without eight commits a day
