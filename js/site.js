@@ -373,7 +373,8 @@
   var splits = doc.querySelector('[data-splits]'), touched = 0, selfScroll = false;
 
   function buildSplits(list) {
-    if (!splits || !list || !list.length) return;
+    if (!splits) return;
+    if (!list || !list.length) { splits.textContent = ''; splits.hidden = true; return; }
     splits.textContent = '';
     list.forEach(function (sp) {
       var card = doc.createElement('div'), lines = [];
@@ -472,29 +473,27 @@
 
   applyMotion();
 
-  fetch('data/strava.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
-    var w = d.week || {}, l = d.latest || {}, synced = d.generated_at ? ago(d.generated_at) : '';
-    var num = function (v) { return typeof v === 'number'; };
+  /* recent[] is newest first. Back steps toward older runs; Forward returns toward the latest. */
+  var runList = [], runIdx = 0, runBusy = false, slideGen = 0;
+
+  function paintRun(l, at) {
+    l = l || {};
     var indoor = l.indoor === 'treadmill' || l.indoor === 'virtual';
     var treadmill = l.indoor === 'treadmill';
+    var which = at ? 'Earlier run' : 'Latest run';
     var out = {
-      'week.miles': num(w.miles) ? w.miles.toFixed(1) : '',
-      'week.pace': w.pace_sec_per_mi ? mmss(w.pace_sec_per_mi) : '',
-      'week.elev': num(w.elev_ft) ? w.elev_ft + '' : '',
-      'week.runs': num(w.runs) ? w.runs + '' : '',
-      'week.time': w.moving_time_s ? hm(w.moving_time_s) : '',
-      'feeling': d.feeling || '',
-      'latest.lead': indoor
-        ? (treadmill ? 'Latest run, on the treadmill: ' : 'Latest run, indoors: ')
-        : 'Latest run, drawn as a route on the canvas: ',
+      'latest.lead': l.miles
+        ? (indoor
+          ? which + (treadmill ? ', on the treadmill: ' : ', indoors: ')
+          : which + ', drawn as a route on the canvas: ')
+        : '',
       'latest.line': l.miles
         ? (indoor
           ? day(l.date) + ', ' + (+l.miles).toFixed(2) + ' miles at ' + mmss(l.pace_sec_per_mi) + ' per mile.'
           : day(l.date) + ', ' + (+l.miles).toFixed(2) + ' miles at ' + mmss(l.pace_sec_per_mi) + ' per mile, ' + l.elev_ft + ' feet of climbing, ' + l.place + '.')
         : '',
       'latest.when': l.date && l.place ? day(l.date) + ', ' + l.place : '',
-      'latest.name': l.name || '',
-      'synced': synced
+      'latest.name': l.name || ''
     };
     Object.keys(out).forEach(function (k) {
       if (out[k]) all('[data-run="' + k + '"]').forEach(function (el) { el.textContent = out[k]; });
@@ -508,32 +507,14 @@
       if (from) from.textContent = notes && l.date ? 'from ' + mdy(l.date) : '';
       notesEl.hidden = !notes;
     }
-
-    if (num(w.miles)) {
-      miles = w.miles;
-      paintOdo(miles);  // the observer rolls it from zero on first view
-      var bar = doc.querySelector('[data-week-goal]');
-      if (bar) {
-        bar.max = 67;
-        bar.value = w.miles;
-        bar.setAttribute('aria-label', 'Miles this week toward 67');
-        bar.textContent = w.miles.toFixed(1) + ' of 67 miles this week';
-      }
-    }
-
-    drawAvg(d.weeks, d.week_start, d.avg_from);
-    drawMilesBars(d.weeks, d.week_start);
     buildSplits(l.splits);
-
-    var stale = doc.querySelector('[data-run-stale]');
-    if (stale && d.generated_at && (Date.now() - Date.parse(d.generated_at)) / 864e5 > 10) {
-      stale.textContent = 'Last synced ' + d.generated_at.slice(0, 10) + '; the log is behind.';
-      stale.hidden = false;
-    }
+    if (splits) splits.setAttribute('aria-label', at ? 'Mile splits of this run' : 'Mile splits of the latest run');
+    var slider = doc.querySelector('[data-tape] [role="slider"]');
+    if (slider) slider.setAttribute('aria-label', at ? 'Position along this run' : 'Position along the latest run');
 
     var map = doc.querySelector('[data-route-map]');
     var mill = doc.querySelector('[data-mill]');
-    if (map) map.hidden = indoor;
+    if (map) map.hidden = !!indoor;
     if (mill) mill.hidden = !indoor;
     if (indoor) {
       var kicker = doc.querySelector('[data-mill-kicker]');
@@ -555,6 +536,136 @@
         slats.style.setProperty('--mill-dur', dur.toFixed(2) + 's');
       }
     } else if (l.polyline && window.__route) window.__route(l);
+    if (window.__analysis) window.__analysis(l);
+  }
+
+  function navState() {
+    var nav = doc.querySelector('[data-run-nav]');
+    if (!nav) return;
+    var many = runList.length > 1;
+    nav.hidden = !many;
+    var back = nav.querySelector('[data-run-back]');
+    var fwd = nav.querySelector('[data-run-fwd]');
+    var meta = nav.querySelector('[data-run-meta]');
+    if (back) back.disabled = !many || runIdx >= runList.length - 1;
+    if (fwd) fwd.disabled = runIdx <= 0;
+    var l = runList[runIdx] || {};
+    if (!meta) return;
+    var when = l.date ? day(l.date) : '';
+    var miles = isFinite(+l.miles) ? (+l.miles).toFixed(2) + ' mi' : '';
+    meta.textContent = runIdx === 0
+      ? ['Latest', when, miles].filter(Boolean).join(' · ')
+      : [when, miles, (runIdx + 1) + ' of ' + runList.length].filter(Boolean).join(' · ');
+  }
+
+  function goRun(next) {
+    if (runBusy || next === runIdx || next < 0 || next >= runList.length) return;
+    var gen = ++slideGen;
+    var dir = next > runIdx ? 'back' : 'fwd';
+    var stage = doc.querySelector('[data-run-stage]');
+    function apply() {
+      runIdx = next;
+      paintRun(runList[runIdx], runIdx);
+      navState();
+    }
+    if (motionOff() || !stage) { apply(); return; }
+    runBusy = true;
+    var outCls = dir === 'back' ? 'run-out-back' : 'run-out-fwd';
+    var inCls = dir === 'back' ? 'run-in-back' : 'run-in-fwd';
+    stage.classList.remove('run-in-back', 'run-in-fwd', 'run-out-back', 'run-out-fwd');
+    void stage.offsetWidth;
+    stage.classList.add(outCls);
+    var finished = false, timer;
+    function done(ev) {
+      if (ev && (ev.target !== stage || (ev.animationName || '').indexOf('run-out') !== 0)) return;
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      stage.removeEventListener('animationend', done);
+      apply();
+      stage.classList.remove(outCls);
+      stage.classList.add(inCls);
+      runBusy = false;
+      function clearIn(ev) {
+        if (gen !== slideGen) return;
+        if (ev && (ev.target !== stage || (ev.animationName || '').indexOf('run-in') !== 0)) return;
+        stage.removeEventListener('animationend', clearIn);
+        stage.classList.remove(inCls);
+      }
+      stage.addEventListener('animationend', clearIn);
+      setTimeout(function () { if (gen === slideGen) stage.classList.remove(inCls); }, 700);
+    }
+    stage.addEventListener('animationend', done);
+    timer = setTimeout(done, 360);
+  }
+
+  var runNav = doc.querySelector('[data-run-nav]');
+  if (runNav) {
+    runNav.addEventListener('click', function (e) {
+      var t = e.target.closest ? e.target.closest('button') : null;
+      if (!t || t.disabled) return;
+      if (t.hasAttribute('data-run-back')) goRun(runIdx + 1);
+      else if (t.hasAttribute('data-run-fwd')) goRun(runIdx - 1);
+    });
+    runNav.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      if (e.target && e.target.closest && !e.target.closest('[data-run-nav]')) return;
+      e.preventDefault();
+      goRun(runIdx + (e.key === 'ArrowLeft' ? 1 : -1));
+    });
+  }
+
+  fetch('data/strava.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
+    var w = d.week || {}, l = d.latest || {}, synced = d.generated_at ? ago(d.generated_at) : '';
+    var num = function (v) { return typeof v === 'number'; };
+    var out = {
+      'week.miles': num(w.miles) ? w.miles.toFixed(1) : '',
+      'week.pace': w.pace_sec_per_mi ? mmss(w.pace_sec_per_mi) : '',
+      'week.elev': num(w.elev_ft) ? w.elev_ft + '' : '',
+      'week.runs': num(w.runs) ? w.runs + '' : '',
+      'week.time': w.moving_time_s ? hm(w.moving_time_s) : '',
+      'feeling': d.feeling || '',
+      'synced': synced
+    };
+    Object.keys(out).forEach(function (k) {
+      if (out[k]) all('[data-run="' + k + '"]').forEach(function (el) { el.textContent = out[k]; });
+    });
+
+    if (num(w.miles)) {
+      miles = w.miles;
+      paintOdo(miles);  // the observer rolls it from zero on first view
+      var bar = doc.querySelector('[data-week-goal]');
+      if (bar) {
+        bar.max = 67;
+        bar.value = w.miles;
+        bar.setAttribute('aria-label', 'Miles this week toward 67');
+        bar.textContent = w.miles.toFixed(1) + ' of 67 miles this week';
+      }
+    }
+
+    drawAvg(d.weeks, d.week_start, d.avg_from);
+    drawMilesBars(d.weeks, d.week_start);
+
+    var stale = doc.querySelector('[data-run-stale]');
+    if (stale && d.generated_at && (Date.now() - Date.parse(d.generated_at)) / 864e5 > 10) {
+      stale.textContent = 'Last synced ' + d.generated_at.slice(0, 10) + '; the log is behind.';
+      stale.hidden = false;
+    }
+
+    var list = (d.recent || []).filter(function (r) {
+      return r && r.date && (r.polyline || r.indoor === 'treadmill' || r.indoor === 'virtual');
+    });
+    if (l.date && !list.some(function (r) {
+      return (r.id && l.id && r.id === l.id) || (r.date === l.date && r.name === l.name && r.miles === l.miles);
+    })) list.unshift(l);
+    list.sort(function (a, b) {
+      if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+      return (b.id || 0) - (a.id || 0);
+    });
+    runList = list;
+    runIdx = 0;
+    paintRun(runList[0] || l, 0);
+    navState();
   }).catch(function () { /* the seeded markup stands */ });
 
   var titles = {

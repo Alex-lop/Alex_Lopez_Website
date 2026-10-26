@@ -208,6 +208,7 @@
     paintTape(f);
     readout(f, tau, scrubbing() || userPaused || phase !== 'run' || reduce);
     emit(mi, f, tau, false);
+    tell(f, tau);
     if (!reduce && (head.dx || head.dy)) comb(head);
   }
 
@@ -219,6 +220,7 @@
     shownF = 0;
     paintTape(0);
     readout(0, 0, true);
+    tell(0, 0);
   }
 
   function comb(head) {
@@ -227,6 +229,11 @@
     combAt = now;
     /* the field measures angles from vertical: atan2(dx, -dy), same as its own wake */
   f.comb(rect.left + head.x * (rect.width / W), rect.top + head.y * (rect.height / H), Math.atan2(head.dx, -head.dy));
+  }
+  /* Every painted frame. The analysis chart follows this; mile events stay on route:at. */
+  function tell(f, tau) {
+    window.__routeAt = f;
+    document.dispatchEvent(new CustomEvent('route:frame', { detail: { fraction: f, t: tau } }));
   }
   /* one event per integer mile, in either direction; a reset forgets the last mile so mile 0 is sent again on the next run */
   function emit(mile, fraction, t, reset) {
@@ -376,6 +383,24 @@
   }
   if (startBtn) startBtn.addEventListener('click', goStart);
   if (playBtn) playBtn.addEventListener('click', togglePlay);
+
+  /* The chart under the map scrubs the same fraction the tape does. drag holds the runner still. */
+  document.addEventListener('route:seek', function (ev) {
+    if (!R) return;
+    var d = ev.detail || {}, f = clamp(+d.fraction, 0, 1);
+    if (!isFinite(+d.fraction)) return;
+    scrubF = f;
+    if (phase === 'start') { phase = 'run'; pulseT = PULSE; }
+    if (d.drag) {
+      drag = true;
+      if (!g) layout();
+      if (g) paint(f);
+      return;
+    }
+    drag = false;
+    release(f);
+    if (!raf) repaint();
+  });
 
   function outsideView() { return document.documentElement.dataset.view === 'outside'; }
   function kick() {
