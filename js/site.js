@@ -536,6 +536,7 @@
         slats.style.setProperty('--mill-dur', dur.toFixed(2) + 's');
       }
     } else if (l.polyline && window.__route) window.__route(l);
+    if (window.__analysis) window.__analysis(l);
   }
 
   function navState() {
