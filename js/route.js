@@ -208,6 +208,7 @@
     paintTape(f);
     readout(f, tau, scrubbing() || userPaused || phase !== 'run' || reduce);
     emit(mi, f, tau, false);
+    tell(f, tau);
     if (!reduce && (head.dx || head.dy)) comb(head);
   }
 
@@ -219,6 +220,7 @@
     shownF = 0;
     paintTape(0);
     readout(0, 0, true);
+    tell(0, 0);
   }
 
   function comb(head) {
@@ -227,6 +229,11 @@
     combAt = now;
     /* the field measures angles from vertical: atan2(dx, -dy), same as its own wake */
   f.comb(rect.left + head.x * (rect.width / W), rect.top + head.y * (rect.height / H), Math.atan2(head.dx, -head.dy));
+  }
+  /* Every painted frame. The analysis chart follows this; mile events stay on route:at. */
+  function tell(f, tau) {
+    window.__routeAt = f;
+    document.dispatchEvent(new CustomEvent('route:frame', { detail: { fraction: f, t: tau } }));
   }
   /* one event per integer mile, in either direction; a reset forgets the last mile so mile 0 is sent again on the next run */
   function emit(mile, fraction, t, reset) {
