@@ -474,7 +474,7 @@
   applyMotion();
 
   /* recent[] is newest first. Back steps toward older runs; Forward returns toward the latest. */
-  var runList = [], runIdx = 0;
+  var runList = [], runIdx = 0, runBusy = false, slideGen = 0;
 
   function paintRun(l, at) {
     l = l || {};
@@ -558,10 +558,44 @@
   }
 
   function goRun(next) {
-    if (next === runIdx || next < 0 || next >= runList.length) return;
-    runIdx = next;
-    paintRun(runList[runIdx], runIdx);
-    navState();
+    if (runBusy || next === runIdx || next < 0 || next >= runList.length) return;
+    var gen = ++slideGen;
+    var dir = next > runIdx ? 'back' : 'fwd';
+    var stage = doc.querySelector('[data-run-stage]');
+    function apply() {
+      runIdx = next;
+      paintRun(runList[runIdx], runIdx);
+      navState();
+    }
+    if (motionOff() || !stage) { apply(); return; }
+    runBusy = true;
+    var outCls = dir === 'back' ? 'run-out-back' : 'run-out-fwd';
+    var inCls = dir === 'back' ? 'run-in-back' : 'run-in-fwd';
+    stage.classList.remove('run-in-back', 'run-in-fwd', 'run-out-back', 'run-out-fwd');
+    void stage.offsetWidth;
+    stage.classList.add(outCls);
+    var finished = false, timer;
+    function done(ev) {
+      if (ev && (ev.target !== stage || (ev.animationName || '').indexOf('run-out') !== 0)) return;
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      stage.removeEventListener('animationend', done);
+      apply();
+      stage.classList.remove(outCls);
+      stage.classList.add(inCls);
+      runBusy = false;
+      function clearIn(ev) {
+        if (gen !== slideGen) return;
+        if (ev && (ev.target !== stage || (ev.animationName || '').indexOf('run-in') !== 0)) return;
+        stage.removeEventListener('animationend', clearIn);
+        stage.classList.remove(inCls);
+      }
+      stage.addEventListener('animationend', clearIn);
+      setTimeout(function () { if (gen === slideGen) stage.classList.remove(inCls); }, 700);
+    }
+    stage.addEventListener('animationend', done);
+    timer = setTimeout(done, 360);
   }
 
   var runNav = doc.querySelector('[data-run-nav]');

@@ -76,6 +76,8 @@ for attr in ("data-miles", "data-pace", "data-time"):
 assert route.get("aria-hidden") == "true", "#route is drawn only; the tape is the control"
 assert canvas["field"].get("aria-hidden") == "true", "#field must be hidden from the a11y tree"
 assert 'data-tape' in HTML and 'data-tape-start' in HTML and 'data-tape-play' in HTML
+assert 'data-run-back' in HTML and 'data-run-fwd' in HTML and 'data-run-stage' in HTML
+assert 'run-out-back' in CSS and 'run-in-fwd' in CSS
 assert 'role="slider"' in HTML
 
 assert "prefers-reduced-motion" in CSS
