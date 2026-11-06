@@ -21,7 +21,7 @@
 <script>
 (function () {
   var alias = { graphene: 'projects', top: 'home', '': 'home', about: 'work', also: 'projects', nemisis: 'projects', reglineage: 'projects', imc: 'projects', hobbies: 'outside', running: 'outside', golf: 'outside' };
-  var known = { home: 1, projects: 1, work: 1, outside: 1 };
+  var known = { home: 1, projects: 1, erdos: 1, work: 1, outside: 1 };
   function apply() {
     var v = alias[location.hash.slice(1)] || location.hash.slice(1);
     document.documentElement.dataset.view = known[v] ? v : 'home';
@@ -45,6 +45,7 @@
           <p class="hub-label">projects</p>
           <div class="hub-list">
             <a href="#projects">graphene</a>
+            <a href="#erdos">erdős</a>
           </div>
         </section>
         <section class="hub-sec">
@@ -97,6 +98,39 @@
             </figure>
             <p class="shot-note">Astra came in about 10× leaner than Fable 5.1 and 42× leaner than Opus 5. Jev lands in a similar accuracy band at a cost that barely shows up. Tokens and dollars are already getting cheap. The part that still takes a person is knowing where the work should go.</p>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="erdos" aria-labelledby="h-erdos">
+    <div class="wrap" data-reveal>
+      <h1 id="h-erdos">An Erdős problem</h1>
+      <p class="tagline">What's the point of working it</p>
+      <div class="feature">
+        <div class="feature-media">
+          <div class="repo-links">
+            <div>
+              <p class="label">#197</p>
+              <p><a href="https://github.com/Alex-lop/erdos-197-tower-obstruction" target="_blank" rel="noopener noreferrer">tower obstruction</a></p>
+              <p><a href="https://github.com/Alex-lop/erdos-197-interval-gadget" target="_blank" rel="noopener noreferrer">interval gadget</a></p>
+              <p><a href="https://github.com/Alex-lop/erdos-197-bounded-lag" target="_blank" rel="noopener noreferrer">bounded lag</a></p>
+            </div>
+            <div>
+              <p class="label">#195</p>
+              <p><a href="https://github.com/Alex-lop/erdos-195-valuation-bands" target="_blank" rel="noopener noreferrer">valuation bands</a></p>
+              <p><a href="https://github.com/Alex-lop/erdos-195-difference-not-div-4" target="_blank" rel="noopener noreferrer">difference not divisible by 4</a></p>
+              <p><a href="https://github.com/Alex-lop/erdos-195-odd-difference" target="_blank" rel="noopener noreferrer">odd difference</a></p>
+            </div>
+          </div>
+        </div>
+        <figure class="feature-video">
+          <p class="video-soon">YouTube video coming</p>
+        </figure>
+        <div class="feature-body">
+          <!-- draft: replace with your own. same length as graphene, on purpose. -->
+          <p>I was following an example in my Group Theory book and the calculation looked off. I'm not saying this to shame the book. I think it's an amazing one, honestly one of the best-written I've read. It was a FOIL a middle schooler could do in a minute, and I spent about fifteen on it anyway, because my answer wasn't the one in the book. I did use an agent to check what I was missing. I was right. The book had a typo. I don't think I'd ever actually contradicted something an authority handed me, not in about two years. It felt like the treasure I used to dig for at the beach.</p>
+          <p>That's what got me working on an Erdős problem. I don't think I solved it, not the whole thing. #195 and #197 are still open, and what's linked here are pieces, checked in Lean, mostly written with an agent. I know the videos going around, Terence Tao and some others, about how the learning shouldn't get lost, and as an undergrad I couldn't agree more. But if you can get to a solution that's honestly better than what you would've come up with in a day, why wouldn't you? Even writing this I keep thinking an agent could just write it for me. I don't really have a definitive answer. The models are going to keep getting better, so I'll leave it up to you.</p>
         </div>
       </div>
     </div>

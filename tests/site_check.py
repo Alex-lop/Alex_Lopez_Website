@@ -40,7 +40,7 @@ site = SiteParser()
 site.feed(HTML)
 
 assert {"top", "projects", "work", "outside", "running", "main"} <= site.ids, sorted(site.ids)
-assert site.h1 == 4, f"Expected one h1 on the hub and each page, found {site.h1}"
+assert site.h1 == 5, f"Expected one h1 on the hub and each page, found {site.h1}"
 for img in site.images:
     assert "alt" in img and img.get("width") and img.get("height"), f"img needs alt, width, height: {img}"
 for a in site.anchors:
