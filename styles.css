@@ -104,16 +104,17 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
   html[data-view="home"] .hub-list a { animation: hub-rise 820ms cubic-bezier(.22, 1, .36, 1) both; }
   html[data-view="home"] .hub h1 { animation-delay: 40ms; }
   html[data-view="home"] .hub-sec:nth-of-type(1) .hub-label { animation-delay: 180ms; }
-  html[data-view="home"] .hub-sec:nth-of-type(1) .hub-list a:nth-child(1) { animation-delay: 220ms; }
-  html[data-view="home"] .hub-sec:nth-of-type(1) .hub-list a:nth-child(2) { animation-delay: 260ms; }
-  html[data-view="home"] .hub-sec:nth-of-type(2) .hub-label { animation-delay: 320ms; }
-  html[data-view="home"] .hub-sec:nth-of-type(2) .hub-list a { animation-delay: 360ms; }
-  html[data-view="home"] .hub-sec:nth-of-type(3) .hub-label { animation-delay: 420ms; }
-  html[data-view="home"] .hub-sec:nth-of-type(3) .hub-list a { animation-delay: 460ms; }
-  html[data-view="home"] .hub-sec:nth-of-type(4) .hub-label { animation-delay: 560ms; }
-  html[data-view="home"] .hub-sec:nth-of-type(4) .hub-list a:nth-child(1) { animation-delay: 600ms; }
-  html[data-view="home"] .hub-sec:nth-of-type(4) .hub-list a:nth-child(2) { animation-delay: 640ms; }
-  html[data-view="home"] .hub-sec:nth-of-type(4) .hub-list a:nth-child(3) { animation-delay: 680ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(1) .hub-list a { animation-delay: 220ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(2) .hub-label { animation-delay: 280ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(2) .hub-list a { animation-delay: 320ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(3) .hub-label { animation-delay: 380ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(3) .hub-list a { animation-delay: 420ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(4) .hub-label { animation-delay: 480ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(4) .hub-list a { animation-delay: 520ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(5) .hub-label { animation-delay: 580ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(5) .hub-list a:nth-child(1) { animation-delay: 620ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(5) .hub-list a:nth-child(2) { animation-delay: 660ms; }
+  html[data-view="home"] .hub-sec:nth-of-type(5) .hub-list a:nth-child(3) { animation-delay: 700ms; }
 }
 @keyframes hub-rise {
   from { opacity: 0; transform: translateY(12px); }
