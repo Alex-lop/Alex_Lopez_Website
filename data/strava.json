@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-11-08T10:14:47Z",
-  "week_start": "2026-11-02",
+  "generated_at": "2026-11-09T06:18:26Z",
+  "week_start": "2026-11-09",
   "week": {
-    "runs": 6,
-    "miles": 26.9,
-    "pace_sec_per_mi": 450,
-    "elev_ft": 141,
-    "moving_time_s": 12095,
+    "runs": 0,
+    "miles": 0.0,
+    "pace_sec_per_mi": null,
+    "elev_ft": 0,
+    "moving_time_s": 0,
     "days": [
-      4.93,
-      3.25,
-      4.48,
       0.0,
-      8.1,
-      6.15,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
       0.0
     ]
   },
@@ -60,7 +60,8 @@
     {"week_start":"2026-10-12","miles":30.8,"runs":7,"moving_time_s":13248},
     {"week_start":"2026-10-19","miles":30.7,"runs":5,"moving_time_s":14052},
     {"week_start":"2026-10-26","miles":10.4,"runs":3,"moving_time_s":4630},
-    {"week_start":"2026-11-02","miles":26.9,"runs":6,"moving_time_s":12095}
+    {"week_start":"2026-11-02","miles":26.9,"runs":6,"moving_time_s":12095},
+    {"week_start":"2026-11-09","miles":0.0,"runs":0,"moving_time_s":0}
   ],
   "avg_from": "2026-09-14",
   "totals": {
@@ -68,11 +69,11 @@
     "ytd_miles": 592.2,
     "all_runs": 336,
     "all_miles": 1028.7,
-    "lifts_before_runs_this_week": 6
+    "lifts_before_runs_this_week": 0
   },
   "achievements": {
     "prs_30d": 55,
-    "achievements_30d": 156
+    "achievements_30d": 149
   },
   "feeling": "Legs were flat Monday, then the six on Wednesday clicked. Relative effort 103 and I still wanted another mile.",
   "pr": {
