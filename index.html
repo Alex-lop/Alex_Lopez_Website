@@ -190,15 +190,45 @@
           <p><a href="https://www.strava.com/athletes/141554769" target="_blank" rel="noopener noreferrer">Check out my Strava</a></p>
           <div class="splits" data-splits hidden tabindex="0" role="region" aria-label="Mile splits of the latest run"></div>
           <figure class="miles-bars" data-miles-bars>
-            <figcaption class="label" data-miles-label>Last 5 weeks</figcaption>
+            <figcaption class="label" data-miles-label>Last 8 weeks</figcaption>
             <div class="miles-plot" data-miles-plot>
-              <button type="button" class="miles-col" aria-pressed="false" data-miles="7.5" data-runs="2" data-range="Aug 31–Sep 6" aria-label="Aug 31, 7.5 miles, 2 runs"><span class="miles-val">7.5</span><span class="miles-track"><span class="miles-fill" style="--h: 27.8%"></span></span><span class="miles-lab">Aug 31</span></button>
-              <button type="button" class="miles-col" aria-pressed="false" data-miles="13.3" data-runs="5" data-range="Sep 7–13" aria-label="Sep 7, 13.3 miles, 5 runs"><span class="miles-val">13.3</span><span class="miles-track"><span class="miles-fill" style="--h: 49.3%"></span></span><span class="miles-lab">Sep 7</span></button>
-              <button type="button" class="miles-col" aria-pressed="false" data-miles="27.0" data-runs="6" data-range="Sep 14–20" aria-label="Sep 14, 27.0 miles, 6 runs"><span class="miles-val">27.0</span><span class="miles-track"><span class="miles-fill" style="--h: 100%"></span></span><span class="miles-lab">Sep 14</span></button>
-              <button type="button" class="miles-col" aria-pressed="false" data-miles="18.8" data-runs="4" data-range="Sep 21–27" aria-label="Sep 21, 18.8 miles, 4 runs"><span class="miles-val">18.8</span><span class="miles-track"><span class="miles-fill" style="--h: 69.6%"></span></span><span class="miles-lab">Sep 21</span></button>
-              <button type="button" class="miles-col live" aria-pressed="true" data-miles="12.3" data-runs="2" data-range="Sep 28–Oct 4" aria-label="This week, 12.3 miles, 2 runs"><span class="miles-val">12.3</span><span class="miles-track"><span class="miles-fill" style="--h: 45.6%"></span></span><span class="miles-lab">now</span></button>
+              <svg class="miles-svg" viewBox="0 0 420 204" aria-hidden="true">
+                <defs>
+                  <linearGradient id="miles-shade" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-opacity="0.42"></stop>
+                    <stop offset="100%" stop-opacity="0"></stop>
+                  </linearGradient>
+                </defs>
+                <line class="miles-rule" x1="36" x2="404" y1="194" y2="194"></line>
+                <text class="miles-ylab" x="28" y="194">0</text>
+                <line class="miles-rule" x1="36" x2="404" y1="112" y2="112"></line>
+                <text class="miles-ylab" x="28" y="112">20</text>
+                <line class="miles-rule" x1="36" x2="404" y1="30" y2="30"></line>
+                <text class="miles-ylab" x="28" y="30">40</text>
+                <path class="miles-area" d="M36 139.5L88.6 83.3L141.1 116.9L193.7 88.2L246.3 128.8L298.9 67.7L351.4 68.1L404 194L404 194L36 194Z"></path>
+                <path class="miles-line" d="M36 139.5L88.6 83.3L141.1 116.9L193.7 88.2L246.3 128.8L298.9 67.7L351.4 68.1L404 194"></path>
+                <circle class="miles-halo" r="11" cx="404" cy="194"></circle>
+                <circle class="miles-dot" cx="36" cy="139.5" r="4.2"></circle>
+                <circle class="miles-dot" cx="88.6" cy="83.3" r="4.2"></circle>
+                <circle class="miles-dot" cx="141.1" cy="116.9" r="4.2"></circle>
+                <circle class="miles-dot" cx="193.7" cy="88.2" r="4.2"></circle>
+                <circle class="miles-dot" cx="246.3" cy="128.8" r="4.2"></circle>
+                <circle class="miles-dot" cx="298.9" cy="67.7" r="4.2"></circle>
+                <circle class="miles-dot" cx="351.4" cy="68.1" r="4.2"></circle>
+                <circle class="miles-dot" cx="404" cy="194" r="6"></circle>
+                <text class="miles-tag" x="404" y="180" text-anchor="end">0.0</text>
+              </svg>
+              <button type="button" class="miles-pt" aria-pressed="false" data-miles="13.3" data-runs="5" data-range="Sep 7–13" data-x="36" data-y="139.5" aria-label="Sep 7, 13.3 miles, 5 runs" style="left: 8.57%; top: 68.38%"></button>
+              <button type="button" class="miles-pt" aria-pressed="false" data-miles="27.0" data-runs="6" data-range="Sep 14–20" data-x="88.6" data-y="83.3" aria-label="Sep 14, 27.0 miles, 6 runs" style="left: 21.1%; top: 40.83%"></button>
+              <button type="button" class="miles-pt" aria-pressed="false" data-miles="18.8" data-runs="4" data-range="Sep 21–27" data-x="141.1" data-y="116.9" aria-label="Sep 21, 18.8 miles, 4 runs" style="left: 33.6%; top: 57.3%"></button>
+              <button type="button" class="miles-pt" aria-pressed="false" data-miles="25.8" data-runs="7" data-range="Sep 28–Oct 4" data-x="193.7" data-y="88.2" aria-label="Sep 28, 25.8 miles, 7 runs" style="left: 46.12%; top: 43.24%"></button>
+              <button type="button" class="miles-pt" aria-pressed="false" data-miles="15.9" data-runs="4" data-range="Oct 5–11" data-x="246.3" data-y="128.8" aria-label="Oct 5, 15.9 miles, 4 runs" style="left: 58.64%; top: 63.14%"></button>
+              <button type="button" class="miles-pt" aria-pressed="false" data-miles="30.8" data-runs="7" data-range="Oct 12–18" data-x="298.9" data-y="67.7" aria-label="Oct 12, 30.8 miles, 7 runs" style="left: 71.17%; top: 33.19%"></button>
+              <button type="button" class="miles-pt" aria-pressed="false" data-miles="30.7" data-runs="5" data-range="Oct 19–25" data-x="351.4" data-y="68.1" aria-label="Oct 19, 30.7 miles, 5 runs" style="left: 83.67%; top: 33.38%"></button>
+              <button type="button" class="miles-pt live" aria-pressed="true" data-miles="0.0" data-runs="0" data-range="Oct 26–Nov 1" data-x="404" data-y="194" aria-label="This week, 0.0 miles" style="left: 96.19%; top: 95.1%"></button>
             </div>
-            <p class="miles-cap" data-miles-caption>This week · 12.3 mi so far · 2 runs</p>
+            <div class="miles-axis" data-miles-axis aria-hidden="true"><span>Sep 7</span><span>14</span><span>21</span><span>28</span><span>Oct 5</span><span>12</span><span>19</span><span class="on">now</span></div>
+            <p class="miles-cap" data-miles-caption>This week · 0.0 mi so far</p>
           </figure>
         </div>
         <div class="route-panel">
