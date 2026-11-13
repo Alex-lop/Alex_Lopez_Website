@@ -436,6 +436,16 @@
   }
 
   if (milesPlot) {
+    milesPlot.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      var pts = all('.miles-pt', milesPlot), best = null, dist = Infinity, i, r, d;
+      for (i = 0; i < pts.length; i++) {
+        r = pts[i].getBoundingClientRect();
+        d = Math.abs(e.clientX - (r.left + r.width / 2));
+        if (d < dist) { dist = d; best = pts[i]; }
+      }
+      if (best) selectMiles(best);
+    });
     milesPlot.addEventListener('click', function (e) {
       var col = e.target.closest && e.target.closest('.miles-pt');
       if (col) selectMiles(col);
