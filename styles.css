@@ -129,10 +129,26 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
 .feature-video iframe,
 .video-soon { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 2px; background: var(--paper-2); }
 .video-soon { display: flex; align-items: center; justify-content: center; margin: 0; padding: 24px; border: 1px solid var(--rule); color: var(--ink-2); font: italic 400 1.15rem/1.4 var(--serif); text-align: center; }
-.repo-links { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 28px; align-items: start; }
-.repo-links p { margin: 0 0 8px; }
-.repo-links .label { margin: 0 0 6px; }
-@media (max-width: 620px) { .repo-links { grid-template-columns: minmax(0, 1fr); row-gap: 16px; } }
+.erdos-q { font: italic 400 clamp(1.35rem, 2.6vw, 1.85rem)/1.3 var(--serif); color: var(--ink); letter-spacing: -.01em; max-width: 16em; }
+.erdos-lead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 520px); column-gap: 40px; align-items: start; }
+.erdos-lead .feature-body { grid-column: 1; grid-row: 1; }
+.erdos-lead .feature-video { grid-column: 2; grid-row: 1; }
+.erdos-work { display: grid; grid-template-columns: minmax(280px, 520px) minmax(240px, 1fr); column-gap: 40px; row-gap: 28px; align-items: start; margin-top: 64px; }
+.erdos-work .paper-scroll { grid-column: 1; grid-row: 1; }
+.erdos-work .erdos-sources { grid-column: 2; grid-row: 1; }
+.repos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 16px; align-items: start; }
+.repos .label { margin: 0 0 8px; }
+.paper-note { margin: 18px 0 12px; max-width: 42ch; color: var(--ink-2); font-size: .92rem; line-height: 1.5; }
+.paper-links { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0; }
+.paper-scroll { max-height: min(74vh, 720px); overflow: auto; margin: 0; padding: 10px; border: 1px solid var(--rule); border-radius: 2px; background: var(--paper-2); }
+.paper-scroll img { width: 100%; height: auto; margin: 0 0 10px; background: #fff; border-radius: 1px; }
+.paper-scroll img:last-child { margin-bottom: 0; }
+@media (max-width: 980px) {
+  .erdos-lead, .erdos-work { grid-template-columns: minmax(0, 1fr); max-width: 42rem; }
+  .erdos-lead .feature-body, .erdos-lead .feature-video,
+  .erdos-work .paper-scroll, .erdos-work .erdos-sources { grid-column: auto; grid-row: auto; }
+}
+@media (max-width: 620px) { .repos { grid-template-columns: minmax(0, 1fr); row-gap: 16px; } }
 @media (max-width: 980px) {
   .feature { grid-template-columns: minmax(0, 1fr); max-width: 42rem; }
   .feature-media, .feature-body, .feature-video { grid-column: auto; grid-row: auto; }
@@ -408,6 +424,38 @@ a[href*="strava.com"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www
 a[href*="chess.com"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='5.2' r='2.55' fill='black'/%3E%3Cpath fill='black' d='M10.15 7.7h3.7c.55 1.15.9 1.95.9 2.7 0 .5-.22.9-.55 1.2l1.7 4.65H8.1l1.7-4.65c-.33-.3-.55-.7-.55-1.2 0-.75.35-1.55.9-2.7zM8.1 17.55h7.8v1.45H8.1zm-1.25 2.35h10.3V21.6H6.85z'/%3E%3C/svg%3E"); }
 a[href^="mailto:"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z'/%3E%3C/svg%3E"); }
 
+/* Repo cards. The outbound-link rule paints every https link blue and prefixes a mark;
+   these opt out, and keep the GitHub mark in the corner. */
+a.repo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0 0 8px;
+  padding: 12px 34px 12px 14px;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--paper-2);
+  border-radius: 2px;
+}
+a.repo::before {
+  position: absolute;
+  top: 13px;
+  right: 12px;
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  color: var(--ink-2);
+}
+a.repo:hover,
+a.repo:focus-visible { color: var(--ink); background: color-mix(in srgb, var(--accent) 9%, var(--paper-2)); }
+a.repo:hover::before,
+a.repo:focus-visible::before,
+a.repo:hover .repo-name,
+a.repo:focus-visible .repo-name { color: var(--accent); }
+.repo-name { font-weight: 500; line-height: 1.3; }
+.repo-slug { color: var(--ink-2); font-size: .78rem; line-height: 1.35; overflow-wrap: anywhere; }
+
 /* One reveal per section, orchestrated: heading first, then each block. site.js adds .in. */
 .reveal-ready [data-reveal] > :first-child { clip-path: inset(0 0 100% 0); transition: clip-path 600ms cubic-bezier(.2, .7, .2, 1); }
 .reveal-ready [data-reveal] > :nth-child(2) { opacity: 0; transform: translateY(8px); transition: opacity 500ms ease 120ms, transform 500ms ease 120ms; }
@@ -430,8 +478,7 @@ a[href^="mailto:"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
 @media (prefers-reduced-motion: reduce) {
   .reveal-ready [data-reveal] > :first-child { clip-path: none; transition: none; }
   .reveal-ready [data-reveal] > :nth-child(2) { opacity: 1; transform: none; transition: none; }
-  .odo .d span, .track::-webkit-progress-value, .avg-fill, .avg-mean, .avg-val, .miles-col, .miles-fill { transition: none; }
-  .miles-col, .miles-col:hover, .miles-col[aria-pressed="true"] { transform: none; }
+  .odo .d span, .track::-webkit-progress-value, .avg-fill, .avg-mean, .avg-val { transition: none; }
   .tape-deck { display: none; }
   .mill-slats { animation: none; }
   .analysis-fold, .metric-sw, .metric-sw::after, .metric-k::before { transition: none; }
@@ -442,8 +489,7 @@ a[href^="mailto:"] { --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
 /* The footer's Pause motion button: the same rest state as the OS setting, so nothing animates on the press itself */
 :root[data-motion="off"] [data-reveal] > :first-child { clip-path: none; transition: none; }
 :root[data-motion="off"] [data-reveal] > :nth-child(2) { opacity: 1; transform: none; transition: none; }
-:root[data-motion="off"] .odo .d span, :root[data-motion="off"] .track::-webkit-progress-value, :root[data-motion="off"] .avg-fill, :root[data-motion="off"] .avg-mean, :root[data-motion="off"] .avg-val, :root[data-motion="off"] .miles-col, :root[data-motion="off"] .miles-fill { transition: none; }
-:root[data-motion="off"] .miles-col, :root[data-motion="off"] .miles-col:hover, :root[data-motion="off"] .miles-col[aria-pressed="true"] { transform: none; }
+:root[data-motion="off"] .odo .d span, :root[data-motion="off"] .track::-webkit-progress-value, :root[data-motion="off"] .avg-fill, :root[data-motion="off"] .avg-mean, :root[data-motion="off"] .avg-val { transition: none; }
 :root[data-motion="off"] .tape-deck { display: none; }
 :root[data-motion="off"] .mill-slats { animation: none; }
 :root[data-motion="off"] .analysis-fold, :root[data-motion="off"] .metric-sw, :root[data-motion="off"] .metric-sw::after, :root[data-motion="off"] .metric-k::before { transition: none; }
