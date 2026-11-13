@@ -296,11 +296,36 @@
     ao.observe(avgPlot);
   }
 
-  /* last five Monday weeks. One bar stays selected: blue fill, lifted. This week starts selected. */
+  /* last eight Monday weeks, as a line of dots with a wash under it. This week starts selected. */
+  var SVGNS = 'http://www.w3.org/2000/svg';
   var milesBars = doc.querySelector('[data-miles-bars]');
   var milesPlot = milesBars && milesBars.querySelector('[data-miles-plot]');
+  var milesAxis = milesBars && milesBars.querySelector('[data-miles-axis]');
   var milesLabel = milesBars && milesBars.querySelector('[data-miles-label]');
   var milesCap = milesBars && milesBars.querySelector('[data-miles-caption]');
+  var MW = 420, MH = 204, ML = 36, MR = 16, MT = 30, MB = 10;
+  if (milesBars && !milesAxis) {
+    milesAxis = doc.createElement('div');
+    milesAxis.className = 'miles-axis';
+    milesAxis.setAttribute('data-miles-axis', '');
+    milesAxis.setAttribute('aria-hidden', 'true');
+    milesBars.insertBefore(milesAxis, milesCap);
+  }
+
+  function svgEl(name) { return doc.createElementNS(SVGNS, name); }
+  function r1(n) { return Math.round(n * 10) / 10; }
+  function chartTop(max) {
+    var need = max <= 0 ? 10 : max * 1.18, step = need <= 12 ? 2 : need <= 30 ? 5 : 10;
+    return Math.max(step, Math.ceil(need / step) * step);
+  }
+  function mileTick(iso, i, rows, live) {
+    if (live) return 'now';
+    var d = new Date(iso + 'T12:00:00');
+    var prev = i ? new Date(rows[i - 1].week_start + 'T12:00:00') : null;
+    var mon = d.toLocaleDateString('en-US', { month: 'short' });
+    if (!prev || prev.getMonth() !== d.getMonth()) return mon + ' ' + d.getDate();
+    return String(d.getDate());
+  }
 
   function milesLine(col) {
     var miles = col.getAttribute('data-miles'), runs = +col.getAttribute('data-runs') || 0;
@@ -310,56 +335,114 @@
   }
 
   function selectMiles(col) {
-    if (!col || !milesPlot) return;
-    all('.miles-col', milesPlot).forEach(function (c) {
-      c.setAttribute('aria-pressed', c === col ? 'true' : 'false');
-    });
+    if (!col || !milesPlot || col.getAttribute('aria-pressed') === 'true') return;
+    var pts = all('.miles-pt', milesPlot), dots = all('.miles-dot', milesPlot), i, n = pts.length;
+    var labs = milesAxis ? all('span', milesAxis) : [];
+    var halo = milesPlot.querySelector('.miles-halo'), tag = milesPlot.querySelector('.miles-tag');
+    for (i = 0; i < n; i++) {
+      var on = pts[i] === col;
+      pts[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (dots[i]) dots[i].setAttribute('r', on ? '6' : '4.2');
+      if (labs[i]) labs[i].classList.toggle('on', on);
+      if (!on) continue;
+      if (halo) { halo.setAttribute('cx', col.getAttribute('data-x')); halo.setAttribute('cy', col.getAttribute('data-y')); }
+      if (tag) {
+        tag.textContent = col.getAttribute('data-miles');
+        tag.setAttribute('x', col.getAttribute('data-x'));
+        tag.setAttribute('y', Math.max(14, +col.getAttribute('data-y') - 14));
+        tag.setAttribute('text-anchor', i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle');
+      }
+    }
     if (milesCap) milesCap.textContent = milesLine(col);
   }
 
   function drawMilesBars(weeks, liveStart) {
     if (!milesPlot || !weeks || !weeks.length) return;
-    var rows = weeks.slice(-5), top = 0, pick = null;
+    var rows = weeks.slice(-8), top = 0, pick = null, plotW = MW - ML - MR, plotH = MH - MT - MB;
     rows.forEach(function (w) { top = Math.max(top, +w.miles || 0); });
-    if (!top) top = 1;
+    top = chartTop(top);
+    var base = MT + plotH, line = '', pts = rows.map(function (w, i) {
+      return {
+        x: r1(ML + (rows.length === 1 ? plotW / 2 : i * plotW / (rows.length - 1))),
+        y: r1(MT + (1 - Math.max(0, +w.miles || 0) / top) * plotH)
+      };
+    });
+    pts.forEach(function (p, i) { line += (i ? 'L' : 'M') + p.x + ' ' + p.y; });
     milesPlot.textContent = '';
-    rows.forEach(function (w) {
+    if (milesAxis) milesAxis.textContent = '';
+    var svg = svgEl('svg'), defs = svgEl('defs'), grad = svgEl('linearGradient');
+    var area = svgEl('path'), stroke = svgEl('path'), halo = svgEl('circle'), tag = svgEl('text');
+    svg.setAttribute('class', 'miles-svg');
+    svg.setAttribute('viewBox', '0 0 ' + MW + ' ' + MH);
+    svg.setAttribute('aria-hidden', 'true');
+    grad.id = 'miles-shade';
+    grad.setAttribute('x1', '0'); grad.setAttribute('y1', '0'); grad.setAttribute('x2', '0'); grad.setAttribute('y2', '1');
+    defs.appendChild(grad);
+    [['0%', '0.42'], ['100%', '0']].forEach(function (pair) {
+      var stop = svgEl('stop');
+      stop.setAttribute('offset', pair[0]);
+      stop.setAttribute('stop-opacity', pair[1]);
+      grad.appendChild(stop);
+    });
+    area.setAttribute('class', 'miles-area');
+    area.setAttribute('d', line + 'L' + pts[pts.length - 1].x + ' ' + r1(base) + 'L' + pts[0].x + ' ' + r1(base) + 'Z');
+    stroke.setAttribute('class', 'miles-line');
+    stroke.setAttribute('d', line);
+    halo.setAttribute('class', 'miles-halo');
+    halo.setAttribute('r', '11');
+    tag.setAttribute('class', 'miles-tag');
+    svg.appendChild(defs);
+    svg.appendChild(area);
+    [0, top / 2, top].forEach(function (v) {
+      var y = r1(MT + (1 - v / top) * plotH), rule = svgEl('line'), lab = svgEl('text');
+      rule.setAttribute('class', 'miles-rule');
+      rule.setAttribute('x1', ML); rule.setAttribute('x2', MW - MR);
+      rule.setAttribute('y1', y); rule.setAttribute('y2', y);
+      lab.setAttribute('class', 'miles-ylab');
+      lab.setAttribute('x', ML - 8); lab.setAttribute('y', y);
+      lab.textContent = String(r1(v));
+      svg.appendChild(rule); svg.appendChild(lab);
+    });
+    svg.appendChild(stroke); svg.appendChild(halo);
+    pts.forEach(function (p) {
+      var dot = svgEl('circle');
+      dot.setAttribute('class', 'miles-dot');
+      dot.setAttribute('cx', p.x); dot.setAttribute('cy', p.y); dot.setAttribute('r', '4.2');
+      svg.appendChild(dot);
+    });
+    svg.appendChild(tag);
+    milesPlot.appendChild(svg);
+    rows.forEach(function (w, i) {
       var miles = +w.miles || 0, runs = +w.runs || 0, live = w.week_start === liveStart, shown = miles.toFixed(1);
-      var col = doc.createElement('button'), val = doc.createElement('span');
-      var track = doc.createElement('span'), fill = doc.createElement('span'), lab = doc.createElement('span');
-      col.type = 'button';
-      col.className = 'miles-col' + (live ? ' live' : '');
-      col.setAttribute('data-miles', shown);
-      col.setAttribute('data-runs', String(runs));
-      col.setAttribute('data-range', weekRange(w.week_start));
-      col.setAttribute('aria-pressed', 'false');
-      col.setAttribute('aria-label', (live ? 'This week' : day(w.week_start)) + ', ' + shown + ' miles' + (runs ? ', ' + runs + ' run' + (runs === 1 ? '' : 's') : ''));
-      val.className = 'miles-val';
-      val.textContent = shown;
-      track.className = 'miles-track';
-      fill.className = 'miles-fill';
-      fill.style.setProperty('--h', (miles / top * 100) + '%');
-      lab.className = 'miles-lab';
-      lab.textContent = live ? 'now' : day(w.week_start, { month: 'short', day: 'numeric' });
-      track.appendChild(fill);
-      col.appendChild(val);
-      col.appendChild(track);
-      col.appendChild(lab);
-      milesPlot.appendChild(col);
-      if (live) pick = col;
+      var btn = doc.createElement('button'), lab = doc.createElement('span');
+      btn.type = 'button';
+      btn.className = 'miles-pt' + (live ? ' live' : '');
+      btn.setAttribute('data-miles', shown);
+      btn.setAttribute('data-runs', String(runs));
+      btn.setAttribute('data-range', weekRange(w.week_start));
+      btn.setAttribute('data-x', pts[i].x);
+      btn.setAttribute('data-y', pts[i].y);
+      btn.setAttribute('aria-pressed', 'false');
+      btn.setAttribute('aria-label', (live ? 'This week' : day(w.week_start)) + ', ' + shown + ' miles' + (runs ? ', ' + runs + ' run' + (runs === 1 ? '' : 's') : ''));
+      btn.style.left = (pts[i].x / MW * 100) + '%';
+      btn.style.top = (pts[i].y / MH * 100) + '%';
+      milesPlot.appendChild(btn);
+      lab.textContent = mileTick(w.week_start, i, rows, live);
+      if (milesAxis) milesAxis.appendChild(lab);
+      if (live) pick = btn;
     });
     if (milesLabel) milesLabel.textContent = 'Last ' + rows.length + (rows.length === 1 ? ' week' : ' weeks');
-    selectMiles(pick || milesPlot.lastElementChild);
+    selectMiles(pick || milesPlot.querySelector('.miles-pt:last-child'));
   }
 
   if (milesPlot) {
     milesPlot.addEventListener('click', function (e) {
-      var col = e.target.closest && e.target.closest('.miles-col');
+      var col = e.target.closest && e.target.closest('.miles-pt');
       if (col) selectMiles(col);
     });
     milesPlot.addEventListener('keydown', function (e) {
       if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-      var cols = all('.miles-col', milesPlot), i, cur = 0, next;
+      var cols = all('.miles-pt', milesPlot), i, cur = 0, next;
       if (!cols.length) return;
       for (i = 0; i < cols.length; i++) if (cols[i].getAttribute('aria-pressed') === 'true') cur = i;
       next = e.key === 'ArrowRight' ? Math.min(cols.length - 1, cur + 1) : Math.max(0, cur - 1);
