@@ -292,14 +292,14 @@ html[data-view]:not([data-view="home"]) .back { display: inline-flex; }
 .miles-bars .label { margin-bottom: 8px; }
 .miles-plot { position: relative; }
 .miles-svg { display: block; width: 100%; height: auto; overflow: visible; aspect-ratio: 420 / 204; }
-#miles-shade stop { stop-color: var(--run); }
+#miles-shade stop { stop-color: var(--accent); }
 .miles-rule { stroke: var(--rule); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .miles-ylab { fill: var(--ink-2); font-weight: 400; font-size: 11px; font-family: var(--sans); text-anchor: end; dominant-baseline: middle; }
 .miles-area { fill: url(#miles-shade); }
-.miles-line { fill: none; stroke: var(--run); stroke-width: 2.25; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.miles-halo { fill: var(--run); opacity: .18; }
-.miles-dot { fill: var(--run); stroke: var(--paper); stroke-width: 2; vector-effect: non-scaling-stroke; }
-.miles-tag { fill: var(--run); font-weight: 500; font-size: 12px; font-family: var(--sans); }
+.miles-line { fill: none; stroke: var(--accent); stroke-width: 2.25; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.miles-halo { fill: var(--accent); opacity: .18; }
+.miles-dot { fill: var(--accent); stroke: var(--paper); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.miles-tag { fill: var(--accent); font-weight: 500; font-size: 12px; font-family: var(--sans); }
 .miles-pt { position: absolute; width: 44px; height: 44px; margin: 0; padding: 0; border: 0; border-radius: 50%; background: transparent; transform: translate(-50%, -50%); cursor: pointer; }
 .miles-axis { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; margin: 2px 3.8% 0 8.6%; color: var(--ink-2); font-size: .75rem; line-height: 1.3; font-variant-numeric: tabular-nums; }
 .miles-axis span { text-align: center; white-space: nowrap; }
