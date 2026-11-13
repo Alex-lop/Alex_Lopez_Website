@@ -671,7 +671,7 @@
   var titles = {
     home: 'Alex Lopez',
     projects: 'Graphene — Alex Lopez',
-    erdos: 'An Erdős problem — Alex Lopez',
+    erdos: 'Erdős problems — Alex Lopez',
     work: 'XP: experience — Alex Lopez',
     outside: 'Outside — Alex Lopez'
   };
