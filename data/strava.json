@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-11-15T22:46:19Z",
-  "week_start": "2026-11-09",
+  "generated_at": "2026-11-16T06:20:46Z",
+  "week_start": "2026-11-16",
   "week": {
-    "runs": 8,
-    "miles": 22.1,
-    "pace_sec_per_mi": 446,
-    "elev_ft": 171,
-    "moving_time_s": 9857,
+    "runs": 0,
+    "miles": 0.0,
+    "pace_sec_per_mi": null,
+    "elev_ft": 0,
+    "moving_time_s": 0,
     "days": [
-      6.89,
-      5.19,
-      3.43,
       0.0,
       0.0,
-      6.59,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
       0.0
     ]
   },
@@ -50,7 +50,7 @@
     }
   },
   "weeks": [
-    {"week_start":"2026-09-14","miles":27.0,"runs":6,"moving_time_s":12285},
+    {"week_start":"2026-09-14","miles":0.0,"runs":0,"moving_time_s":0},
     {"week_start":"2026-09-21","miles":18.8,"runs":4,"moving_time_s":8624},
     {"week_start":"2026-09-28","miles":25.8,"runs":7,"moving_time_s":10881},
     {"week_start":"2026-10-05","miles":15.9,"runs":4,"moving_time_s":7106},
@@ -58,7 +58,8 @@
     {"week_start":"2026-10-19","miles":30.7,"runs":5,"moving_time_s":14052},
     {"week_start":"2026-10-26","miles":10.4,"runs":3,"moving_time_s":4630},
     {"week_start":"2026-11-02","miles":26.9,"runs":6,"moving_time_s":12095},
-    {"week_start":"2026-11-09","miles":22.1,"runs":8,"moving_time_s":9857}
+    {"week_start":"2026-11-09","miles":22.1,"runs":8,"moving_time_s":9857},
+    {"week_start":"2026-11-16","miles":0.0,"runs":0,"moving_time_s":0}
   ],
   "avg_from": "2026-09-14",
   "totals": {
@@ -66,11 +67,11 @@
     "ytd_miles": 614.3,
     "all_runs": 344,
     "all_miles": 1050.8,
-    "lifts_before_runs_this_week": 5
+    "lifts_before_runs_this_week": 0
   },
   "achievements": {
-    "prs_30d": 50,
-    "achievements_30d": 125
+    "prs_30d": 34,
+    "achievements_30d": 107
   },
   "feeling": "Legs were flat Monday, then the six on Wednesday clicked. Relative effort 103 and I still wanted another mile.",
   "pr": {
